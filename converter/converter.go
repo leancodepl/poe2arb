@@ -2,7 +2,9 @@ package converter
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
+	"regexp"
 
 	"github.com/leancodepl/poe2arb/utils"
 	"github.com/pkg/errors"
@@ -12,6 +14,8 @@ type Converter struct {
 	Input  io.Reader
 	Output io.Writer
 	Lang   string
+
+	posParamCount int
 }
 
 func NewConverter(input io.Reader, output io.Writer, lang string) *Converter {
@@ -20,42 +24,6 @@ func NewConverter(input io.Reader, output io.Writer, lang string) *Converter {
 		Output: output,
 		Lang:   lang,
 	}
-}
-
-type jsonTerm struct {
-	Term       string             `json:"term"`
-	Definition jsonTermDefinition `json:"definition"`
-}
-
-type jsonTermDefinition struct {
-	Value  *string
-	Plural *jsonTermPluralDefinition
-}
-
-func (d *jsonTermDefinition) UnmarshalJSON(data []byte) error {
-	var v interface{}
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-
-	switch v := v.(type) {
-	case string:
-		d.Value = &v
-		return nil
-	case map[string]interface{}:
-		return json.Unmarshal(data, &d.Plural)
-	}
-
-	return errors.New("invalid definition type")
-}
-
-type jsonTermPluralDefinition struct {
-	Zero  *string `json:"zero"`
-	One   *string `json:"one"`
-	Two   *string `json:"two"`
-	Few   *string `json:"few"`
-	Many  *string `json:"many"`
-	Other string  `json:"other"`
 }
 
 const (
@@ -89,7 +57,7 @@ func (c *Converter) Convert() error {
 	arb.Set(localeKey, c.Lang)
 
 	for _, term := range jsonContents {
-		message, err := parseTerm(term)
+		message, err := c.parseTerm(term)
 		if err != nil {
 			return errors.Wrapf(err, `decoding term "%s" failed`, term.Term)
 		}
@@ -106,14 +74,24 @@ func (c *Converter) Convert() error {
 	return errors.Wrap(err, "encoding arb failed")
 }
 
-func parseTerm(term *jsonTerm) (*arbMessage, error) {
-	// todo: icu support
-
+func (c *Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 	var value string
 	if term.Definition.Value != nil {
-		value = *term.Definition.Value
+		var err error
+		value, err = c.parseTranslation(*term.Definition.Value)
+		if err != nil {
+			return nil, err
+		}
 	} else {
-		value = "<empty>"
+		plural, err := term.Definition.Plural.Map(func(s string) (string, error) {
+			s, err := c.parseTranslation(s)
+			return s, err
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		value = plural.ToICUMessageFormat()
 	}
 
 	message := &arbMessage{
@@ -121,6 +99,26 @@ func parseTerm(term *jsonTerm) (*arbMessage, error) {
 		Translation: value,
 		Attributes:  &arbMessageAttributes{},
 	}
+
+	return message, nil
+}
+
+const (
+	messageParameterPattern = `[a-zA-Z][a-zA-Z_\d]*`
+)
+
+var (
+	posParamRegexp   = regexp.MustCompile("{}")
+	namedParamRegexp = regexp.MustCompile("{" + messageParameterPattern + "}")
+)
+
+// parseTranslation parses translations replacing `{}` parameters with placeholders
+// pos1, pos2, ...
+func (c *Converter) parseTranslation(message string) (string, error) {
+	message = posParamRegexp.ReplaceAllStringFunc(message, func(s string) string {
+		c.posParamCount++
+		return fmt.Sprintf("{pos%d}", c.posParamCount)
+	})
 
 	return message, nil
 }
