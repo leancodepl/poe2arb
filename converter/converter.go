@@ -23,8 +23,39 @@ func NewConverter(input io.Reader, output io.Writer, lang string) *Converter {
 }
 
 type jsonTerm struct {
-	Term       string `json:"term"`
-	Definition string `json:"definition"`
+	Term       string             `json:"term"`
+	Definition jsonTermDefinition `json:"definition"`
+}
+
+type jsonTermDefinition struct {
+	Value  *string
+	Plural *jsonTermPluralDefinition
+}
+
+func (d *jsonTermDefinition) UnmarshalJSON(data []byte) error {
+	var v interface{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	switch v := v.(type) {
+	case string:
+		d.Value = &v
+		return nil
+	case map[string]interface{}:
+		return json.Unmarshal(data, &d.Plural)
+	}
+
+	return errors.New("invalid definition type")
+}
+
+type jsonTermPluralDefinition struct {
+	Zero  *string `json:"zero"`
+	One   *string `json:"one"`
+	Two   *string `json:"two"`
+	Few   *string `json:"few"`
+	Many  *string `json:"many"`
+	Other string  `json:"other"`
 }
 
 const (
@@ -60,7 +91,7 @@ func (c *Converter) Convert() error {
 	for _, term := range jsonContents {
 		message, err := parseTerm(term)
 		if err != nil {
-			return errors.Wrapf(err, "decoding term \"%s\" failed", term.Term)
+			return errors.Wrapf(err, `decoding term "%s" failed`, term.Term)
 		}
 
 		arb.Set(message.Name, message.Translation)
@@ -78,9 +109,16 @@ func (c *Converter) Convert() error {
 func parseTerm(term *jsonTerm) (*arbMessage, error) {
 	// todo: icu support
 
+	var value string
+	if term.Definition.Value != nil {
+		value = *term.Definition.Value
+	} else {
+		value = "<empty>"
+	}
+
 	message := &arbMessage{
 		Name:        term.Term,
-		Translation: term.Definition,
+		Translation: value,
 		Attributes:  &arbMessageAttributes{},
 	}
 
