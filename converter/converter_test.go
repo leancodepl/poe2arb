@@ -34,6 +34,17 @@ func TestConverterConvert(t *testing.T) {
         "term_plural": "",
         "reference": "",
         "comment": ""
+    },
+    {
+        "term": "pluralTerm",
+        "definition": {
+            "one": "One thing",
+            "other": "{count} things"
+        },
+        "context": "",
+        "term_plural": "pluralTerm",
+        "reference": "",
+        "comment": ""
     }
 ]`
 	expectedOut := `{
@@ -43,7 +54,15 @@ func TestConverterConvert(t *testing.T) {
     "welcomeSignIn": "ZALOGUJ SIĘ",
     "@welcomeSignIn": {},
     "signInAppBarTitle": "Zaloguj się",
-    "@signInAppBarTitle": {}
+    "@signInAppBarTitle": {},
+    "pluralTerm": "{count, plural, =1 {One thing} other {{count} things}}",
+    "@pluralTerm": {
+        "placeholders": {
+            "count": {
+                "type": "num"
+            }
+        }
+    }
 }
 `
 

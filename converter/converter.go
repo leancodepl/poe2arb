@@ -16,13 +16,15 @@ type Converter struct {
 	Lang   string
 
 	posParamCount int
+	namedParams   map[string]string
 }
 
 func NewConverter(input io.Reader, output io.Writer, lang string) *Converter {
 	return &Converter{
-		Input:  input,
-		Output: output,
-		Lang:   lang,
+		Input:       input,
+		Output:      output,
+		Lang:        lang,
+		namedParams: make(map[string]string),
 	}
 }
 
@@ -91,21 +93,21 @@ func (c *Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 			return nil, err
 		}
 
+		c.namedParams["count"] = "num"
+
 		value = plural.ToICUMessageFormat()
 	}
 
 	message := &arbMessage{
 		Name:        term.Term,
 		Translation: value,
-		Attributes:  &arbMessageAttributes{},
+		Attributes:  c.buildMessageAttributes(),
 	}
 
 	return message, nil
 }
 
-const (
-	messageParameterPattern = `[a-zA-Z][a-zA-Z_\d]*`
-)
+const messageParameterPattern = `[a-zA-Z][a-zA-Z_\d]*`
 
 var (
 	posParamRegexp   = regexp.MustCompile("{}")
@@ -113,7 +115,7 @@ var (
 )
 
 // parseTranslation parses translations replacing `{}` parameters with placeholders
-// pos1, pos2, ...
+// pos1, pos2, ... This is for a compatibility with easy_localization strings.
 func (c *Converter) parseTranslation(message string) (string, error) {
 	message = posParamRegexp.ReplaceAllStringFunc(message, func(s string) string {
 		c.posParamCount++
@@ -121,4 +123,29 @@ func (c *Converter) parseTranslation(message string) (string, error) {
 	})
 
 	return message, nil
+}
+
+func (c Converter) buildMessageAttributes() *arbMessageAttributes {
+	var placeholders []*arbPlaceholder
+
+	for i := 0; i < c.posParamCount; i++ {
+		placeholders = append(
+			placeholders,
+			&arbPlaceholder{
+				Name: fmt.Sprintf("pos%d", i),
+				Type: "Object",
+			},
+		)
+	}
+
+	for name, pType := range c.namedParams {
+		placeholders = append(placeholders, &arbPlaceholder{name, pType})
+	}
+
+	placeholdersMap := make(map[string]*arbPlaceholder, len(placeholders))
+	for _, placeholder := range placeholders {
+		placeholdersMap[placeholder.Name] = placeholder
+	}
+
+	return &arbMessageAttributes{Placeholders: placeholdersMap}
 }
