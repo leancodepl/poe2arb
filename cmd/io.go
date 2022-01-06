@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bufio"
 	"os"
 
 	"github.com/leancodepl/poe2arb/converter"
@@ -16,9 +15,6 @@ var ioCmd = &cobra.Command{
 }
 
 func runIo(cmd *cobra.Command, args []string) error {
-	input := bufio.NewReader(os.Stdin)
-	output := bufio.NewWriter(os.Stdout)
-
-	conv := converter.NewConverter(input, output, lang)
+	conv := converter.NewConverter(os.Stdin, os.Stdout, lang)
 	return conv.Convert()
 }
