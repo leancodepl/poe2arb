@@ -105,7 +105,7 @@ func TestConverterConvert(t *testing.T) {
     "@@locale": "en",
     "textWithNamedPlaceholder": "This is {text}.",
     "@textWithNamedPlaceholder": {
-        "placeholder": {
+        "placeholders": {
             "text": {
                 "type": "Object"
             }
