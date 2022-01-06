@@ -21,10 +21,11 @@ type Converter struct {
 
 func NewConverter(input io.Reader, output io.Writer, lang string) *Converter {
 	return &Converter{
-		Input:       input,
-		Output:      output,
-		Lang:        lang,
-		namedParams: make(map[string]string),
+		Input:         input,
+		Output:        output,
+		Lang:          lang,
+		posParamCount: -1,
+		namedParams:   make(map[string]string),
 	}
 }
 
@@ -128,7 +129,7 @@ func (c *Converter) parseTranslation(message string) (string, error) {
 func (c Converter) buildMessageAttributes() *arbMessageAttributes {
 	var placeholders []*arbPlaceholder
 
-	for i := 0; i < c.posParamCount; i++ {
+	for i := 0; i <= c.posParamCount; i++ {
 		placeholders = append(
 			placeholders,
 			&arbPlaceholder{
