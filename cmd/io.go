@@ -10,7 +10,6 @@ import (
 var ioCmd = &cobra.Command{
 	Use:   "io",
 	Short: "Reads JSON from stdin and output to stdout",
-	Args:  cobra.ExactArgs(1),
 	RunE:  runIo,
 }
 

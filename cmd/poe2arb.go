@@ -13,6 +13,7 @@ var (
 
 func Execute() {
 	rootCmd.PersistentFlags().StringVarP(&lang, "lang", "l", "", "Language of the input file")
+	rootCmd.MarkFlagRequired("lang")
 
 	rootCmd.AddCommand(ioCmd)
 
