@@ -37,14 +37,16 @@ func (c Client) encodeBody(params map[string]string) io.Reader {
 	return strings.NewReader(values.Encode())
 }
 
-func (c *Client) request(method, path string, params map[string]string, respBody interface{}) error {
+func (c *Client) request(path string, params map[string]string, respBody interface{}) error {
 	url := fmt.Sprintf("%s%s", c.apiURL, path)
 	body := c.encodeBody(params)
 
-	req, err := http.NewRequest(method, url, body)
+	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
 		return err
 	}
+
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -63,7 +65,7 @@ func (c *Client) GetProjectLanguages(projectID string) ([]Language, error) {
 	var resp languagesListResponse
 
 	params := map[string]string{"id": projectID}
-	err := c.request("POST", "/languages/list", params, &resp)
+	err := c.request("/languages/list", params, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +89,7 @@ func (c *Client) GetExportURL(projectID, languageCode string) (string, error) {
 		"language": languageCode,
 		"type":     "json",
 	}
-	err := c.request("POST", "/projects/export", params, &resp)
+	err := c.request("/projects/export", params, &resp)
 	if err != nil {
 		return "", err
 	}

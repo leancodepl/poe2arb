@@ -45,14 +45,14 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	}
 
 	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
-		fmt.Printf("Creating directory %s...", outputDir)
+		fmt.Printf("Creating directory %s...\n", outputDir)
 		if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
 			return err
 		}
 	}
 
 	for _, lang := range langs {
-		fmt.Printf(`Fetching JSON export for %s (%s)...\n`, lang.Name, lang.Code)
+		fmt.Printf("Fetching JSON export for %s (%s)...\n", lang.Name, lang.Code)
 		url, err := client.GetExportURL(projectID, lang.Code)
 		if err != nil {
 			return err
