@@ -16,7 +16,7 @@ type Converter struct {
 	Lang   string
 
 	posParamCount int
-	namedParams   map[string]string
+	namedParams   map[string]string // name to type
 }
 
 func NewConverter(input io.Reader, output io.Writer, lang string) *Converter {
@@ -112,16 +112,24 @@ const messageParameterPattern = `[a-zA-Z][a-zA-Z_\d]*`
 
 var (
 	posParamRegexp   = regexp.MustCompile("{}")
-	namedParamRegexp = regexp.MustCompile("{" + messageParameterPattern + "}")
+	namedParamRegexp = regexp.MustCompile("{(" + messageParameterPattern + ")}")
 )
 
-// parseTranslation parses translations replacing `{}` parameters with placeholders
-// pos1, pos2, ... This is for a compatibility with easy_localization strings.
 func (c *Converter) parseTranslation(message string) (string, error) {
+	// Positional params. Ex.: This is a {}.
+	// Parses translations replacing `{}` parameters with placeholders
+	// pos0, pos1, ... This is for a compatibility with easy_localization strings.
 	message = posParamRegexp.ReplaceAllStringFunc(message, func(s string) string {
 		c.posParamCount++
 		return fmt.Sprintf("{pos%d}", c.posParamCount)
 	})
+
+	// Named params. Ex.: This is a {param}.
+	namedMatches := namedParamRegexp.FindAllStringSubmatch(message, -1)
+	for _, matchGroup := range namedMatches {
+		name := matchGroup[1]
+		c.namedParams[name] = "Object"
+	}
 
 	return message, nil
 }
