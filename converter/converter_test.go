@@ -191,8 +191,7 @@ func TestConverterConvert(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			out := new(bytes.Buffer)
-			conv := converter.NewConverter(strings.NewReader(testCase.Input), out, "en")
-			err := conv.Convert()
+			err := converter.Convert(strings.NewReader(testCase.Input), out, "en")
 
 			assert.NoError(t, err)
 			assert.Equal(t, testCase.Output, out.String())

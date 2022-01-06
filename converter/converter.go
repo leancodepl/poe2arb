@@ -10,57 +10,18 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Converter struct {
-	Input  io.Reader
-	Output io.Writer
-	Lang   string
-
-	posParamCount int
-	namedParams   map[string]string // name to type
-}
-
-func NewConverter(input io.Reader, output io.Writer, lang string) *Converter {
-	return &Converter{
-		Input:         input,
-		Output:        output,
-		Lang:          lang,
-		posParamCount: -1,
-		namedParams:   make(map[string]string),
-	}
-}
-
-const (
-	localeKey = "@@locale"
-)
-
-type arbMessage struct {
-	Name        string
-	Translation string
-	Attributes  *arbMessageAttributes
-}
-
-type arbMessageAttributes struct {
-	Description  string                     `json:"description,omitempty"`
-	Placeholders map[string]*arbPlaceholder `json:"placeholders,omitempty"`
-}
-
-type arbPlaceholder struct {
-	Name string `json:"-"`
-	Type string `json:"type,omitempty"`
-}
-
-func (c *Converter) Convert() error {
+func Convert(input io.Reader, output io.Writer, lang string) error {
 	var jsonContents []*jsonTerm
-	err := json.NewDecoder(c.Input).Decode(&jsonContents)
+	err := json.NewDecoder(input).Decode(&jsonContents)
 	if err != nil {
 		return errors.Wrap(err, "decoding json failed")
 	}
 
 	arb := utils.NewOrderedMap()
-	arb.Set(localeKey, c.Lang)
+	arb.Set(localeKey, lang)
 
 	for _, term := range jsonContents {
-		message, err := c.parseTerm(term)
+		message, err := parseTerm(term)
 		if err != nil {
 			return errors.Wrapf(err, `decoding term "%s" failed`, term.Term)
 		}
@@ -69,7 +30,7 @@ func (c *Converter) Convert() error {
 		arb.Set("@"+message.Name, message.Attributes)
 	}
 
-	encoder := json.NewEncoder(c.Output)
+	encoder := json.NewEncoder(output)
 	encoder.SetEscapeHTML(false)
 	encoder.SetIndent("", "    ") // 4 spaces
 
@@ -77,24 +38,26 @@ func (c *Converter) Convert() error {
 	return errors.Wrap(err, "encoding arb failed")
 }
 
-func (c *Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
+func parseTerm(term *jsonTerm) (*arbMessage, error) {
 	var value string
+	pc := newParseContext()
+
 	if term.Definition.Value != nil {
 		var err error
-		value, err = c.parseTranslation(*term.Definition.Value)
+		value, err = pc.parseTranslation(*term.Definition.Value)
 		if err != nil {
 			return nil, err
 		}
 	} else {
 		plural, err := term.Definition.Plural.Map(func(s string) (string, error) {
-			s, err := c.parseTranslation(s)
+			s, err := pc.parseTranslation(s)
 			return s, err
 		})
 		if err != nil {
 			return nil, err
 		}
 
-		c.namedParams["count"] = "num"
+		pc.namedParams["count"] = "num"
 
 		value = plural.ToICUMessageFormat()
 	}
@@ -102,7 +65,7 @@ func (c *Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 	message := &arbMessage{
 		Name:        term.Term,
 		Translation: value,
-		Attributes:  c.buildMessageAttributes(),
+		Attributes:  pc.buildMessageAttributes(),
 	}
 
 	return message, nil
@@ -115,29 +78,41 @@ var (
 	namedParamRegexp = regexp.MustCompile("{(" + messageParameterPattern + ")}")
 )
 
-func (c *Converter) parseTranslation(message string) (string, error) {
+type parseContext struct {
+	posParamCount int
+	namedParams   map[string]string // name to type
+}
+
+func newParseContext() *parseContext {
+	return &parseContext{
+		posParamCount: -1,
+		namedParams:   make(map[string]string),
+	}
+}
+
+func (pc *parseContext) parseTranslation(message string) (string, error) {
 	// Positional params. Ex.: This is a {}.
 	// Parses translations replacing `{}` parameters with placeholders
 	// pos0, pos1, ... This is for a compatibility with easy_localization strings.
 	message = posParamRegexp.ReplaceAllStringFunc(message, func(s string) string {
-		c.posParamCount++
-		return fmt.Sprintf("{pos%d}", c.posParamCount)
+		pc.posParamCount++
+		return fmt.Sprintf("{pos%d}", pc.posParamCount)
 	})
 
 	// Named params. Ex.: This is a {param}.
 	namedMatches := namedParamRegexp.FindAllStringSubmatch(message, -1)
 	for _, matchGroup := range namedMatches {
 		name := matchGroup[1]
-		c.namedParams[name] = "Object"
+		pc.namedParams[name] = "Object"
 	}
 
 	return message, nil
 }
 
-func (c Converter) buildMessageAttributes() *arbMessageAttributes {
+func (pc parseContext) buildMessageAttributes() *arbMessageAttributes {
 	var placeholders []*arbPlaceholder
 
-	for i := 0; i <= c.posParamCount; i++ {
+	for i := 0; i <= pc.posParamCount; i++ {
 		placeholders = append(
 			placeholders,
 			&arbPlaceholder{
@@ -147,7 +122,7 @@ func (c Converter) buildMessageAttributes() *arbMessageAttributes {
 		)
 	}
 
-	for name, pType := range c.namedParams {
+	for name, pType := range pc.namedParams {
 		placeholders = append(placeholders, &arbPlaceholder{name, pType})
 	}
 
