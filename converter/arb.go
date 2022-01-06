@@ -14,6 +14,7 @@ type arbMessageAttributes struct {
 }
 
 type arbPlaceholder struct {
-	Name string `json:"-"`
-	Type string `json:"type,omitempty"`
+	Name   string `json:"-"`
+	Type   string `json:"type,omitempty"`
+	Format string `json:"format,omitempty"`
 }

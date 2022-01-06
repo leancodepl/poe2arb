@@ -145,7 +145,16 @@ func (pc parseContext) buildMessageAttributes() *arbMessageAttributes {
 	}
 
 	for name, pType := range pc.namedParams {
-		placeholders = append(placeholders, &arbPlaceholder{name, pType})
+		placeholder := &arbPlaceholder{
+			Name: name,
+			Type: pType,
+		}
+
+		if pType == "num" {
+			placeholder.Format = "decimalPattern"
+		}
+
+		placeholders = append(placeholders, placeholder)
 	}
 
 	placeholdersMap := make(map[string]*arbPlaceholder, len(placeholders))
