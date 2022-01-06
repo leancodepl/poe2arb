@@ -13,8 +13,9 @@ import (
 
 var (
 	poeCmd = &cobra.Command{
-		Use:  "poe",
-		RunE: runPoe,
+		Use:   "poe",
+		Short: "Exports POEditor terms and converts them to ARB",
+		RunE:  runPoe,
 	}
 )
 
