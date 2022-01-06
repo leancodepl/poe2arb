@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"strings"
 
 	"github.com/leancodepl/poe2arb/utils"
 	"github.com/pkg/errors"
@@ -42,6 +43,11 @@ func parseTerm(term *jsonTerm) (*arbMessage, error) {
 	var value string
 	pc := newParseContext()
 
+	name, err := pc.parseName(term.Term)
+	if err != nil {
+		return nil, err
+	}
+
 	if term.Definition.Value != nil {
 		var err error
 		value, err = pc.parseTranslation(*term.Definition.Value)
@@ -63,7 +69,7 @@ func parseTerm(term *jsonTerm) (*arbMessage, error) {
 	}
 
 	message := &arbMessage{
-		Name:        term.Term,
+		Name:        name,
 		Translation: value,
 		Attributes:  pc.buildMessageAttributes(),
 	}
@@ -74,8 +80,9 @@ func parseTerm(term *jsonTerm) (*arbMessage, error) {
 const messageParameterPattern = `[a-zA-Z][a-zA-Z_\d]*`
 
 var (
-	posParamRegexp   = regexp.MustCompile("{}")
-	namedParamRegexp = regexp.MustCompile("{(" + messageParameterPattern + ")}")
+	messageNameRegexp = regexp.MustCompile(`^[a-z][a-zA-Z_\d]*$`)
+	posParamRegexp    = regexp.MustCompile("{}")
+	namedParamRegexp  = regexp.MustCompile("{(" + messageParameterPattern + ")}")
 )
 
 type parseContext struct {
@@ -88,6 +95,21 @@ func newParseContext() *parseContext {
 		posParamCount: -1,
 		namedParams:   make(map[string]string),
 	}
+}
+
+func (parseContext) parseName(name string) (string, error) {
+	// lowercase first letter, Flutter gen-l10n doesn't allow first letter uppercase
+	// https://github.com/flutter/flutter/blob/fae84f67140cbaa7a07ed5c82ee99f31c7bb1f0e/packages/flutter_tools/lib/src/localizations/gen_l10n.dart#L1056
+	name = strings.ToLower(name[:1]) + name[1:]
+
+	// replace dots with an underscore
+	name = strings.ReplaceAll(name, ".", "_")
+
+	if !messageNameRegexp.MatchString(name) {
+		return "", errors.New("term name must start with lowercase letter followed by any number of anycase letter, digit or underscore")
+	}
+
+	return name, nil
 }
 
 func (pc *parseContext) parseTranslation(message string) (string, error) {
