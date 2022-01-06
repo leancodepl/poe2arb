@@ -28,6 +28,10 @@ func (d *jsonTermDefinition) UnmarshalJSON(data []byte) error {
 		return nil
 	case map[string]interface{}:
 		return json.Unmarshal(data, &d.Plural)
+	case nil:
+		empty := ""
+		d.Value = &empty
+		return nil
 	}
 
 	return errors.New("invalid definition type")

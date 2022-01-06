@@ -11,6 +11,7 @@ var (
 
 func Execute() {
 	rootCmd.AddCommand(convertCmd)
+	rootCmd.AddCommand(poeCmd)
 
 	rootCmd.Execute()
 }
