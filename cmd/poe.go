@@ -20,10 +20,10 @@ var (
 )
 
 func init() {
-	poeCmd.Flags().StringP("token", "t", "", "POEditor API token")
+	poeCmd.Flags().StringP("token", "t", "", "(required) POEditor API token")
 	poeCmd.MarkFlagRequired("token")
 
-	poeCmd.Flags().StringP("project-id", "p", "", "POEditor project ID")
+	poeCmd.Flags().StringP("project-id", "p", "", "(required) POEditor project ID")
 	poeCmd.MarkFlagRequired("project-id")
 
 	poeCmd.Flags().StringP("arb-prefix", "", "app_", "ARB file names prefix")
