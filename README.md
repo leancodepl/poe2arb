@@ -84,7 +84,7 @@ Placeholders have an `Object` type and are displayed using `toString()`. An exce
 
 `--el-compat` flag enables compatibility with `easy_localization`'s positional arguments. A positional argument is just a pair of open&close brackets `{}`. Each positional argument will be parsed as `pos1`, `pos2`, `posN` placeholders.
 
-PLurals can't be used with positional arguments. If you want to use plural term, replace positional arguments with named (normal) ones.
+Plurals can't be used with positional arguments. If you want to use plural term, replace positional arguments with named (normal) ones.
 
 Example:
 
