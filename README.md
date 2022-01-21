@@ -1,7 +1,12 @@
+<div align="center">
+
 # poe2arb
 
 [![Latest GitHub release][github-release-img]][github-release-link]
 [![CI status (main branch)][ci-status-img]][ci-status-link]
+
+<img src="art/terminal-screenshot.png" width="600">
+</div>
 
 `poe2arb` is a CLI tool that lets the POEditor work with Flutter's native localization solution (`flutter gen-l10n`).
 
