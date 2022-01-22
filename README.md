@@ -19,14 +19,6 @@ brew tap leancodepl/poe2arb
 brew install poe2arb
 ```
 
-## Building
-
-All you need is Go 1.17.
-
-```
-go build .
-```
-
 ## Usage
 
 `poe2arb` operates on POEditor's _JSON_ (not _JSON key-value_) export file format.
@@ -105,6 +97,26 @@ In translations, a `{count}` placeholder (`int` formatted as `decimalPattern`) c
 one:    Andy has 1 kilogram of {fruit}.
 other:  Andy has {count} kilograms of {fruit}.
 ```
+
+## Contributing
+
+### Building
+
+All you need is Go 1.17.
+
+```
+go build .
+```
+
+### Releasing
+
+Create a _lightweight_ git tag and push it. GitHub Actions with a GoReleaser workflow will take care of the rest.
+
+```
+git tag v0.1.1
+git push --tags
+```
+
 
 [github-release-link]: https://github.com/leancodepl/poe2arb/releases
 [github-release-img]: https://img.shields.io/github/v/release/leancodepl/poe2arb?label=version&sort=semver
