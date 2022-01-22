@@ -33,7 +33,7 @@ func init() {
 
 func runConvertIo(cmd *cobra.Command, args []string) error {
 	lang, _ := cmd.Flags().GetString(langFlag)
-	elCompat, _ := cmd.Flags().GetBool(elCompatFlag)
+	elCompat := getElCompatFlag(cmd)
 
 	conv := converter.NewConverter(elCompat)
 
