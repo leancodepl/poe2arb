@@ -56,6 +56,7 @@ poe2arb convert io --lang en < Hello_World_English.json > lib/l10n/app_en.arb
 | `-t, --token`      | **Required.** POEditor API read-only access token. Available in [Account settings > API access][poeditor-tokens]. | Defaults to `POEDITOR_TOKEN` env.                                                                                   |
 | `-o, --output-dir` | ARB files output directory.                                                                                       | Defaults to `arb-dir` from `l10n.yaml`. If it's empty, then defaults to `.`.                                        |
 | `--arb-prefix`     | ARB output files prefix.                                                                                          | Defaults to `app_`.                                                                                                 |
+| `--el-compat`      | [`easy_localization`][easy_localization] compatibility mode. More in [this section][el-compat-mode].              | Defaults to `false`.                                                                                                |
 
 ## Syntax & supported features
 
@@ -77,7 +78,7 @@ Placeholders have an `Object` type and are displayed using `toString()`. An exce
 
 > **Note:** It is advised to not use the compatibility mode and to migrate from it, if possible.
 
-`--el-compat` flag enables compatibility with `easy_localization`'s positional arguments. A positional argument is just a pair of open&close brackets `{}`. Each positional argument will be parsed as `pos1`, `pos2`, `posN` placeholders.
+`--el-compat` flag enables compatibility with [`easy_localization`][easy_localization]'s positional arguments. A positional argument is just a pair of open&close brackets `{}`. Each positional argument will be parsed as `pos1`, `pos2`, `posN` placeholders.
 
 Plurals can't be used with positional arguments. If you want to use plural term, replace positional arguments with named (normal) ones.
 
@@ -124,4 +125,6 @@ git push --tags
 [ci-status-img]: https://img.shields.io/github/workflow/status/leancodepl/poe2arb/Test/main
 [releases]: https://github.com/leancodepl/poe2arb/releases
 [poeditor-tokens]: https://poeditor.com/account/api
+[easy_localization]: https://pub.dev/packages/easy_localization
+[el-compat-mode]: #easy_localization-compatibility-mode
 [term-name-constraint]: https://github.com/flutter/flutter/blob/ce318b7b539e228b806f81b3fa7b33793c2a2685/packages/flutter_tools/lib/src/localizations/gen_l10n.dart#L868-L886
