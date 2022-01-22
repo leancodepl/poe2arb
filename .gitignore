@@ -20,3 +20,6 @@ poe2arb
 
 # Go workspace file
 go.work
+
+# Goreleaser
+dist/
