@@ -71,7 +71,8 @@ func runPoe(cmd *cobra.Command, args []string) error {
 		}
 		defer file.Close()
 
-		err = converter.Convert(resp.Body, file, lang.Code)
+		conv := converter.NewConverter(true)
+		err = conv.Convert(resp.Body, file, lang.Code)
 		if err != nil {
 			return err
 		}

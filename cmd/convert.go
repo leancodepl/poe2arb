@@ -29,5 +29,8 @@ func init() {
 
 func runConvertIo(cmd *cobra.Command, args []string) error {
 	lang, _ := cmd.Flags().GetString("lang")
-	return converter.Convert(os.Stdin, os.Stdout, lang)
+
+	conv := converter.NewConverter(true)
+
+	return conv.Convert(os.Stdin, os.Stdout, lang)
 }

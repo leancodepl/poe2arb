@@ -11,7 +11,17 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Convert(input io.Reader, output io.Writer, lang string) error {
+type Converter struct {
+	EasyLocalizationCompat bool
+}
+
+func NewConverter(easyLocalizationCompat bool) *Converter {
+	return &Converter{
+		EasyLocalizationCompat: easyLocalizationCompat,
+	}
+}
+
+func (c *Converter) Convert(input io.Reader, output io.Writer, lang string) error {
 	var jsonContents []*jsonTerm
 	err := json.NewDecoder(input).Decode(&jsonContents)
 	if err != nil {
@@ -22,7 +32,7 @@ func Convert(input io.Reader, output io.Writer, lang string) error {
 	arb.Set(localeKey, lang)
 
 	for _, term := range jsonContents {
-		message, err := parseTerm(term)
+		message, err := c.parseTerm(term)
 		if err != nil {
 			return errors.Wrapf(err, `decoding term "%s" failed`, term.Term)
 		}
@@ -39,9 +49,9 @@ func Convert(input io.Reader, output io.Writer, lang string) error {
 	return errors.Wrap(err, "encoding arb failed")
 }
 
-func parseTerm(term *jsonTerm) (*arbMessage, error) {
+func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 	var value string
-	pc := newParseContext()
+	pc := c.newParseContext(term.Definition.IsPlural)
 
 	name, err := pc.parseName(term.Term)
 	if err != nil {
@@ -86,12 +96,17 @@ var (
 )
 
 type parseContext struct {
+	plural   bool
+	elCompat bool
+
 	posParamCount int
 	namedParams   map[string]string // name to type
 }
 
-func newParseContext() *parseContext {
+func (c *Converter) newParseContext(plural bool) *parseContext {
 	return &parseContext{
+		plural:        plural,
+		elCompat:      c.EasyLocalizationCompat,
 		posParamCount: -1,
 		namedParams:   make(map[string]string),
 	}
@@ -113,13 +128,16 @@ func (parseContext) parseName(name string) (string, error) {
 }
 
 func (pc *parseContext) parseTranslation(message string) (string, error) {
-	// Positional params. Ex.: This is a {}.
-	// Parses translations replacing `{}` parameters with placeholders
-	// pos0, pos1, ... This is for a compatibility with easy_localization strings.
-	message = posParamRegexp.ReplaceAllStringFunc(message, func(s string) string {
-		pc.posParamCount++
-		return fmt.Sprintf("{pos%d}", pc.posParamCount)
-	})
+	if pc.elCompat && !pc.plural {
+		// Positional params. Ex.: This is a {}.
+		// Parses translations replacing `{}` parameters with placeholders
+		// pos0, pos1, ... This is for a compatibility with easy_localization strings.
+		// Positional params are not supported in plurals.
+		message = posParamRegexp.ReplaceAllStringFunc(message, func(s string) string {
+			pc.posParamCount++
+			return fmt.Sprintf("{pos%d}", pc.posParamCount)
+		})
+	}
 
 	// Named params. Ex.: This is a {param}.
 	namedMatches := namedParamRegexp.FindAllStringSubmatch(message, -1)

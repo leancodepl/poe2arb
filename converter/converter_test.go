@@ -11,14 +11,15 @@ import (
 
 func TestConverterConvert(t *testing.T) {
 	type testCase struct {
-		Name   string
-		Input  string
-		Output string
+		Name     string
+		ElCompat bool
+		Input    string
+		Output   string
 	}
 
 	testCases := []testCase{
 		{
-			"Just text",
+			"Just text", false,
 			`[
     {
         "term": "justText",
@@ -37,7 +38,26 @@ func TestConverterConvert(t *testing.T) {
 `,
 		},
 		{
-			"Text with positional placeholder",
+			"Text with positional placeholder w/o elCompat", false,
+			`[
+    {
+        "term": "textWithPositionalPlaceholder",
+        "definition": "This is {}.",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    }
+]`,
+			`{
+    "@@locale": "en",
+    "textWithPositionalPlaceholder": "This is {}.",
+    "@textWithPositionalPlaceholder": {}
+}
+`,
+		},
+		{
+			"Text with positional placeholder w/ elCompat", true,
 			`[
     {
         "term": "textWithPositionalPlaceholder",
@@ -62,7 +82,7 @@ func TestConverterConvert(t *testing.T) {
 `,
 		},
 		{
-			"Text with positional placeholders",
+			"Text with few positional placeholders w/ elCompat", true,
 			`[
     {
         "term": "textWithPositionalPlaceholders",
@@ -90,7 +110,7 @@ func TestConverterConvert(t *testing.T) {
 `,
 		},
 		{
-			"Text with named placeholder",
+			"Text with named placeholder", false,
 			`[
     {
         "term": "textWithNamedPlaceholder",
@@ -115,7 +135,7 @@ func TestConverterConvert(t *testing.T) {
 `,
 		},
 		{
-			"Text with unique named placeholders",
+			"Text with unique named placeholders", false,
 			`[
     {
         "term": "textWithUniqueNamedPlaceholders",
@@ -143,7 +163,7 @@ func TestConverterConvert(t *testing.T) {
 `,
 		},
 		{
-			"Text with repeated named placeholder",
+			"Text with repeated named placeholder", false,
 			`[
     {
         "term": "textWithRepeatedNamedPlaceholder",
@@ -168,7 +188,7 @@ func TestConverterConvert(t *testing.T) {
 `,
 		},
 		{
-			"Text with double quotes",
+			"Text with double quotes", false,
 			`[
     {
         "term": "textWithDoubleQuotes",
@@ -191,7 +211,8 @@ func TestConverterConvert(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			out := new(bytes.Buffer)
-			err := converter.Convert(strings.NewReader(testCase.Input), out, "en")
+			conv := converter.NewConverter(testCase.ElCompat)
+			err := conv.Convert(strings.NewReader(testCase.Input), out, "en")
 
 			assert.NoError(t, err)
 			assert.Equal(t, testCase.Output, out.String())
