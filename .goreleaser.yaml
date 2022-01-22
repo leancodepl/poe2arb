@@ -8,6 +8,9 @@ universal_binaries:
   - replace: true
 changelog:
   use: github
+  filters:
+    exclude:
+      - '^Merge pull request'
 release:
 brews:
   - tap:
