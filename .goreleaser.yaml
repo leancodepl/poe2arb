@@ -12,7 +12,7 @@ release:
 brews:
   - tap:
       owner: leancodepl
-      name: homebrew-tools
+      name: poe2arb
     folder: Formula
     homepage: "https://github.com/leancodepl/poe2arb"
     description: "POEditor JSON to Flutter ARB converter."

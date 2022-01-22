@@ -15,7 +15,7 @@
 You can download latest or historical binary straight from the [GitHub releases][releases] artifacts or using Homebrew:
 
 ```
-brew tap leancodepl/tools
+brew tap leancodepl/poe2arb
 brew install poe2arb
 ```
 
