@@ -19,23 +19,33 @@ var (
 	}
 )
 
+const (
+	projectIDFlag = "project-id"
+	tokenFlag     = "token"
+	arbPrefixFlag = "arb-prefix"
+	outputDirFlag = "output-dir"
+)
+
 func init() {
-	poeCmd.Flags().StringP("token", "t", "", "(required) POEditor API token")
-	poeCmd.MarkFlagRequired("token")
+	poeCmd.Flags().StringP(projectIDFlag, "p", "", "(required) POEditor project ID")
+	poeCmd.MarkFlagRequired(projectIDFlag)
 
-	poeCmd.Flags().StringP("project-id", "p", "", "(required) POEditor project ID")
-	poeCmd.MarkFlagRequired("project-id")
+	poeCmd.Flags().StringP(tokenFlag, "t", "", "(required) POEditor API token")
+	poeCmd.MarkFlagRequired(tokenFlag)
 
-	poeCmd.Flags().StringP("arb-prefix", "", "app_", "ARB file names prefix")
+	poeCmd.Flags().StringP(arbPrefixFlag, "", "app_", "ARB file names prefix")
 
-	poeCmd.Flags().StringP("output-dir", "o", ".", "Output directory")
+	poeCmd.Flags().StringP(outputDirFlag, "o", ".", "Output directory")
+
+	addElCompatFlag(poeCmd)
 }
 
 func runPoe(cmd *cobra.Command, args []string) error {
-	projectID, _ := cmd.Flags().GetString("project-id")
-	token, _ := cmd.Flags().GetString("token")
-	arbPrefix, _ := cmd.Flags().GetString("arb-prefix")
-	outputDir, _ := cmd.Flags().GetString("output-dir")
+	projectID, _ := cmd.Flags().GetString(projectIDFlag)
+	token, _ := cmd.Flags().GetString(tokenFlag)
+	arbPrefix, _ := cmd.Flags().GetString(arbPrefixFlag)
+	outputDir, _ := cmd.Flags().GetString(outputDirFlag)
+	elCompat := getElCompatFlag(cmd)
 
 	client := poeditor.NewClient(token)
 
@@ -71,7 +81,8 @@ func runPoe(cmd *cobra.Command, args []string) error {
 		}
 		defer file.Close()
 
-		err = converter.Convert(resp.Body, file, lang.Code)
+		conv := converter.NewConverter(elCompat)
+		err = conv.Convert(resp.Body, file, lang.Code)
 		if err != nil {
 			return err
 		}
