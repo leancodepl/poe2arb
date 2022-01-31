@@ -11,13 +11,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	poeCmd = &cobra.Command{
-		Use:   "poe",
-		Short: "Exports POEditor terms and converts them to ARB",
-		RunE:  runPoe,
-	}
-)
+var poeCmd = &cobra.Command{
+	Use:   "poe",
+	Short: "Exports POEditor terms and converts them to ARB",
+	RunE:  runPoe,
+}
 
 func init() {
 	poeCmd.Flags().StringP("token", "t", "", "(required) POEditor API token")
