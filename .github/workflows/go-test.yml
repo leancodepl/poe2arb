@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      
+
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
@@ -31,3 +31,8 @@ jobs:
 
       - name: Run tests with coverage
         run: go test -cover ./...
+
+      - name: Verify code formatting
+        run: |
+          go install mvdan.cc/gofumpt@latest \
+          test -z $(gofumpt -l .)
