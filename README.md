@@ -62,6 +62,7 @@ into your Flutter workspace in one command:
 | `-t, --token`      | **Required.** POEditor API read-only access token. Available in [Account settings > API access][poeditor-tokens]. | Defaults to `POEDITOR_TOKEN` env.                                                                                   |
 | `-o, --output-dir` | ARB files output directory.                                                                                       | Defaults to `arb-dir` from `l10n.yaml`. If it's empty, then defaults to `.`.                                        |
 | `--arb-prefix`     | ARB output files prefix.                                                                                          | Defaults to `app_`.                                                                                                 |
+| `--el-compat`      | [`easy_localization`][easy_localization] compatibility mode. More in [this section][el-compat-mode].              | Defaults to `false`.                                                                                                |
 
 ## Syntax & supported features
 

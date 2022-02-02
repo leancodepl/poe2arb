@@ -12,6 +12,8 @@ type jsonTerm struct {
 }
 
 type jsonTermDefinition struct {
+	IsPlural bool
+
 	Value  *string
 	Plural *jsonTermPluralDefinition
 }
@@ -27,6 +29,7 @@ func (d *jsonTermDefinition) UnmarshalJSON(data []byte) error {
 		d.Value = &v
 		return nil
 	case map[string]interface{}:
+		d.IsPlural = true
 		return json.Unmarshal(data, &d.Plural)
 	case nil:
 		empty := ""
