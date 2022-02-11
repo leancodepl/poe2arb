@@ -2,8 +2,8 @@
 
 # poe2arb
 
-[![Latest GitHub release][github-release-img]][github-release-link] [![CI status
-(main branch)][ci-status-img]][ci-status-link]
+[![Latest GitHub release][github-release-img]][github-release-link]
+[![CI status(main branch)][ci-status-img]][ci-status-link]
 
 <img src="art/terminal-screenshot.png" width="600">
 </div>
