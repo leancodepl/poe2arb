@@ -29,17 +29,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Run tests with coverage
-        run: go test -cover ./...
-
       - name: Verify code formatting
-        if: always()
         run: |
           go install mvdan.cc/gofumpt@latest && \
           test -z $(gofumpt -l .)
 
       - name: Run linter
-        if: always()
         run: |
           go install honnef.co/go/tools/cmd/staticcheck@latest && \
           staticcheck ./cmd ./converter ./poeditor ./utils
+
+      - name: Run tests with coverage
+        run: go test -cover ./...
