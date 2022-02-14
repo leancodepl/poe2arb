@@ -119,6 +119,19 @@ other:  Andy has {count} kilograms of {fruit}.
 
 ## Contributing
 
+### Formatting
+
+We use [gofumpt](https://github.com/mvdan/gofumpt), which is a superset of
+[gofmt](https://pkg.go.dev/cmd/gofmt).
+
+To make `gopls` in VSCode use `gofumpt`, add this to your settings:
+
+```json
+"gopls": {
+    "formatting.gofumpt": true
+},
+```
+
 ### Building
 
 All you need is Go 1.17.
