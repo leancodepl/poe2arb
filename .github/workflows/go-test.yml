@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      
+
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
@@ -28,6 +28,16 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+
+      - name: Verify code formatting
+        run: |
+          go install mvdan.cc/gofumpt@latest
+          test -z $(gofumpt -l .)
+
+      - name: Run linter
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          staticcheck ./...
 
       - name: Run tests with coverage
         run: go test -cover ./...

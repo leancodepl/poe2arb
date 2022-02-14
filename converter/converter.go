@@ -1,3 +1,4 @@
+// Package converter handles coversion from POEditor's JSON to Flutter's ARB.
 package converter
 
 import (
