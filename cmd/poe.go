@@ -37,7 +37,7 @@ func init() {
 
 	poeCmd.Flags().StringP(arbPrefixFlag, "", "app_", "ARB file names prefix")
 
-	poeCmd.Flags().StringP(outputDirFlag, "o", ".", "Output directory")
+	poeCmd.Flags().StringP(outputDirFlag, "o", "", "Output directory. Defaults to current directory.")
 
 	addElCompatFlag(poeCmd)
 }
@@ -154,7 +154,18 @@ func (s *poeOptionsSelector) SelectARBPrefix() (string, error) {
 
 func (s *poeOptionsSelector) SelectOutputDir() (string, error) {
 	fromCmd, err := s.flags.GetString(outputDirFlag)
-	return fromCmd, err
+	if err != nil {
+		return "", err
+	}
+	if fromCmd != "" {
+		return fromCmd, nil
+	}
+
+	if s.l10n.ARBDir != "" {
+		return s.l10n.ARBDir, nil
+	}
+
+	return ".", err
 }
 
 func (s *poeOptionsSelector) SelectElCompat() (bool, error) {
