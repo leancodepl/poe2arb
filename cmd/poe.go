@@ -36,7 +36,7 @@ func init() {
 
 	poeCmd.Flags().StringP(arbPrefixFlag, "", "app_", "ARB file names prefix")
 
-	poeCmd.Flags().StringP(outputDirFlag, "o", "", "Output directory. Defaults to current directory.")
+	poeCmd.Flags().StringP(outputDirFlag, "o", "", `Output directory [default: "."]`)
 
 	addElCompatFlag(poeCmd)
 }
