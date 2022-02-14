@@ -121,10 +121,9 @@ other:  Andy has {count} kilograms of {fruit}.
 
 ### Formatting
 
-We use [gofumpt](https://github.com/mvdan/gofumpt), which is a superset of
-[gofmt](https://pkg.go.dev/cmd/gofmt).
+We use [gofumpt][gofumpt], which is a superset of [gofmt][gofmt].
 
-To make `gopls` in VSCode use `gofumpt`, add this to your settings:
+To make `gopls` in VS Code use `gofumpt`, add this to your settings:
 
 ```json
 "gopls": {
@@ -134,9 +133,9 @@ To make `gopls` in VSCode use `gofumpt`, add this to your settings:
 
 ### Linting
 
-We use [staticcheck](https://staticcheck.io) with all checks enabled.
+We use [staticcheck][staticcheck] with all checks enabled.
 
-To make VSCode use `staticcheck`, add this to your settings:
+To make VS Code use `staticcheck`, add this to your settings:
 
 ```json
 "go.lintTool": "staticcheck",
@@ -170,3 +169,6 @@ git push --tags
 [easy_localization]: https://pub.dev/packages/easy_localization
 [el-compat-mode]: #easy_localization-compatibility-mode
 [term-name-constraint]: https://github.com/flutter/flutter/blob/ce318b7b539e228b806f81b3fa7b33793c2a2685/packages/flutter_tools/lib/src/localizations/gen_l10n.dart#L868-L886
+[gofumpt]: https://github.com/mvdan/gofumpt
+[gofmt]: https://pkg.go.dev/cmd/gofmt
+[staticcheck]: https://staticcheck.io
