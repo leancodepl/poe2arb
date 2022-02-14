@@ -1,11 +1,11 @@
-package flutter_config_test
+package flutter_test
 
 import (
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/leancodepl/poe2arb/flutter_config"
+	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +15,7 @@ func TestNewFromDirectory(t *testing.T) {
 		assert.NoError(t, err)
 		defer os.RemoveAll(dir)
 
-		cfg, err := flutter_config.NewFromDirectory(dir)
+		cfg, err := flutter.NewFromDirectory(dir)
 
 		assert.NoError(t, err)
 		assert.Nil(t, cfg)
@@ -29,7 +29,7 @@ func TestNewFromDirectory(t *testing.T) {
 		err = os.WriteFile(filepath.Join(dir, "pubspec.yaml"), []byte{}, 0o666)
 		assert.NoError(t, err)
 
-		cfg, err := flutter_config.NewFromDirectory(dir)
+		cfg, err := flutter.NewFromDirectory(dir)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, cfg)
@@ -48,7 +48,7 @@ func TestNewFromDirectory(t *testing.T) {
 		err = os.Mkdir(childDir, 0o777)
 		assert.NoError(t, err)
 
-		cfg, err := flutter_config.NewFromDirectory(childDir)
+		cfg, err := flutter.NewFromDirectory(childDir)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, cfg)
@@ -67,7 +67,7 @@ func TestNewFromDirectory(t *testing.T) {
 		err = os.WriteFile(filepath.Join(dir, "l10n.yaml"), []byte(l10nContents), 0o666)
 		assert.NoError(t, err)
 
-		cfg, err := flutter_config.NewFromDirectory(dir)
+		cfg, err := flutter.NewFromDirectory(dir)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, cfg)

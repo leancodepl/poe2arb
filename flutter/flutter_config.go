@@ -1,6 +1,6 @@
-// Package flutter_config provides Flutter project configuration
+// Package flutter provides Flutter project configuration
 // and means of parsing it from the filesystem.
-package flutter_config
+package flutter
 
 import (
 	"os"

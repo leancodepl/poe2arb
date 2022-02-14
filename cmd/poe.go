@@ -7,18 +7,16 @@ import (
 	"path"
 
 	"github.com/leancodepl/poe2arb/converter"
-	"github.com/leancodepl/poe2arb/flutter_config"
+	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/leancodepl/poe2arb/poeditor"
 	"github.com/spf13/cobra"
 )
 
-var (
-	poeCmd = &cobra.Command{
-		Use:   "poe",
-		Short: "Exports POEditor terms and converts them to ARB",
-		RunE:  runPoe,
-	}
-)
+var poeCmd = &cobra.Command{
+	Use:   "poe",
+	Short: "Exports POEditor terms and converts them to ARB",
+	RunE:  runPoe,
+}
 
 const (
 	projectIDFlag = "project-id"
@@ -117,13 +115,13 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func getFlutterConfig() (*flutter_config.FlutterConfig, error) {
+func getFlutterConfig() (*flutter.FlutterConfig, error) {
 	workDir, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
 
-	flutterCfg, err := flutter_config.NewFromDirectory(workDir)
+	flutterCfg, err := flutter.NewFromDirectory(workDir)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/leancodepl/poe2arb/flutter_config"
+	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/spf13/pflag"
 )
 
@@ -9,7 +9,7 @@ import (
 // depending on the available sources.
 type poeOptionsSelector struct {
 	flags *pflag.FlagSet
-	l10n  *flutter_config.L10n
+	l10n  *flutter.L10n
 }
 
 // SelectProjectID returns POEditor project id from available sources.
