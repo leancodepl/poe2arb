@@ -1,3 +1,4 @@
+// Package providing Flutter configuration and means of parsing it from the filesystem.
 package flutter_config
 
 import (
@@ -9,11 +10,14 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// FlutterConfig represents a Flutter project configuration.
 type FlutterConfig struct {
 	RootDir string
 	L10n    *L10n
 }
 
+// L10n represents the l10n.yaml configuration file in a Flutter project directory.
+//
 // https://github.com/flutter/flutter/blob/61a0add2865c51bfee33939c1820709d1115c77d/packages/flutter_tools/lib/src/localizations/localizations_utils.dart#L291
 type L10n struct {
 	ARBDir                    string `yaml:"arb-dir"`
@@ -29,6 +33,8 @@ func newDefaultL10n() *L10n {
 	}
 }
 
+// NewFromDirectory creates a FlutterConfig if a given dir was inside a Flutter project
+// or nil otherwise.
 func NewFromDirectory(dir string) (*FlutterConfig, error) {
 	pubspec, err := walkUpForPubspec(dir)
 	if err != nil {
