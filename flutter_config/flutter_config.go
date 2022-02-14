@@ -40,23 +40,23 @@ func NewFromDirectory(dir string) (*FlutterConfig, error) {
 	pubspec, err := walkUpForPubspec(dir)
 	if err != nil {
 		return nil, err
-	}
-	if pubspec == nil {
+	} else if pubspec == nil {
 		// no pubspec found
 		return nil, nil
 	}
 
 	rootDir := filepath.Dir(pubspec.Name())
 
+	l10n := newDefaultL10n()
 	l10nFile, err := getL10nFile(rootDir)
 	if err != nil {
 		return nil, err
-	}
-
-	l10n := newDefaultL10n()
-	err = yaml.NewDecoder(l10nFile).Decode(&l10n)
-	if err != nil {
-		return nil, errors.Wrap(err, "failure decoding l10n.yaml")
+	} else if l10nFile != nil {
+		// l10n.yaml file found
+		err = yaml.NewDecoder(l10nFile).Decode(&l10n)
+		if err != nil {
+			return nil, errors.Wrap(err, "failure decoding l10n.yaml")
+		}
 	}
 
 	return &FlutterConfig{
@@ -88,8 +88,12 @@ func walkUpForPubspec(dir string) (file *os.File, err error) {
 
 func getL10nFile(pubspecDir string) (*os.File, error) {
 	file, err := os.Open(path.Join(pubspecDir, "l10n.yaml"))
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		return nil, errors.Wrap(err, "failure reading l10n.yaml")
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			return nil, errors.Wrap(err, "failure reading l10n.yaml")
+		}
+
+		return nil, nil
 	}
 
 	return file, nil
