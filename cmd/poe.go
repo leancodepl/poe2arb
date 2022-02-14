@@ -7,6 +7,7 @@ import (
 	"path"
 
 	"github.com/leancodepl/poe2arb/converter"
+	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/leancodepl/poe2arb/poeditor"
 	"github.com/spf13/cobra"
 )
@@ -33,17 +34,38 @@ func init() {
 
 	poeCmd.Flags().StringP(arbPrefixFlag, "", "app_", "ARB file names prefix")
 
-	poeCmd.Flags().StringP(outputDirFlag, "o", ".", "Output directory")
+	poeCmd.Flags().StringP(outputDirFlag, "o", "", `Output directory [default: "."]`)
 
 	addElCompatFlag(poeCmd)
 }
 
 func runPoe(cmd *cobra.Command, args []string) error {
-	projectID, _ := cmd.Flags().GetString(projectIDFlag)
-	token, _ := cmd.Flags().GetString(tokenFlag)
-	arbPrefix, _ := cmd.Flags().GetString(arbPrefixFlag)
-	outputDir, _ := cmd.Flags().GetString(outputDirFlag)
-	elCompat := getElCompatFlag(cmd)
+	flutterCfg, err := getFlutterConfig()
+	if err != nil {
+		return err
+	}
+
+	sel := poeOptionsSelector{cmd.Flags(), flutterCfg.L10n}
+	projectID, err := sel.SelectProjectID()
+	if err != nil {
+		return err
+	}
+	token, err := sel.SelectToken()
+	if err != nil {
+		return err
+	}
+	arbPrefix, err := sel.SelectARBPrefix()
+	if err != nil {
+		return err
+	}
+	outputDir, err := sel.SelectOutputDir()
+	if err != nil {
+		return err
+	}
+	elCompat, err := sel.SelectElCompat()
+	if err != nil {
+		return err
+	}
 
 	client := poeditor.NewClient(token)
 
@@ -91,4 +113,18 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	fmt.Println("\nDone!")
 
 	return nil
+}
+
+func getFlutterConfig() (*flutter.FlutterConfig, error) {
+	workDir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	flutterCfg, err := flutter.NewFromDirectory(workDir)
+	if err != nil {
+		return nil, err
+	}
+
+	return flutterCfg, nil
 }
