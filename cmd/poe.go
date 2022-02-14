@@ -7,8 +7,10 @@ import (
 	"path"
 
 	"github.com/leancodepl/poe2arb/converter"
+	"github.com/leancodepl/poe2arb/flutter_config"
 	"github.com/leancodepl/poe2arb/poeditor"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 var (
@@ -41,11 +43,32 @@ func init() {
 }
 
 func runPoe(cmd *cobra.Command, args []string) error {
-	projectID, _ := cmd.Flags().GetString(projectIDFlag)
-	token, _ := cmd.Flags().GetString(tokenFlag)
-	arbPrefix, _ := cmd.Flags().GetString(arbPrefixFlag)
-	outputDir, _ := cmd.Flags().GetString(outputDirFlag)
-	elCompat := getElCompatFlag(cmd)
+	flutterCfg, err := getFlutterConfig()
+	if err != nil {
+		return err
+	}
+
+	sel := poeOptionsSelector{cmd.Flags(), flutterCfg.L10n}
+	projectID, err := sel.SelectProjectID()
+	if err != nil {
+		return err
+	}
+	token, err := sel.SelectToken()
+	if err != nil {
+		return err
+	}
+	arbPrefix, err := sel.SelectARBPrefix()
+	if err != nil {
+		return err
+	}
+	outputDir, err := sel.SelectOutputDir()
+	if err != nil {
+		return err
+	}
+	elCompat, err := sel.SelectElCompat()
+	if err != nil {
+		return err
+	}
 
 	client := poeditor.NewClient(token)
 
@@ -93,4 +116,47 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	fmt.Println("\nDone!")
 
 	return nil
+}
+
+func getFlutterConfig() (*flutter_config.FlutterConfig, error) {
+	workDir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	flutterCfg, err := flutter_config.NewFromDirectory(workDir)
+	if err != nil {
+		return nil, err
+	}
+
+	return flutterCfg, nil
+}
+
+type poeOptionsSelector struct {
+	flags *pflag.FlagSet
+	l10n  *flutter_config.L10n
+}
+
+func (s *poeOptionsSelector) SelectProjectID() (string, error) {
+	fromCmd, err := s.flags.GetString(projectIDFlag)
+	return fromCmd, err
+}
+
+func (s *poeOptionsSelector) SelectToken() (string, error) {
+	fromCmd, err := s.flags.GetString(tokenFlag)
+	return fromCmd, err
+}
+
+func (s *poeOptionsSelector) SelectARBPrefix() (string, error) {
+	fromCmd, err := s.flags.GetString(arbPrefixFlag)
+	return fromCmd, err
+}
+
+func (s *poeOptionsSelector) SelectOutputDir() (string, error) {
+	fromCmd, err := s.flags.GetString(outputDirFlag)
+	return fromCmd, err
+}
+
+func (s *poeOptionsSelector) SelectElCompat() (bool, error) {
+	return getElCompatFlag(s.flags), nil
 }
