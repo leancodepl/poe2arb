@@ -1,7 +1,6 @@
 package flutter_config_test
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,7 +11,7 @@ import (
 
 func TestNewFromDirectory(t *testing.T) {
 	t.Run("without pubspec.yaml anywhere", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
+		dir, err := os.MkdirTemp("", "")
 		assert.NoError(t, err)
 		defer os.RemoveAll(dir)
 
@@ -23,11 +22,11 @@ func TestNewFromDirectory(t *testing.T) {
 	})
 
 	t.Run("with pubspec.yaml, without l10n.yaml", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
+		dir, err := os.MkdirTemp("", "")
 		assert.NoError(t, err)
 		defer os.RemoveAll(dir)
 
-		err = ioutil.WriteFile(filepath.Join(dir, "pubspec.yaml"), []byte{}, 0o666)
+		err = os.WriteFile(filepath.Join(dir, "pubspec.yaml"), []byte{}, 0o666)
 		assert.NoError(t, err)
 
 		cfg, err := flutter_config.NewFromDirectory(dir)
@@ -38,11 +37,11 @@ func TestNewFromDirectory(t *testing.T) {
 	})
 
 	t.Run("with pubspec.yaml in parent dir, without l10n.yaml", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
+		dir, err := os.MkdirTemp("", "")
 		assert.NoError(t, err)
 		defer os.RemoveAll(dir)
 
-		err = ioutil.WriteFile(filepath.Join(dir, "pubspec.yaml"), []byte{}, 0o666)
+		err = os.WriteFile(filepath.Join(dir, "pubspec.yaml"), []byte{}, 0o666)
 		assert.NoError(t, err)
 
 		childDir := filepath.Join(dir, "child-dir")
@@ -57,15 +56,15 @@ func TestNewFromDirectory(t *testing.T) {
 	})
 
 	t.Run("with pubspec.yaml, with l10n.yaml", func(t *testing.T) {
-		dir, err := ioutil.TempDir("", "")
+		dir, err := os.MkdirTemp("", "")
 		assert.NoError(t, err)
 		defer os.RemoveAll(dir)
 
-		err = ioutil.WriteFile(filepath.Join(dir, "pubspec.yaml"), []byte{}, 0o666)
+		err = os.WriteFile(filepath.Join(dir, "pubspec.yaml"), []byte{}, 0o666)
 		assert.NoError(t, err)
 
 		l10nContents := `arb-dir: this-is/arb-dir/test`
-		err = ioutil.WriteFile(filepath.Join(dir, "l10n.yaml"), []byte(l10nContents), 0o666)
+		err = os.WriteFile(filepath.Join(dir, "l10n.yaml"), []byte(l10nContents), 0o666)
 		assert.NoError(t, err)
 
 		cfg, err := flutter_config.NewFromDirectory(dir)
