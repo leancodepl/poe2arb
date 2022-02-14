@@ -1,4 +1,5 @@
-// Package providing Flutter configuration and means of parsing it from the filesystem.
+// Package flutter_config provides Flutter project configuration
+// and means of parsing it from the filesystem.
 package flutter_config
 
 import (
@@ -33,8 +34,8 @@ func newDefaultL10n() *L10n {
 	}
 }
 
-// NewFromDirectory creates a FlutterConfig if a given dir was inside a Flutter project
-// or nil otherwise.
+// NewFromDirectory creates a FlutterConfig if the given dir
+// was inside a Flutter project or nil otherwise.
 func NewFromDirectory(dir string) (*FlutterConfig, error) {
 	pubspec, err := walkUpForPubspec(dir)
 	if err != nil {
@@ -76,7 +77,7 @@ func walkUpForPubspec(dir string) (file *os.File, err error) {
 
 		parent := filepath.Dir(dir)
 		if parent == dir {
-			// we tried to up the root directory
+			// we tried to go up the root directory
 			// could not find Dart project root (pubspec.yaml)
 			return nil, nil
 		}
