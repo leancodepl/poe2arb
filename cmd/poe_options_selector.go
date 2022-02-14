@@ -42,7 +42,7 @@ func (s *poeOptionsSelector) SelectOutputDir() (string, error) {
 		return fromCmd, nil
 	}
 
-	if s.l10n.ARBDir != "" {
+	if s.l10n != nil && s.l10n.ARBDir != "" {
 		return s.l10n.ARBDir, nil
 	}
 
