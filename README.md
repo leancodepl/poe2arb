@@ -132,6 +132,17 @@ To make `gopls` in VSCode use `gofumpt`, add this to your settings:
 },
 ```
 
+### Linting
+
+We use [staticcheck](https://staticcheck.io) with all checks enabled.
+
+To make VSCode use `staticcheck`, add this to your settings:
+
+```json
+"go.lintTool": "staticcheck",
+"go.lintFlags": ["-checks=all"],
+```
+
 ### Building
 
 All you need is Go 1.17.
