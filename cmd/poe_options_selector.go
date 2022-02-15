@@ -10,6 +10,7 @@ import (
 type poeOptionsSelector struct {
 	flags *pflag.FlagSet
 	l10n  *flutter.L10n
+	env   *envVars
 }
 
 // SelectProjectID returns POEditor project id from available sources.
@@ -21,7 +22,14 @@ func (s *poeOptionsSelector) SelectProjectID() (string, error) {
 // SelectToken returns POEditor API token option from available sources.
 func (s *poeOptionsSelector) SelectToken() (string, error) {
 	fromCmd, err := s.flags.GetString(tokenFlag)
-	return fromCmd, err
+	if err != nil {
+		return "", err
+	}
+	if fromCmd != "" {
+		return fromCmd, nil
+	}
+
+	return s.env.Token, nil
 }
 
 // SelectARBPrefix returns ARB files prefix option from available sources.
