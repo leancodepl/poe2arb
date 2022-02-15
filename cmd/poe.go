@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -29,8 +30,7 @@ func init() {
 	poeCmd.Flags().StringP(projectIDFlag, "p", "", "(required) POEditor project ID")
 	poeCmd.MarkFlagRequired(projectIDFlag)
 
-	poeCmd.Flags().StringP(tokenFlag, "t", "", "(required) POEditor API token")
-	poeCmd.MarkFlagRequired(tokenFlag)
+	poeCmd.Flags().StringP(tokenFlag, "t", "", "POEditor API token")
 
 	poeCmd.Flags().StringP(arbPrefixFlag, "", "app_", "ARB file names prefix")
 
@@ -59,6 +59,10 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	if token == "" {
+		return errors.New("no POEditor token provided")
+	}
+
 	arbPrefix, err := sel.SelectARBPrefix()
 	if err != nil {
 		return err
