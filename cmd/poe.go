@@ -40,12 +40,17 @@ func init() {
 }
 
 func runPoe(cmd *cobra.Command, args []string) error {
+	envVars, err := newEnvVars()
+	if err != nil {
+		return err
+	}
+
 	flutterCfg, err := getFlutterConfig()
 	if err != nil {
 		return err
 	}
 
-	sel := poeOptionsSelector{cmd.Flags(), flutterCfg.L10n}
+	sel := poeOptionsSelector{cmd.Flags(), flutterCfg.L10n, envVars}
 	projectID, err := sel.SelectProjectID()
 	if err != nil {
 		return err
