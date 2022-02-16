@@ -63,7 +63,7 @@ func TestNewFromDirectory(t *testing.T) {
 		err = os.WriteFile(filepath.Join(dir, "pubspec.yaml"), []byte{}, 0o666)
 		assert.NoError(t, err)
 
-		l10nContents := `arb-dir: this-is/arb-dir/test`
+		l10nContents := `{arb-dir: this-is/arb-dir/test, poeditor-project-id: 123123}`
 		err = os.WriteFile(filepath.Join(dir, "l10n.yaml"), []byte(l10nContents), 0o666)
 		assert.NoError(t, err)
 
@@ -74,5 +74,6 @@ func TestNewFromDirectory(t *testing.T) {
 		assert.Equal(t, dir, cfg.RootDir)
 
 		assert.Equal(t, "this-is/arb-dir/test", cfg.L10n.ARBDir)
+		assert.Equal(t, "123123", cfg.L10n.POEditorProjectID)
 	})
 }

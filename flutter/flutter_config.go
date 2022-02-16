@@ -24,6 +24,10 @@ type L10n struct {
 	ARBDir                    string `yaml:"arb-dir"`
 	TemplateArbFile           string `yaml:"template-arb-file"`
 	RequireResourceAttributes bool   `yaml:"required-resource-attributes"`
+
+	// custom options
+
+	POEditorProjectID string `yaml:"poeditor-project-id"`
 }
 
 func newDefaultL10n() *L10n {

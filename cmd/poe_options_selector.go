@@ -16,7 +16,14 @@ type poeOptionsSelector struct {
 // SelectProjectID returns POEditor project id from available sources.
 func (s *poeOptionsSelector) SelectProjectID() (string, error) {
 	fromCmd, err := s.flags.GetString(projectIDFlag)
-	return fromCmd, err
+	if err != nil {
+		return "", err
+	}
+	if fromCmd != "" {
+		return fromCmd, nil
+	}
+
+	return s.l10n.POEditorProjectID, nil
 }
 
 // SelectToken returns POEditor API token option from available sources.

@@ -27,8 +27,7 @@ const (
 )
 
 func init() {
-	poeCmd.Flags().StringP(projectIDFlag, "p", "", "(required) POEditor project ID")
-	poeCmd.MarkFlagRequired(projectIDFlag)
+	poeCmd.Flags().StringP(projectIDFlag, "p", "", "POEditor project ID")
 
 	poeCmd.Flags().StringP(tokenFlag, "t", "", "POEditor API token")
 
@@ -51,10 +50,15 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	}
 
 	sel := poeOptionsSelector{cmd.Flags(), flutterCfg.L10n, envVars}
+
 	projectID, err := sel.SelectProjectID()
 	if err != nil {
 		return err
 	}
+	if projectID != "" {
+		return errors.New("no POEditor project id provided")
+	}
+
 	token, err := sel.SelectToken()
 	if err != nil {
 		return err
