@@ -63,8 +63,7 @@ func TestNewFromDirectory(t *testing.T) {
 		err = os.WriteFile(filepath.Join(dir, "pubspec.yaml"), []byte{}, 0o666)
 		assert.NoError(t, err)
 
-		l10nContents := `arb-dir: this-is/arb-dir/test
-poeditor-project-id: 123123`
+		l10nContents := `{arb-dir: this-is/arb-dir/test, poeditor-project-id: 123123}`
 		err = os.WriteFile(filepath.Join(dir, "l10n.yaml"), []byte(l10nContents), 0o666)
 		assert.NoError(t, err)
 
