@@ -27,7 +27,8 @@ type L10n struct {
 
 	// custom options
 
-	POEditorProjectID string `yaml:"poeditor-project-id"`
+	POEditorProjectID string   `yaml:"poeditor-project-id"`
+	POEditorLangs     []string `yaml:"poeditor-langs"`
 }
 
 func newDefaultL10n() *L10n {
