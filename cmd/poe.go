@@ -55,7 +55,7 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if projectID != "" {
+	if projectID == "" {
 		return errors.New("no POEditor project id provided")
 	}
 
