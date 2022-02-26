@@ -1,0 +1,10 @@
+[
+    {
+        "term": "home_SiteContact",
+        "definition": "{fullName}, Phone: {phoneNumber}, Email: {emailAddress}",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    }
+]

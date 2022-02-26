@@ -1,0 +1,17 @@
+{
+    "@@locale": "en",
+    "home_SiteContact": "{fullName}, Phone: {phoneNumber}, Email: {emailAddress}",
+    "@home_SiteContact": {
+        "placeholders": {
+            "fullName": {
+                "type": "Object"
+            },
+            "phoneNumber": {
+                "type": "Object"
+            },
+            "emailAddress": {
+                "type": "Object"
+            }
+        }
+    }
+}
