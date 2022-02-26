@@ -1,0 +1,10 @@
+[
+    {
+        "term": "textWithUniqueNamedPlaceholders",
+        "definition": "So {something} is a {somethingElse}.",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    }
+]

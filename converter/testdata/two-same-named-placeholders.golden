@@ -1,0 +1,11 @@
+{
+    "@@locale": "en",
+    "textWithRepeatedNamedPlaceholder": "So {something} is the same thing as {something}.",
+    "@textWithRepeatedNamedPlaceholder": {
+        "placeholders": {
+            "something": {
+                "type": "Object"
+            }
+        }
+    }
+}

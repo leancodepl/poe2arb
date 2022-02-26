@@ -1,0 +1,11 @@
+{
+    "@@locale": "en",
+    "textWithNamedPlaceholder": "This is {text}.",
+    "@textWithNamedPlaceholder": {
+        "placeholders": {
+            "text": {
+                "type": "Object"
+            }
+        }
+    }
+}

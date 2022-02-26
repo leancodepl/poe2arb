@@ -1,0 +1,10 @@
+[
+    {
+        "term": "textWithRepeatedNamedPlaceholder",
+        "definition": "So {something} is the same thing as {something}.",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    }
+]

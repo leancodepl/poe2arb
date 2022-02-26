@@ -1,0 +1,11 @@
+{
+    "@@locale": "en",
+    "textWithPositionalPlaceholder": "This is {pos0}.",
+    "@textWithPositionalPlaceholder": {
+        "placeholders": {
+            "pos0": {
+                "type": "Object"
+            }
+        }
+    }
+}
