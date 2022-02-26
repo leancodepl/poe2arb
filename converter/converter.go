@@ -74,7 +74,7 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 			return nil, err
 		}
 
-		pc.namedParams["count"] = "num"
+		pc.namedParams.Set("count", "num")
 
 		value = plural.ToICUMessageFormat()
 	}
@@ -101,7 +101,7 @@ type parseContext struct {
 	elCompat bool
 
 	posParamCount int
-	namedParams   map[string]string // name to type
+	namedParams   *utils.OrderedMap // name to type (string)
 }
 
 func (c *Converter) newParseContext(plural bool) *parseContext {
@@ -109,7 +109,7 @@ func (c *Converter) newParseContext(plural bool) *parseContext {
 		plural:        plural,
 		elCompat:      c.EasyLocalizationCompat,
 		posParamCount: -1,
-		namedParams:   make(map[string]string),
+		namedParams:   utils.NewOrderedMap(),
 	}
 }
 
@@ -144,7 +144,7 @@ func (pc *parseContext) parseTranslation(message string) (string, error) {
 	namedMatches := namedParamRegexp.FindAllStringSubmatch(message, -1)
 	for _, matchGroup := range namedMatches {
 		name := matchGroup[1]
-		pc.namedParams[name] = "Object"
+		pc.namedParams.Set(name, "Object")
 	}
 
 	return message, nil
@@ -163,7 +163,8 @@ func (pc parseContext) buildMessageAttributes() *arbMessageAttributes {
 		)
 	}
 
-	for name, pType := range pc.namedParams {
+	pc.namedParams.ForEach(func(name string, _pType interface{}) {
+		pType := _pType.(string)
 		placeholder := &arbPlaceholder{
 			Name: name,
 			Type: pType,
@@ -174,11 +175,15 @@ func (pc parseContext) buildMessageAttributes() *arbMessageAttributes {
 		}
 
 		placeholders = append(placeholders, placeholder)
-	}
+	})
 
-	placeholdersMap := make(map[string]*arbPlaceholder, len(placeholders))
-	for _, placeholder := range placeholders {
-		placeholdersMap[placeholder.Name] = placeholder
+	// json:omitempty isn't possible for custom structs, so return nil on empty
+	var placeholdersMap *utils.OrderedMap
+	if len(placeholders) > 0 {
+		placeholdersMap = utils.NewOrderedMap()
+		for _, placeholder := range placeholders {
+			placeholdersMap.Set(placeholder.Name, placeholder)
+		}
 	}
 
 	return &arbMessageAttributes{Placeholders: placeholdersMap}

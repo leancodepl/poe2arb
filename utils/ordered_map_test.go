@@ -19,10 +19,19 @@ func TestOrderedMap(t *testing.T) {
 
 	m.Remove("c")
 
+	var keysIteratedOver []string
+	m.ForEach(func(key string, value interface{}) {
+		keysIteratedOver = append(keysIteratedOver, key)
+	})
+
 	json, err := m.MarshalJSON()
 
 	if assert.NoError(t, err) {
 		expected := []byte(`{"b":false,"a":true,"d":true}`)
 		assert.Equal(t, expected, json)
 	}
+
+	assert.Equal(t, "b", keysIteratedOver[0])
+	assert.Equal(t, "a", keysIteratedOver[1])
+	assert.Equal(t, "d", keysIteratedOver[2])
 }
