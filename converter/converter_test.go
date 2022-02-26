@@ -2,6 +2,8 @@ package converter_test
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -10,212 +12,39 @@ import (
 )
 
 func TestConverterConvert(t *testing.T) {
-	type testCase struct {
-		Name     string
-		ElCompat bool
-		Input    string
-		Output   string
+	paths, err := filepath.Glob(filepath.Join("testdata", "*.input"))
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	testCases := []testCase{
-		{
-			"Just text", false,
-			`[
-    {
-        "term": "justText",
-        "definition": "This is text",
-        "context": "",
-        "term_plural": "",
-        "reference": "",
-        "comment": ""
-    }
-]`,
-			`{
-    "@@locale": "en",
-    "justText": "This is text",
-    "@justText": {}
-}
-`,
-		},
-		{
-			"Text with positional placeholder w/o elCompat", false,
-			`[
-    {
-        "term": "textWithPositionalPlaceholder",
-        "definition": "This is {}.",
-        "context": "",
-        "term_plural": "",
-        "reference": "",
-        "comment": ""
-    }
-]`,
-			`{
-    "@@locale": "en",
-    "textWithPositionalPlaceholder": "This is {}.",
-    "@textWithPositionalPlaceholder": {}
-}
-`,
-		},
-		{
-			"Text with positional placeholder w/ elCompat", true,
-			`[
-    {
-        "term": "textWithPositionalPlaceholder",
-        "definition": "This is {}.",
-        "context": "",
-        "term_plural": "",
-        "reference": "",
-        "comment": ""
-    }
-]`,
-			`{
-    "@@locale": "en",
-    "textWithPositionalPlaceholder": "This is {pos0}.",
-    "@textWithPositionalPlaceholder": {
-        "placeholders": {
-            "pos0": {
-                "type": "Object"
-            }
-        }
-    }
-}
-`,
-		},
-		{
-			"Text with few positional placeholders w/ elCompat", true,
-			`[
-    {
-        "term": "textWithPositionalPlaceholders",
-        "definition": "So {} is a {}.",
-        "context": "",
-        "term_plural": "",
-        "reference": "",
-        "comment": ""
-    }
-]`,
-			`{
-    "@@locale": "en",
-    "textWithPositionalPlaceholders": "So {pos0} is a {pos1}.",
-    "@textWithPositionalPlaceholders": {
-        "placeholders": {
-            "pos0": {
-                "type": "Object"
-            },
-            "pos1": {
-                "type": "Object"
-            }
-        }
-    }
-}
-`,
-		},
-		{
-			"Text with named placeholder", false,
-			`[
-    {
-        "term": "textWithNamedPlaceholder",
-        "definition": "This is {text}.",
-        "context": "",
-        "term_plural": "",
-        "reference": "",
-        "comment": ""
-    }
-]`,
-			`{
-    "@@locale": "en",
-    "textWithNamedPlaceholder": "This is {text}.",
-    "@textWithNamedPlaceholder": {
-        "placeholders": {
-            "text": {
-                "type": "Object"
-            }
-        }
-    }
-}
-`,
-		},
-		{
-			"Text with unique named placeholders", false,
-			`[
-    {
-        "term": "textWithUniqueNamedPlaceholders",
-        "definition": "So {something} is a {somethingElse}.",
-        "context": "",
-        "term_plural": "",
-        "reference": "",
-        "comment": ""
-    }
-]`,
-			`{
-    "@@locale": "en",
-    "textWithUniqueNamedPlaceholders": "So {something} is a {somethingElse}.",
-    "@textWithUniqueNamedPlaceholders": {
-        "placeholders": {
-            "something": {
-                "type": "Object"
-            },
-            "somethingElse": {
-                "type": "Object"
-            }
-        }
-    }
-}
-`,
-		},
-		{
-			"Text with repeated named placeholder", false,
-			`[
-    {
-        "term": "textWithRepeatedNamedPlaceholder",
-        "definition": "So {something} is the same thing as {something}.",
-        "context": "",
-        "term_plural": "",
-        "reference": "",
-        "comment": ""
-    }
-]`,
-			`{
-    "@@locale": "en",
-    "textWithRepeatedNamedPlaceholder": "So {something} is the same thing as {something}.",
-    "@textWithRepeatedNamedPlaceholder": {
-        "placeholders": {
-            "something": {
-                "type": "Object"
-            }
-        }
-    }
-}
-`,
-		},
-		{
-			"Text with double quotes", false,
-			`[
-    {
-        "term": "textWithDoubleQuotes",
-        "definition": "Those are some \"quotes\".",
-        "context": "",
-        "term_plural": "",
-        "reference": "",
-        "comment": ""
-    }
-]`,
-			`{
-    "@@locale": "en",
-    "textWithDoubleQuotes": "Those are some \"quotes\".",
-    "@textWithDoubleQuotes": {}
-}
-`,
-		},
-	}
+	for _, path := range paths {
+		_, filename := filepath.Split(path)
+		testname := filename[:len(filename)-len(filepath.Ext(path))]
 
-	for _, testCase := range testCases {
-		t.Run(testCase.Name, func(t *testing.T) {
+		t.Run(testname, func(t *testing.T) {
+			source, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			elCompat := strings.HasSuffix(testname, "el-compat")
+
+			goldenfile := filepath.Join("testdata", testname+".golden")
+			golden, err := os.ReadFile(goldenfile)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expect := string(golden)
+
+			// Actual test
 			out := new(bytes.Buffer)
-			conv := converter.NewConverter(testCase.ElCompat)
-			err := conv.Convert(strings.NewReader(testCase.Input), out, "en")
+			conv := converter.NewConverter(elCompat)
+			err = conv.Convert(strings.NewReader(string(source)), out, "en")
+
+			actual := out.String()
 
 			assert.NoError(t, err)
-			assert.Equal(t, testCase.Output, out.String())
+			assert.Equal(t, expect, actual)
 		})
 	}
 }

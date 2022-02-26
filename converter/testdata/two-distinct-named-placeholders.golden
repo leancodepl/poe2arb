@@ -1,0 +1,14 @@
+{
+    "@@locale": "en",
+    "textWithUniqueNamedPlaceholders": "So {something} is a {somethingElse}.",
+    "@textWithUniqueNamedPlaceholders": {
+        "placeholders": {
+            "something": {
+                "type": "Object"
+            },
+            "somethingElse": {
+                "type": "Object"
+            }
+        }
+    }
+}

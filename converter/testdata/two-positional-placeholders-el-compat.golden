@@ -1,0 +1,14 @@
+{
+    "@@locale": "en",
+    "textWithPositionalPlaceholders": "So {pos0} is a {pos1}.",
+    "@textWithPositionalPlaceholders": {
+        "placeholders": {
+            "pos0": {
+                "type": "Object"
+            },
+            "pos1": {
+                "type": "Object"
+            }
+        }
+    }
+}

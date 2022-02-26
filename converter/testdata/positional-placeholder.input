@@ -1,0 +1,10 @@
+[
+    {
+        "term": "textWithPositionalPlaceholder",
+        "definition": "This is {}.",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    }
+]

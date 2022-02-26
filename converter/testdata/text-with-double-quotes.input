@@ -1,0 +1,10 @@
+[
+    {
+        "term": "textWithDoubleQuotes",
+        "definition": "Those are some \"quotes\".",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    }
+]
