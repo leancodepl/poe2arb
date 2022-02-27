@@ -98,14 +98,6 @@ func (s *poeOptionsSelector) SelectToken() (string, error) {
 
 // SelectARBPrefix returns ARB files prefix option from available sources.
 func (s *poeOptionsSelector) SelectARBPrefix() (string, error) {
-	fromCmd, err := s.flags.GetString(arbPrefixFlag)
-	if err != nil {
-		return "", err
-	}
-	if fromCmd != "" {
-		return fromCmd, nil
-	}
-
 	return prefixFromTemplateFileName(s.l10n.TemplateArbFile)
 }
 
