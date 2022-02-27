@@ -14,7 +14,7 @@ type Error struct {
 	Description string
 }
 
-func TryNewErrorFromResponse(resp response) *Error {
+func TryNewErrorFromResponse(resp response) error {
 	code, _ := strconv.Atoi(resp.Code)
 
 	if code == 200 {
