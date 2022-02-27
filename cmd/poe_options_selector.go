@@ -71,3 +71,24 @@ func (s *poeOptionsSelector) SelectOutputDir() (string, error) {
 func (s *poeOptionsSelector) SelectElCompat() (bool, error) {
 	return getElCompatFlag(s.flags), nil
 }
+
+// SelectOverrideLangs returns a slice of languages that narrow down
+// the available languages from POEditor API.
+//
+// Defaults to empty, which doesn't change the original language list.
+func (s *poeOptionsSelector) SelectOverrideLangs() ([]string, error) {
+	fromCmd, err := s.flags.GetStringSlice(overrideLangsFlag)
+	if err != nil {
+		return nil, err
+	}
+	if len(fromCmd) > 0 {
+		return fromCmd, nil
+	}
+
+	fromL10n := s.l10n.POEditorLangs
+	if fromL10n != nil {
+		return fromL10n, nil
+	}
+
+	return []string{}, nil
+}

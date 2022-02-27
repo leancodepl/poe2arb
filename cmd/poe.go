@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/leancodepl/poe2arb/converter"
 	"github.com/leancodepl/poe2arb/flutter"
@@ -20,20 +21,19 @@ var poeCmd = &cobra.Command{
 }
 
 const (
-	projectIDFlag = "project-id"
-	tokenFlag     = "token"
-	arbPrefixFlag = "arb-prefix"
-	outputDirFlag = "output-dir"
+	projectIDFlag     = "project-id"
+	tokenFlag         = "token"
+	arbPrefixFlag     = "arb-prefix"
+	outputDirFlag     = "output-dir"
+	overrideLangsFlag = "langs"
 )
 
 func init() {
 	poeCmd.Flags().StringP(projectIDFlag, "p", "", "POEditor project ID")
-
 	poeCmd.Flags().StringP(tokenFlag, "t", "", "POEditor API token")
-
 	poeCmd.Flags().StringP(arbPrefixFlag, "", "app_", "ARB file names prefix")
-
 	poeCmd.Flags().StringP(outputDirFlag, "o", "", `Output directory [default: "."]`)
+	poeCmd.Flags().StringSliceP(overrideLangsFlag, "", []string{}, "Override downloaded languages")
 
 	addElCompatFlag(poeCmd)
 }
@@ -79,6 +79,10 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	overrideLangs, err := sel.SelectOverrideLangs()
+	if err != nil {
+		return err
+	}
 
 	client := poeditor.NewClient(token)
 
@@ -86,6 +90,36 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	langs, err := client.GetProjectLanguages(projectID)
 	if err != nil {
 		return err
+	}
+
+	// Use only overriden langs
+	if len(overrideLangs) > 0 {
+		var tmp []poeditor.Language
+		for _, lang := range langs {
+			for _, overridenLang := range overrideLangs {
+				if lang.Code == overridenLang {
+					tmp = append(tmp, lang)
+					break
+				}
+			}
+		}
+
+		if len(tmp) == 0 {
+			langsWord := "lang"
+			if len(overrideLangsFlag) > 1 {
+				langsWord = "langs"
+			}
+			var available []string
+			for _, lang := range langs {
+				available = append(available, lang.Code)
+			}
+			return fmt.Errorf(
+				`--%s specified %d %s, but none of them were available in the POEditor project. Available langs: %s`,
+				overrideLangsFlag, len(overrideLangs), langsWord, strings.Join(available, ", "),
+			)
+		}
+
+		langs = tmp
 	}
 
 	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
