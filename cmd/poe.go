@@ -23,7 +23,6 @@ var poeCmd = &cobra.Command{
 const (
 	projectIDFlag     = "project-id"
 	tokenFlag         = "token"
-	arbPrefixFlag     = "arb-prefix"
 	outputDirFlag     = "output-dir"
 	overrideLangsFlag = "langs"
 )
@@ -31,7 +30,6 @@ const (
 func init() {
 	poeCmd.Flags().StringP(projectIDFlag, "p", "", "POEditor project ID")
 	poeCmd.Flags().StringP(tokenFlag, "t", "", "POEditor API token")
-	poeCmd.Flags().StringP(arbPrefixFlag, "", "app_", "ARB file names prefix")
 	poeCmd.Flags().StringP(outputDirFlag, "o", "", `Output directory [default: "."]`)
 	poeCmd.Flags().StringSliceP(overrideLangsFlag, "", []string{}, "Override downloaded languages")
 
