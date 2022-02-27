@@ -23,3 +23,5 @@ go.work
 
 # Goreleaser
 dist/
+
+.vscode

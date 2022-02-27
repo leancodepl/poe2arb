@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 const apiURL = "https://api.poeditor.com/v2"
@@ -46,22 +48,30 @@ func (c *Client) request(path string, params map[string]string, respBody interfa
 
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "creating HTTP request")
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "making HTTP request")
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&respBody)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "decoding response")
 	}
 
 	return nil
+}
+
+func handleRequestErr(err error, resp baseResponse) error {
+	if err != nil {
+		return err
+	}
+
+	return TryNewErrorFromResponse(resp.Response)
 }
 
 func (c *Client) GetProjectLanguages(projectID string) ([]Language, error) {
@@ -69,7 +79,8 @@ func (c *Client) GetProjectLanguages(projectID string) ([]Language, error) {
 
 	params := map[string]string{"id": projectID}
 	err := c.request("/languages/list", params, &resp)
-	if err != nil {
+	//lint:ignore SA4023 false-positive https://github.com/dominikh/go-tools/issues/1194
+	if err := handleRequestErr(err, resp.baseResponse); err != nil {
 		return nil, err
 	}
 
@@ -93,7 +104,8 @@ func (c *Client) GetExportURL(projectID, languageCode string) (string, error) {
 		"type":     "json",
 	}
 	err := c.request("/projects/export", params, &resp)
-	if err != nil {
+	//lint:ignore SA4023 false-positive https://github.com/dominikh/go-tools/issues/1194
+	if err := handleRequestErr(err, resp.baseResponse); err != nil {
 		return "", err
 	}
 
