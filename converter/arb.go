@@ -1,5 +1,7 @@
 package converter
 
+import "github.com/leancodepl/poe2arb/utils"
+
 const localeKey = "@@locale"
 
 type arbMessage struct {
@@ -9,8 +11,8 @@ type arbMessage struct {
 }
 
 type arbMessageAttributes struct {
-	Description  string                     `json:"description,omitempty"`
-	Placeholders map[string]*arbPlaceholder `json:"placeholders,omitempty"`
+	Description  string            `json:"description,omitempty"`
+	Placeholders *utils.OrderedMap `json:"placeholders,omitempty"` // value type *arbPlaceholder
 }
 
 type arbPlaceholder struct {

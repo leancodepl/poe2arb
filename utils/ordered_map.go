@@ -6,6 +6,8 @@ import (
 	"fmt"
 )
 
+// TODO: Make OrderMap generic once Go 1.18 is used
+
 type OrderedMap struct {
 	values map[string]interface{}
 	keys   []string
@@ -63,4 +65,11 @@ func (o *OrderedMap) MarshalJSON() ([]byte, error) {
 	result += "}"
 
 	return []byte(result), nil
+}
+
+// ForEach calls callback for every item in the OrderedMap, in order
+func (o *OrderedMap) ForEach(callback func(key string, value interface{})) {
+	for _, key := range o.keys {
+		callback(key, o.values[key])
+	}
 }
