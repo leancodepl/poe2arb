@@ -13,6 +13,58 @@ type poeOptionsSelector struct {
 	env   *envVars
 }
 
+// poeOptions describes options passed or otherwise obtained to the poe command.
+type poeOptions struct {
+	ProjectID     string
+	Token         string
+	ARBPrefix     string
+	OutputDir     string
+	ElCompat      bool
+	OverrideLangs []string
+}
+
+// SelectOptions selects all the options used for the poe command.
+func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
+	projectID, err := s.SelectProjectID()
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := s.SelectToken()
+	if err != nil {
+		return nil, err
+	}
+
+	arbPrefix, err := s.SelectARBPrefix()
+	if err != nil {
+		return nil, err
+	}
+
+	outputDir, err := s.SelectOutputDir()
+	if err != nil {
+		return nil, err
+	}
+
+	elCompat, err := s.SelectElCompat()
+	if err != nil {
+		return nil, err
+	}
+
+	overrideLangs, err := s.SelectOverrideLangs()
+	if err != nil {
+		return nil, err
+	}
+
+	return &poeOptions{
+		ProjectID:     projectID,
+		Token:         token,
+		ARBPrefix:     arbPrefix,
+		OutputDir:     outputDir,
+		ElCompat:      elCompat,
+		OverrideLangs: overrideLangs,
+	}, nil
+}
+
 // SelectProjectID returns POEditor project id from available sources.
 func (s *poeOptionsSelector) SelectProjectID() (string, error) {
 	fromCmd, err := s.flags.GetString(projectIDFlag)
