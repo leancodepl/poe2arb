@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,6 +10,7 @@ import (
 	"github.com/leancodepl/poe2arb/converter"
 	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/leancodepl/poe2arb/poeditor"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -138,13 +138,13 @@ func runPoe(cmd *cobra.Command, args []string) error {
 
 		resp, err := http.Get(url)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "making HTTP request for export")
 		}
 
 		filePath := path.Join(outputDir, fmt.Sprintf("%s%s.arb", arbPrefix, lang.Code))
 		file, err := os.Create(filePath)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "creating ARB file")
 		}
 		defer file.Close()
 

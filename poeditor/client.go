@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 const apiURL = "https://api.poeditor.com/v2"
@@ -46,19 +48,19 @@ func (c *Client) request(path string, params map[string]string, respBody interfa
 
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "creating HTTP request")
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "making HTTP request")
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&respBody)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "decoding response")
 	}
 
 	return nil
