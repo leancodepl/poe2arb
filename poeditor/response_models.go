@@ -6,9 +6,13 @@ type response struct {
 	Message string `json:"message"`
 }
 
-type languagesListResponse struct {
+type baseResponse struct {
 	Response response `json:"response"`
-	Result   struct {
+}
+
+type languagesListResponse struct {
+	baseResponse
+	Result struct {
 		Languages []struct {
 			Name string `json:"name"`
 			Code string `json:"code"`
@@ -17,8 +21,8 @@ type languagesListResponse struct {
 }
 
 type projectsExportResponse struct {
-	Response response `json:"response"`
-	Result   struct {
+	baseResponse
+	Result struct {
 		URL string `json:"url"`
 	} `json:"result"`
 }

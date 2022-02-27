@@ -64,12 +64,21 @@ func (c *Client) request(path string, params map[string]string, respBody interfa
 	return nil
 }
 
+func handleRequestErr(err error, resp baseResponse) error {
+	if err != nil {
+		return err
+	}
+
+	return TryNewErrorFromResponse(resp.Response)
+}
+
 func (c *Client) GetProjectLanguages(projectID string) ([]Language, error) {
 	var resp languagesListResponse
 
 	params := map[string]string{"id": projectID}
 	err := c.request("/languages/list", params, &resp)
-	if err != nil {
+	//lint:ignore SA4023 false-positive https://github.com/dominikh/go-tools/issues/1194
+	if err := handleRequestErr(err, resp.baseResponse); err != nil {
 		return nil, err
 	}
 
@@ -93,7 +102,8 @@ func (c *Client) GetExportURL(projectID, languageCode string) (string, error) {
 		"type":     "json",
 	}
 	err := c.request("/projects/export", params, &resp)
-	if err != nil {
+	//lint:ignore SA4023 false-positive https://github.com/dominikh/go-tools/issues/1194
+	if err := handleRequestErr(err, resp.baseResponse); err != nil {
 		return "", err
 	}
 
