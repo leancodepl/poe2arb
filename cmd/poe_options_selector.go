@@ -1,8 +1,13 @@
 package cmd
 
 import (
+	"path/filepath"
+	"strings"
+
 	"github.com/leancodepl/poe2arb/flutter"
+	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
+	"golang.org/x/text/language"
 )
 
 // poeOptionsSelector decides on the correct values for given options
@@ -94,7 +99,38 @@ func (s *poeOptionsSelector) SelectToken() (string, error) {
 // SelectARBPrefix returns ARB files prefix option from available sources.
 func (s *poeOptionsSelector) SelectARBPrefix() (string, error) {
 	fromCmd, err := s.flags.GetString(arbPrefixFlag)
-	return fromCmd, err
+	if err != nil {
+		return "", err
+	}
+	if fromCmd != "" {
+		return fromCmd, nil
+	}
+
+	return prefixFromTemplateFileName(s.l10n.TemplateArbFile)
+}
+
+// see Flutter gen-l10n implementation:
+// https://github.com/flutter/flutter/blob/61a0add2865c51bfee33939c1820709d1115c77d/packages/flutter_tools/lib/src/localizations/gen_l10n_types.dart#L454-L460
+
+func prefixFromTemplateFileName(templateFile string) (string, error) {
+	filename := strings.TrimSuffix(templateFile, filepath.Ext(templateFile))
+
+	for i := 0; i < len(filename)-1; i++ {
+		if filename[i] != '_' {
+			continue
+		}
+
+		locale := filename[i+1:]
+		_, err := language.Parse(locale)
+		if err == nil {
+			return filename[:i+1], nil
+		}
+	}
+
+	return "", errors.New(
+		"invalid template-arb-file. Should be a filename with prefix ending " +
+			"with an underscore followed by a valid BCP-47 locale.",
+	)
 }
 
 // SelectOutputDir returns output directory option from available sources.

@@ -31,7 +31,7 @@ const (
 func init() {
 	poeCmd.Flags().StringP(projectIDFlag, "p", "", "POEditor project ID")
 	poeCmd.Flags().StringP(tokenFlag, "t", "", "POEditor API token")
-	poeCmd.Flags().StringP(arbPrefixFlag, "", "app_", "ARB file names prefix")
+	poeCmd.Flags().StringP(arbPrefixFlag, "", "", "ARB file names prefix")
 	poeCmd.Flags().StringP(outputDirFlag, "o", "", `Output directory [default: "."]`)
 	poeCmd.Flags().StringSliceP(overrideLangsFlag, "", []string{}, "Override downloaded languages")
 
