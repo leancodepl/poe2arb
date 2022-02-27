@@ -79,7 +79,6 @@ func (c *Client) GetProjectLanguages(projectID string) ([]Language, error) {
 
 	params := map[string]string{"id": projectID}
 	err := c.request("/languages/list", params, &resp)
-	//lint:ignore SA4023 false-positive https://github.com/dominikh/go-tools/issues/1194
 	if err := handleRequestErr(err, resp.baseResponse); err != nil {
 		return nil, err
 	}
@@ -104,7 +103,6 @@ func (c *Client) GetExportURL(projectID, languageCode string) (string, error) {
 		"type":     "json",
 	}
 	err := c.request("/projects/export", params, &resp)
-	//lint:ignore SA4023 false-positive https://github.com/dominikh/go-tools/issues/1194
 	if err := handleRequestErr(err, resp.baseResponse); err != nil {
 		return "", err
 	}
