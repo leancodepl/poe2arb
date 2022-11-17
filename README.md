@@ -144,7 +144,7 @@ To make VS Code use `staticcheck`, add this to your settings:
 
 ### Building
 
-All you need is Go 1.17.
+All you need is Go 1.19.
 
 ```
 go build .
