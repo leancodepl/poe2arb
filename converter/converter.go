@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/leancodepl/poe2arb/utils"
 	"github.com/pkg/errors"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 type Converter struct {
@@ -29,7 +29,7 @@ func (c *Converter) Convert(input io.Reader, output io.Writer, lang string) erro
 		return errors.Wrap(err, "decoding json failed")
 	}
 
-	arb := utils.NewOrderedMap()
+	arb := orderedmap.New[string, any]()
 	arb.Set(localeKey, lang)
 
 	for _, term := range jsonContents {
@@ -101,7 +101,7 @@ type parseContext struct {
 	elCompat bool
 
 	posParamCount int
-	namedParams   *utils.OrderedMap // name to type (string)
+	namedParams   *orderedmap.OrderedMap[string, string] // name to type
 }
 
 func (c *Converter) newParseContext(plural bool) *parseContext {
@@ -109,7 +109,7 @@ func (c *Converter) newParseContext(plural bool) *parseContext {
 		plural:        plural,
 		elCompat:      c.EasyLocalizationCompat,
 		posParamCount: -1,
-		namedParams:   utils.NewOrderedMap(),
+		namedParams:   orderedmap.New[string, string](),
 	}
 }
 
@@ -163,24 +163,25 @@ func (pc parseContext) buildMessageAttributes() *arbMessageAttributes {
 		)
 	}
 
-	pc.namedParams.ForEach(func(name string, _pType interface{}) {
-		pType := _pType.(string)
+	for pair := pc.namedParams.Oldest(); pair != nil; pair = pair.Next() {
+		name, placeholderType := pair.Key, pair.Value
+
 		placeholder := &arbPlaceholder{
 			Name: name,
-			Type: pType,
+			Type: placeholderType,
 		}
 
-		if pType == "num" {
+		if placeholderType == "num" {
 			placeholder.Format = "decimalPattern"
 		}
 
 		placeholders = append(placeholders, placeholder)
-	})
+	}
 
 	// json:omitempty isn't possible for custom structs, so return nil on empty
-	var placeholdersMap *utils.OrderedMap
+	var placeholdersMap *orderedmap.OrderedMap[string, *arbPlaceholder]
 	if len(placeholders) > 0 {
-		placeholdersMap = utils.NewOrderedMap()
+		placeholdersMap = orderedmap.New[string, *arbPlaceholder]()
 		for _, placeholder := range placeholders {
 			placeholdersMap.Set(placeholder.Name, placeholder)
 		}
