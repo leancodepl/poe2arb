@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Go 1.17
+    name: Go 1.19
 
     runs-on: ubuntu-latest
 
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17'
+          go-version: '1.19'
 
       - name: Cache Go modules
         uses: actions/cache@v2
@@ -31,7 +31,7 @@ jobs:
 
       - name: Verify code formatting
         run: |
-          go install mvdan.cc/gofumpt@v0.3
+          go install mvdan.cc/gofumpt@v0.4
           test -z $(gofumpt -l .)
 
       - name: Run linter
