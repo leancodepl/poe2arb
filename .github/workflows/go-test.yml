@@ -31,7 +31,7 @@ jobs:
 
       - name: Verify code formatting
         run: |
-          go install mvdan.cc/gofumpt@v0.3
+          go install mvdan.cc/gofumpt@v0.4
           test -z $(gofumpt -l .)
 
       - name: Run linter
