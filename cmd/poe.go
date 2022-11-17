@@ -15,9 +15,10 @@ import (
 )
 
 var poeCmd = &cobra.Command{
-	Use:   "poe",
-	Short: "Exports POEditor terms and converts them to ARB",
-	RunE:  runPoe,
+	Use: "poe",
+	Short: "Exports POEditor terms and converts them to ARB. " +
+		"Must be run from the Flutter project root directory or its subdirectory.",
+	RunE: runPoe,
 }
 
 const (

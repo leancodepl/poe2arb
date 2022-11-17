@@ -11,6 +11,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var ErrNoPubspec = errors.New("no pubspec.yaml found in the current or any parent directory")
+
 // FlutterConfig represents a Flutter project configuration.
 type FlutterConfig struct {
 	RootDir string
@@ -47,7 +49,7 @@ func NewFromDirectory(dir string) (*FlutterConfig, error) {
 		return nil, err
 	} else if pubspec == nil {
 		// no pubspec found
-		return nil, nil
+		return nil, ErrNoPubspec
 	}
 
 	rootDir := filepath.Dir(pubspec.Name())
