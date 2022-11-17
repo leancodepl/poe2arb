@@ -47,7 +47,7 @@ func NewFromDirectory(dir string) (*FlutterConfig, error) {
 		return nil, err
 	} else if pubspec == nil {
 		// no pubspec found
-		return nil, nil
+		return nil, errors.New("no pubspec.yaml found in the current directory or any parent directory")
 	}
 
 	rootDir := filepath.Dir(pubspec.Name())

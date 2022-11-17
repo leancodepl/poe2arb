@@ -17,8 +17,10 @@ func TestNewFromDirectory(t *testing.T) {
 
 		cfg, err := flutter.NewFromDirectory(dir)
 
-		assert.NoError(t, err)
 		assert.Nil(t, cfg)
+		if assert.Error(t, err) {
+			assert.EqualError(t, err, "no pubspec.yaml found in the current directory or any parent directory")
+		}
 	})
 
 	t.Run("with pubspec.yaml, without l10n.yaml", func(t *testing.T) {
