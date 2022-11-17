@@ -31,13 +31,15 @@ jobs:
 
       - name: Verify code formatting
         run: |
-          go install mvdan.cc/gofumpt@latest
+          go install mvdan.cc/gofumpt@v0.3
           test -z $(gofumpt -l .)
 
       - name: Run linter
+        if: always()
         run: |
-          go install honnef.co/go/tools/cmd/staticcheck@latest
+          go install honnef.co/go/tools/cmd/staticcheck@v0.3
           staticcheck ./...
 
       - name: Run tests with coverage
+        if: always()
         run: go test -cover ./...
