@@ -11,6 +11,7 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.AddCommand(convertCmd)
 	rootCmd.AddCommand(poeCmd)
+	rootCmd.AddCommand(versionCmd)
 
 	rootCmd.Execute()
 }

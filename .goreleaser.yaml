@@ -1,9 +1,16 @@
 builds:
-  - targets:
+  -
+    targets:
       - linux_amd64
       - windows_amd64
       - darwin_amd64
       - darwin_arm64
+    ldflags:
+      - >
+        -s -w
+        -X github.com/leancodepl/poe2arb/cmd.Version={{.Version}}
+        -X github.com/leancodepl/poe2arb/cmd.Commit={{.Commit}}
+        -X github.com/leancodepl/poe2arb/cmd.BuiltDate={{.Date}}
 universal_binaries:
   - replace: true
 changelog:
