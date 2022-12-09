@@ -42,6 +42,8 @@ github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKs
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/wk8/go-ordered-map/v2 v2.1.0 h1:irLJKNi0WMmX6f4MQC7urUX5pE8Ab5dOtM2orbaeEjU=
 github.com/wk8/go-ordered-map/v2 v2.1.0/go.mod h1:ny62VR4ZctzfAJyvdkBYE1DmSHfsuLsj6AGsxni6wWQ=
+github.com/wk8/go-ordered-map/v2 v2.1.1 h1:y13jts8SahUV/CChdundKh4kAR/1+Y4qYE+rI3Br7cY=
+github.com/wk8/go-ordered-map/v2 v2.1.1/go.mod h1:ny62VR4ZctzfAJyvdkBYE1DmSHfsuLsj6AGsxni6wWQ=
 golang.org/x/text v0.4.0 h1:BrVqGRd7+k1DiOgtnFvAkoQEWQvBc25ouMJM6429SFg=
 golang.org/x/text v0.4.0/go.mod h1:mrYo+phRRbMaCq/xk9113O4dZlRixOauAjOtrjsXDZ8=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
