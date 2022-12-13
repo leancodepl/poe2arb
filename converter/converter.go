@@ -38,8 +38,10 @@ func (c *Converter) Convert(input io.Reader, output io.Writer, lang string) erro
 			return errors.Wrapf(err, `decoding term "%s" failed`, term.Term)
 		}
 
-		arb.Set(message.Name, message.Translation)
-		arb.Set("@"+message.Name, message.Attributes)
+		if message != nil {
+			arb.Set(message.Name, message.Translation)
+			arb.Set("@"+message.Name, message.Attributes)
+		}
 	}
 
 	encoder := json.NewEncoder(output)
@@ -78,8 +80,8 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 
 		if plural.Other != "" {
 			value = plural.ToICUMessageFormat()
-			//lint:ignore SA9003 todo comment
 		} else {
+			return nil, nil
 			// TODO: Log note about missing "other" plural
 		}
 	}
