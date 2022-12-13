@@ -1,0 +1,37 @@
+[
+    {
+        "term": "appName",
+        "definition": "Test application name",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    },
+    {
+        "term": "dashboardTitle",
+        "definition": null,
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    },
+    {
+        "term": "greeting",
+        "definition": null,
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    },
+    {
+        "term": "testPlural",
+        "definition": {
+            "one": "One {count}",
+            "other": "Many {count}s"
+        },
+        "context": "",
+        "term_plural": "plural",
+        "reference": "",
+        "comment": ""
+    }
+]
