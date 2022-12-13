@@ -1,0 +1,12 @@
+{
+    "@@locale": "en",
+    "testPlural": "",
+    "@testPlural": {
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "decimalPattern"
+            }
+        }
+    }
+}

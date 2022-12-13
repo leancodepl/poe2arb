@@ -1,0 +1,16 @@
+[
+    
+    {
+        "term": "testPlural",
+        "definition": {
+            "one": "",
+            "few": "",
+            "many": "",
+            "other": ""
+        },
+        "context": "",
+        "term_plural": "plural",
+        "reference": "",
+        "comment": ""
+    }
+]

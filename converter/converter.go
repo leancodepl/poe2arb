@@ -59,7 +59,7 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 		return nil, err
 	}
 
-	if term.Definition.Value != nil {
+	if !term.Definition.IsPlural {
 		var err error
 		value, err = pc.parseTranslation(*term.Definition.Value)
 		if err != nil {
@@ -76,7 +76,12 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 
 		pc.namedParams.Set("count", "num")
 
-		value = plural.ToICUMessageFormat()
+		if plural.Other != "" {
+			value = plural.ToICUMessageFormat()
+			//lint:ignore SA9003 todo comment
+		} else {
+			// TODO: Log note about missing "other" plural
+		}
 	}
 
 	message := &arbMessage{
