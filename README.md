@@ -109,7 +109,7 @@ POEditor plurals are also supported. Simply mark the the term and plural and
 give it _any_ name (it's never used, but required by POEditor to enable plurals
 for the term).
 
-In translations, a `{count}` placeholder (`int` formatted as `decimalPattern`)
+In translations, a `{count}` placeholder (`num` formatted as `decimalPattern`)
 can be used. You can use other placeholders too. Example:
 
 ```
