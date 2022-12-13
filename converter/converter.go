@@ -12,14 +12,10 @@ import (
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
-type Converter struct {
-	EasyLocalizationCompat bool
-}
+type Converter struct{}
 
-func NewConverter(easyLocalizationCompat bool) *Converter {
-	return &Converter{
-		EasyLocalizationCompat: easyLocalizationCompat,
-	}
+func NewConverter() *Converter {
+	return &Converter{}
 }
 
 func (c *Converter) Convert(input io.Reader, output io.Writer, lang string) error {
@@ -92,13 +88,11 @@ const messageParameterPattern = `[a-zA-Z][a-zA-Z_\d]*`
 
 var (
 	messageNameRegexp = regexp.MustCompile(`^[a-z][a-zA-Z_\d]*$`)
-	posParamRegexp    = regexp.MustCompile("{}")
 	namedParamRegexp  = regexp.MustCompile("{(" + messageParameterPattern + ")}")
 )
 
 type parseContext struct {
-	plural   bool
-	elCompat bool
+	plural bool
 
 	posParamCount int
 	namedParams   *orderedmap.OrderedMap[string, string] // name to type
@@ -107,7 +101,6 @@ type parseContext struct {
 func (c *Converter) newParseContext(plural bool) *parseContext {
 	return &parseContext{
 		plural:        plural,
-		elCompat:      c.EasyLocalizationCompat,
 		posParamCount: -1,
 		namedParams:   orderedmap.New[string, string](),
 	}
@@ -129,17 +122,6 @@ func (parseContext) parseName(name string) (string, error) {
 }
 
 func (pc *parseContext) parseTranslation(message string) (string, error) {
-	if pc.elCompat && !pc.plural {
-		// Positional params. Ex.: This is a {}.
-		// Parses translations replacing `{}` parameters with placeholders
-		// pos0, pos1, ... This is for a compatibility with easy_localization strings.
-		// Positional params are not supported in plurals.
-		message = posParamRegexp.ReplaceAllStringFunc(message, func(s string) string {
-			pc.posParamCount++
-			return fmt.Sprintf("{pos%d}", pc.posParamCount)
-		})
-	}
-
 	// Named params. Ex.: This is a {param}.
 	namedMatches := namedParamRegexp.FindAllStringSubmatch(message, -1)
 	for _, matchGroup := range namedMatches {
