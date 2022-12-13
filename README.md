@@ -105,7 +105,7 @@ Field {} must not be empty.
 
 ### Plurals
 
-POEditor plurals are also supported. Simply mark the the term and plural and
+POEditor plurals are also supported. Simply mark the the term as plural and
 give it _any_ name (it's never used, but required by POEditor to enable plurals
 for the term).
 
@@ -116,6 +116,8 @@ can be used. You can use other placeholders too. Example:
 one:    Andy has 1 kilogram of {fruit}.
 other:  Andy has {count} kilograms of {fruit}.
 ```
+
+You must provide at least `other` plural category for your translations, otherwise it won't be converted.
 
 ## Contributing
 
