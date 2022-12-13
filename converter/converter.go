@@ -78,6 +78,7 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 
 		if plural.Other != "" {
 			value = plural.ToICUMessageFormat()
+			//lint:ignore SA9003 todo comment
 		} else {
 			// TODO: Log note about missing "other" plural
 		}
