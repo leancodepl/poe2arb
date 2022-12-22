@@ -34,7 +34,9 @@ format.
 [Supported features](#syntax--supported-features) section.
 
 For conversion, you need to pass the translation file language in the
-`--lang/-l` flag
+`--lang/-l` flag.
+
+By default, a template ARB file is generated. So no empty message is skipped and attributes are generated. If you want to skip that, pass `--no-template` flag.
 
 Currently, only an stdin/stdout is supported for the `poe2arb convert` command.
 
