@@ -37,9 +37,11 @@ func TestConverterConvert(t *testing.T) {
 			expect := string(golden)
 
 			// Actual test
+			in := strings.NewReader(string(source))
+			conv := converter.NewConverter(in, "en", template)
+
 			out := new(bytes.Buffer)
-			conv := converter.NewConverter()
-			err = conv.Convert(strings.NewReader(string(source)), out, "en", template)
+			err = conv.Convert(out)
 
 			actual := out.String()
 

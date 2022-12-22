@@ -213,8 +213,8 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error
 	}
 	defer file.Close()
 
-	conv := converter.NewConverter()
-	err = conv.Convert(resp.Body, file, lang.Code, template)
+	conv := converter.NewConverter(resp.Body, lang.Code, template)
+	err = conv.Convert(file)
 	if err != nil {
 		return err
 	}

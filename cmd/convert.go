@@ -38,7 +38,7 @@ func runConvertIo(cmd *cobra.Command, args []string) error {
 	lang, _ := cmd.Flags().GetString(langFlag)
 	template, _ := cmd.Flags().GetBool(templateFlag)
 
-	conv := converter.NewConverter()
+	conv := converter.NewConverter(os.Stdin, lang, template)
 
-	return conv.Convert(os.Stdin, os.Stdout, lang, template)
+	return conv.Convert(os.Stdout)
 }
