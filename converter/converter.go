@@ -44,7 +44,10 @@ func (c *Converter) Convert(output io.Writer) error {
 
 		if message != nil {
 			arb.Set(message.Name, message.Translation)
-			arb.Set("@"+message.Name, message.Attributes)
+
+			if c.template {
+				arb.Set("@"+message.Name, message.Attributes)
+			}
 		}
 	}
 
