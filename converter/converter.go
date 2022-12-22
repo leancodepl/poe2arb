@@ -13,16 +13,27 @@ import (
 )
 
 type Converter struct {
-	input    io.Reader
+	input io.Reader
+
 	lang     string
 	template bool
+
+	requireResourceAttributes bool
 }
 
-func NewConverter(input io.Reader, lang string, template bool) *Converter {
+func NewConverter(
+	input io.Reader,
+	lang string,
+	template bool,
+	requireResourceAttributes bool,
+) *Converter {
 	return &Converter{
-		input:    input,
+		input: input,
+
 		lang:     lang,
 		template: template,
+
+		requireResourceAttributes: requireResourceAttributes,
 	}
 }
 

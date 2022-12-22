@@ -38,7 +38,7 @@ func TestConverterConvert(t *testing.T) {
 
 			// Actual test
 			in := strings.NewReader(string(source))
-			conv := converter.NewConverter(in, "en", template)
+			conv := converter.NewConverter(in, "en", template, false)
 
 			out := new(bytes.Buffer)
 			err = conv.Convert(out)

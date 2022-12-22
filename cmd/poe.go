@@ -63,7 +63,8 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	for _, lang := range langs {
 		template := options.TemplateLocale == lang.Code
 
-		if err := poeCmd.ExportLanguage(lang, template); err != nil {
+		err := poeCmd.ExportLanguage(lang, template, options.RequireResourceAttributes)
+		if err != nil {
 			msg := fmt.Sprintf("exporting %s (%s) language", lang.Name, lang.Code)
 			return errors.Wrap(err, msg)
 		}
@@ -194,7 +195,7 @@ func (c *poeCommand) EnsureOutputDirectory() error {
 	return nil
 }
 
-func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error {
+func (c *poeCommand) ExportLanguage(lang poeditor.Language, template, requireResourceAttributes bool) error {
 	fmt.Printf("Fetching JSON export for %s (%s)...\n", lang.Name, lang.Code)
 	url, err := c.client.GetExportURL(c.options.ProjectID, lang.Code)
 	if err != nil {
@@ -213,7 +214,7 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error
 	}
 	defer file.Close()
 
-	conv := converter.NewConverter(resp.Body, lang.Code, template)
+	conv := converter.NewConverter(resp.Body, lang.Code, template, requireResourceAttributes)
 	err = conv.Convert(file)
 	if err != nil {
 		return err
