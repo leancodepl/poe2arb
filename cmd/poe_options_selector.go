@@ -20,11 +20,12 @@ type poeOptionsSelector struct {
 
 // poeOptions describes options passed or otherwise obtained to the poe command.
 type poeOptions struct {
-	ProjectID     string
-	Token         string
-	ARBPrefix     string
-	OutputDir     string
-	OverrideLangs []string
+	ProjectID      string
+	Token          string
+	ARBPrefix      string
+	TemplateLocale string
+	OutputDir      string
+	OverrideLangs  []string
 }
 
 // SelectOptions selects all the options used for the poe command.
@@ -39,7 +40,7 @@ func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
 		return nil, err
 	}
 
-	arbPrefix, err := s.SelectARBPrefix()
+	arbPrefix, templateLocale, err := s.SelectARBPrefixAndTemplate()
 	if err != nil {
 		return nil, err
 	}
@@ -55,11 +56,12 @@ func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
 	}
 
 	return &poeOptions{
-		ProjectID:     projectID,
-		Token:         token,
-		ARBPrefix:     arbPrefix,
-		OutputDir:     outputDir,
-		OverrideLangs: overrideLangs,
+		ProjectID:      projectID,
+		Token:          token,
+		ARBPrefix:      arbPrefix,
+		TemplateLocale: templateLocale,
+		OutputDir:      outputDir,
+		OverrideLangs:  overrideLangs,
 	}, nil
 }
 
@@ -90,8 +92,13 @@ func (s *poeOptionsSelector) SelectToken() (string, error) {
 }
 
 // SelectARBPrefix returns ARB files prefix option from available sources.
-func (s *poeOptionsSelector) SelectARBPrefix() (string, error) {
-	return prefixFromTemplateFileName(s.l10n.TemplateArbFile)
+func (s *poeOptionsSelector) SelectARBPrefixAndTemplate() (prefix, templateLocale string, err error) {
+	prefix, err = prefixFromTemplateFileName(s.l10n.TemplateArbFile)
+	if err != nil {
+		return "", "", err
+	}
+
+	return prefix, strings.TrimPrefix(s.l10n.TemplateArbFile, prefix), nil
 }
 
 // see Flutter gen-l10n implementation:

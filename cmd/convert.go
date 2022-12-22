@@ -20,19 +20,25 @@ var (
 	}
 )
 
-const langFlag = "lang"
+const (
+	langFlag     = "lang"
+	templateFlag = "template"
+)
 
 func init() {
-	convertCmd.PersistentFlags().StringP(langFlag, "l", "", "Language of the input file")
+	convertCmd.PersistentFlags().StringP(langFlag, "l", "", "Language of the input")
 	convertCmd.MarkPersistentFlagRequired(langFlag)
+
+	convertCmd.PersistentFlags().BoolP(templateFlag, "t", false, "Whether the output should be a template ARB")
 
 	convertCmd.AddCommand(convertIoCmd)
 }
 
 func runConvertIo(cmd *cobra.Command, args []string) error {
 	lang, _ := cmd.Flags().GetString(langFlag)
+	template, _ := cmd.Flags().GetBool(templateFlag)
 
 	conv := converter.NewConverter()
 
-	return conv.Convert(os.Stdin, os.Stdout, lang)
+	return conv.Convert(os.Stdin, os.Stdout, lang, template)
 }

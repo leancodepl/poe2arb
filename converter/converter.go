@@ -18,7 +18,7 @@ func NewConverter() *Converter {
 	return &Converter{}
 }
 
-func (c *Converter) Convert(input io.Reader, output io.Writer, lang string) error {
+func (c *Converter) Convert(input io.Reader, output io.Writer, lang string, template bool) error {
 	var jsonContents []*jsonTerm
 	err := json.NewDecoder(input).Decode(&jsonContents)
 	if err != nil {

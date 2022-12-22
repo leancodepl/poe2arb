@@ -20,6 +20,7 @@ func TestPrefixFromTemplateFileName(t *testing.T) {
 		{"app_zh-Hant-CN.arb", "app_", false},
 		{"app.arb", "", true},
 		{"app-xd.arb", "", true}, // "xd" is not a valid ISO 639 country
+		{"app-en.arb", "", true}, // must have prefix ending with "_"
 		{"en.arb", "", true},     // must have prefix ending with "_"
 	}
 
