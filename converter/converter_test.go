@@ -26,7 +26,6 @@ func TestConverterConvert(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			elCompat := strings.HasSuffix(testname, "el-compat")
 
 			goldenfile := filepath.Join("testdata", testname+".golden")
 			golden, err := os.ReadFile(goldenfile)
@@ -38,7 +37,7 @@ func TestConverterConvert(t *testing.T) {
 
 			// Actual test
 			out := new(bytes.Buffer)
-			conv := converter.NewConverter(elCompat)
+			conv := converter.NewConverter()
 			err = conv.Convert(strings.NewReader(string(source)), out, "en")
 
 			actual := out.String()

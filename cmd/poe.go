@@ -33,8 +33,6 @@ func init() {
 	poeCmd.Flags().StringP(tokenFlag, "t", "", "POEditor API token")
 	poeCmd.Flags().StringP(outputDirFlag, "o", "", `Output directory [default: "."]`)
 	poeCmd.Flags().StringSliceP(overrideLangsFlag, "", []string{}, "Override downloaded languages")
-
-	addElCompatFlag(poeCmd)
 }
 
 func runPoe(cmd *cobra.Command, args []string) error {
@@ -213,7 +211,7 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language) error {
 	}
 	defer file.Close()
 
-	conv := converter.NewConverter(c.options.ElCompat)
+	conv := converter.NewConverter()
 	err = conv.Convert(resp.Body, file, lang.Code)
 	if err != nil {
 		return err

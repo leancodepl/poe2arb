@@ -26,16 +26,13 @@ func init() {
 	convertCmd.PersistentFlags().StringP(langFlag, "l", "", "Language of the input file")
 	convertCmd.MarkPersistentFlagRequired(langFlag)
 
-	addElCompatFlag(convertCmd)
-
 	convertCmd.AddCommand(convertIoCmd)
 }
 
 func runConvertIo(cmd *cobra.Command, args []string) error {
 	lang, _ := cmd.Flags().GetString(langFlag)
-	elCompat := getElCompatFlag(cmd.Flags())
 
-	conv := converter.NewConverter(elCompat)
+	conv := converter.NewConverter()
 
 	return conv.Convert(os.Stdin, os.Stdout, lang)
 }

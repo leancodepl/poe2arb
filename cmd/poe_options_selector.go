@@ -24,7 +24,6 @@ type poeOptions struct {
 	Token         string
 	ARBPrefix     string
 	OutputDir     string
-	ElCompat      bool
 	OverrideLangs []string
 }
 
@@ -50,11 +49,6 @@ func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
 		return nil, err
 	}
 
-	elCompat, err := s.SelectElCompat()
-	if err != nil {
-		return nil, err
-	}
-
 	overrideLangs, err := s.SelectOverrideLangs()
 	if err != nil {
 		return nil, err
@@ -65,7 +59,6 @@ func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
 		Token:         token,
 		ARBPrefix:     arbPrefix,
 		OutputDir:     outputDir,
-		ElCompat:      elCompat,
 		OverrideLangs: overrideLangs,
 	}, nil
 }
@@ -142,14 +135,6 @@ func (s *poeOptionsSelector) SelectOutputDir() (string, error) {
 	}
 
 	return ".", err
-}
-
-// SelectElCompat returns whether the easy_localizations compatibility option
-// is enabled from available sources.
-//
-// Defaults to false.
-func (s *poeOptionsSelector) SelectElCompat() (bool, error) {
-	return getElCompatFlag(s.flags), nil
 }
 
 // SelectOverrideLangs returns a slice of languages that narrow down
