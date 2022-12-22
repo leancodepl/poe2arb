@@ -15,6 +15,10 @@ type arbMessageAttributes struct {
 	Placeholders *orderedmap.OrderedMap[string, *arbPlaceholder] `json:"placeholders,omitempty"`
 }
 
+func (a *arbMessageAttributes) IsEmpty() bool {
+	return a.Description == "" && (a.Placeholders == nil || a.Placeholders.Len() == 0)
+}
+
 type arbPlaceholder struct {
 	Name   string `json:"-"`
 	Type   string `json:"type,omitempty"`
