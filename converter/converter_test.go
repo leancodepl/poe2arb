@@ -27,6 +27,7 @@ func TestConverterConvert(t *testing.T) {
 				t.Fatal(err)
 			}
 			template := !strings.Contains(testname, "-no-template")
+			requireResourceAttributes := strings.Contains(testname, "-req-attrs")
 
 			goldenfile := filepath.Join("testdata", testname+".golden")
 			golden, err := os.ReadFile(goldenfile)
@@ -38,7 +39,7 @@ func TestConverterConvert(t *testing.T) {
 
 			// Actual test
 			in := strings.NewReader(string(source))
-			conv := converter.NewConverter(in, "en", template)
+			conv := converter.NewConverter(in, "en", template, requireResourceAttributes)
 
 			out := new(bytes.Buffer)
 			err = conv.Convert(out)

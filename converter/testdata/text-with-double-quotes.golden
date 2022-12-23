@@ -1,5 +1,4 @@
 {
     "@@locale": "en",
-    "textWithDoubleQuotes": "Those are some \"quotes\".",
-    "@textWithDoubleQuotes": {}
+    "textWithDoubleQuotes": "Those are some \"quotes\"."
 }

@@ -20,12 +20,13 @@ type poeOptionsSelector struct {
 
 // poeOptions describes options passed or otherwise obtained to the poe command.
 type poeOptions struct {
-	ProjectID      string
-	Token          string
-	ARBPrefix      string
-	TemplateLocale string
-	OutputDir      string
-	OverrideLangs  []string
+	ProjectID                 string
+	Token                     string
+	ARBPrefix                 string
+	TemplateLocale            string
+	OutputDir                 string
+	OverrideLangs             []string
+	RequireResourceAttributes bool
 }
 
 // SelectOptions selects all the options used for the poe command.
@@ -55,13 +56,16 @@ func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
 		return nil, err
 	}
 
+	requireResourceAttributes := s.SelectRequireResourceAttributes()
+
 	return &poeOptions{
-		ProjectID:      projectID,
-		Token:          token,
-		ARBPrefix:      arbPrefix,
-		TemplateLocale: templateLocale,
-		OutputDir:      outputDir,
-		OverrideLangs:  overrideLangs,
+		ProjectID:                 projectID,
+		Token:                     token,
+		ARBPrefix:                 arbPrefix,
+		TemplateLocale:            templateLocale,
+		OutputDir:                 outputDir,
+		OverrideLangs:             overrideLangs,
+		RequireResourceAttributes: requireResourceAttributes,
 	}, nil
 }
 
@@ -163,4 +167,12 @@ func (s *poeOptionsSelector) SelectOverrideLangs() ([]string, error) {
 	}
 
 	return []string{}, nil
+}
+
+// SelectRequireResourceAttributes returns a boolean value that determines
+// whether the generated ARB files should contain attributes for each resource,
+// even empty ones.
+func (s *poeOptionsSelector) SelectRequireResourceAttributes() bool {
+	// In Flutter, defaults to false, so no need to handle lack of the option.
+	return s.l10n.RequireResourceAttributes
 }

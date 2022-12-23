@@ -1,0 +1,18 @@
+[
+    {
+        "term": "noAttrs",
+        "definition": "Foobar",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    },
+    {
+        "term": "attrs",
+        "definition": "Foo {bar}",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    }
+]

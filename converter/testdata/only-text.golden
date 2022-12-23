@@ -1,5 +1,4 @@
 {
     "@@locale": "en",
-    "justText": "This is text",
-    "@justText": {}
+    "justText": "This is text"
 }

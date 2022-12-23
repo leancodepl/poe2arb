@@ -1,5 +1,4 @@
 {
     "@@locale": "en",
-    "textWithPositionalPlaceholder": "This is {}.",
-    "@textWithPositionalPlaceholder": {}
+    "textWithPositionalPlaceholder": "This is {}."
 }

@@ -1,0 +1,12 @@
+{
+    "@@locale": "en",
+    "noAttrs": "Foobar",
+    "attrs": "Foo {bar}",
+    "@attrs": {
+        "placeholders": {
+            "bar": {
+                "type": "Object"
+            }
+        }
+    }
+}
