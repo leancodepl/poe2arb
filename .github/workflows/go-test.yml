@@ -44,7 +44,7 @@ jobs:
         if: always()
         run: go test -cover ./...
 
-  integration_test:
+  smoke-test:
     name: Smoke test with Flutter ${{ matrix.flutter_version }}
 
     runs-on: ubuntu-latest
@@ -82,3 +82,12 @@ jobs:
         run: |
           cd smoke_test
           ./test.sh
+
+      - name: Upload lib/l10n/ artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: smoke-test-l10n-dir
+          path: |
+            smoke_test/lib/l10n/
+            !smoke_test/lib/l10n/.gitignore

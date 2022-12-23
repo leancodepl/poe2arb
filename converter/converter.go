@@ -12,21 +12,29 @@ import (
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
-type Converter struct{}
-
-func NewConverter() *Converter {
-	return &Converter{}
+type Converter struct {
+	input    io.Reader
+	lang     string
+	template bool
 }
 
-func (c *Converter) Convert(input io.Reader, output io.Writer, lang string) error {
+func NewConverter(input io.Reader, lang string, template bool) *Converter {
+	return &Converter{
+		input:    input,
+		lang:     lang,
+		template: template,
+	}
+}
+
+func (c *Converter) Convert(output io.Writer) error {
 	var jsonContents []*jsonTerm
-	err := json.NewDecoder(input).Decode(&jsonContents)
+	err := json.NewDecoder(c.input).Decode(&jsonContents)
 	if err != nil {
 		return errors.Wrap(err, "decoding json failed")
 	}
 
 	arb := orderedmap.New[string, any]()
-	arb.Set(localeKey, lang)
+	arb.Set(localeKey, c.lang)
 
 	for _, term := range jsonContents {
 		message, err := c.parseTerm(term)
@@ -36,7 +44,10 @@ func (c *Converter) Convert(input io.Reader, output io.Writer, lang string) erro
 
 		if message != nil {
 			arb.Set(message.Name, message.Translation)
-			arb.Set("@"+message.Name, message.Attributes)
+
+			if c.template {
+				arb.Set("@"+message.Name, message.Attributes)
+			}
 		}
 	}
 

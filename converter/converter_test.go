@@ -26,6 +26,7 @@ func TestConverterConvert(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			template := !strings.Contains(testname, "-no-template")
 
 			goldenfile := filepath.Join("testdata", testname+".golden")
 			golden, err := os.ReadFile(goldenfile)
@@ -36,9 +37,11 @@ func TestConverterConvert(t *testing.T) {
 			expect := string(golden)
 
 			// Actual test
+			in := strings.NewReader(string(source))
+			conv := converter.NewConverter(in, "en", template)
+
 			out := new(bytes.Buffer)
-			conv := converter.NewConverter()
-			err = conv.Convert(strings.NewReader(string(source)), out, "en")
+			err = conv.Convert(out)
 
 			actual := out.String()
 
