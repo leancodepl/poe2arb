@@ -102,7 +102,9 @@ func (s *poeOptionsSelector) SelectARBPrefixAndTemplate() (prefix, templateLocal
 		return "", "", err
 	}
 
-	return prefix, strings.TrimPrefix(s.l10n.TemplateArbFile, prefix), nil
+	templateLocale = strings.TrimSuffix(strings.TrimPrefix(s.l10n.TemplateArbFile, prefix), ".arb")
+
+	return prefix, templateLocale, nil
 }
 
 // see Flutter gen-l10n implementation:
