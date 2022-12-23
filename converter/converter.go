@@ -53,14 +53,22 @@ func (c *Converter) Convert(output io.Writer) error {
 			return errors.Wrapf(err, `decoding term "%s" failed`, term.Term)
 		}
 
-		if message != nil {
-			arb.Set(message.Name, message.Translation)
+		if message == nil {
+			continue
+		}
 
-			if c.template &&
-				(c.requireResourceAttributes ||
-					message.Attributes != nil && !message.Attributes.IsEmpty()) {
-				arb.Set("@"+message.Name, message.Attributes)
-			}
+		if !c.template && message.Translation == "" {
+			// Don't generate terms for empty translations if we're not generating a template
+			// https://github.com/leancodepl/poe2arb/issues/42
+			continue
+		}
+
+		arb.Set(message.Name, message.Translation)
+
+		if c.template &&
+			(c.requireResourceAttributes ||
+				message.Attributes != nil && !message.Attributes.IsEmpty()) {
+			arb.Set("@"+message.Name, message.Attributes)
 		}
 	}
 
