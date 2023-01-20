@@ -18,7 +18,9 @@ var versionCmd = &cobra.Command{
 }
 
 func runVersion(cmd *cobra.Command, args []string) error {
-	cmd.Printf("poe2arb version %s, commit %s, built at %s\n", Version, Commit, BuiltDate)
+	log := GetLogger(cmd)
+
+	log.Info("poe2arb version %s, commit %s, built at %s", Version, Commit, BuiltDate)
 
 	return nil
 }

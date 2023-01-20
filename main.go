@@ -1,7 +1,12 @@
 package main
 
-import "github.com/leancodepl/poe2arb/cmd"
+import (
+	"github.com/leancodepl/poe2arb/cmd"
+	"github.com/leancodepl/poe2arb/log"
+)
 
 func main() {
-	cmd.Execute()
+	logger := log.NewStdout()
+
+	cmd.Execute(logger)
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/leancodepl/poe2arb/converter"
 	"github.com/leancodepl/poe2arb/flutter"
+	"github.com/leancodepl/poe2arb/log"
 	"github.com/leancodepl/poe2arb/poeditor"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -18,7 +19,9 @@ var poeCmd = &cobra.Command{
 	Use: "poe",
 	Short: "Exports POEditor terms and converts them to ARB. " +
 		"Must be run from the Flutter project root directory or its subdirectory.",
-	RunE: runPoe,
+	SilenceErrors: true,
+	SilenceUsage:  true,
+	RunE:          runPoe,
 }
 
 const (
@@ -36,23 +39,32 @@ func init() {
 }
 
 func runPoe(cmd *cobra.Command, args []string) error {
+	log := GetLogger(cmd)
+
+	logSub := log.Info("loading options").Sub()
+
 	sel, err := getOptionsSelector(cmd)
 	if err != nil {
+		logSub.Error("failed " + err.Error())
 		return err
 	}
 
 	options, err := sel.SelectOptions()
 	if err != nil {
+		logSub.Error("failed: " + err.Error())
 		return err
 	}
 
-	poeCmd, err := NewPoeCommand(options)
+	poeCmd, err := NewPoeCommand(options, log)
 	if err != nil {
+		logSub.Error(err.Error())
 		return err
 	}
 
+	log.Info("fetching project languages")
 	langs, err := poeCmd.GetExportLanguages()
 	if err != nil {
+		logSub.Error(err.Error())
 		return err
 	}
 
@@ -70,7 +82,7 @@ func runPoe(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	fmt.Println("\nDone!")
+	log.Success("done")
 
 	return nil
 }
@@ -110,9 +122,10 @@ func getFlutterConfig() (*flutter.FlutterConfig, error) {
 type poeCommand struct {
 	options *poeOptions
 	client  *poeditor.Client
+	log     *log.Logger
 }
 
-func NewPoeCommand(options *poeOptions) (*poeCommand, error) {
+func NewPoeCommand(options *poeOptions, log *log.Logger) (*poeCommand, error) {
 	if errs := validatePoeOptions(options); len(errs) > 0 {
 		msg := ""
 		for _, err := range errs {
@@ -126,6 +139,7 @@ func NewPoeCommand(options *poeOptions) (*poeCommand, error) {
 	return &poeCommand{
 		options: options,
 		client:  client,
+		log:     log,
 	}, nil
 }
 
@@ -144,7 +158,6 @@ func validatePoeOptions(options *poeOptions) []error {
 }
 
 func (c *poeCommand) GetExportLanguages() ([]poeditor.Language, error) {
-	fmt.Println("Fetching project languages...")
 	langs, err := c.client.GetProjectLanguages(c.options.ProjectID)
 	if err != nil {
 		return nil, err
@@ -186,8 +199,9 @@ func (c *poeCommand) GetExportLanguages() ([]poeditor.Language, error) {
 func (c *poeCommand) EnsureOutputDirectory() error {
 	dir := c.options.OutputDir
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		fmt.Printf("Creating directory %s...\n", dir)
+		logSub := c.log.Info("creating directory %s", dir).Sub()
 		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+			logSub.Error("failed: " + err.Error())
 			return err
 		}
 	}
@@ -196,7 +210,7 @@ func (c *poeCommand) EnsureOutputDirectory() error {
 }
 
 func (c *poeCommand) ExportLanguage(lang poeditor.Language, template, requireResourceAttributes bool) error {
-	fmt.Printf("Fetching JSON export for %s (%s)...\n", lang.Name, lang.Code)
+	logSub := c.log.Info("fetching JSON export for %s (%s)", lang.Name, lang.Code).Sub()
 	url, err := c.client.GetExportURL(c.options.ProjectID, lang.Code)
 	if err != nil {
 		return err
@@ -204,23 +218,28 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template, requireRes
 
 	resp, err := http.Get(url)
 	if err != nil {
+		logSub.Error("making HTTP request failed: " + err.Error())
 		return errors.Wrap(err, "making HTTP request for export")
 	}
 
 	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, lang.Code))
 	file, err := os.Create(filePath)
 	if err != nil {
+		logSub.Error("creating file failed: " + err.Error())
 		return errors.Wrap(err, "creating ARB file")
 	}
 	defer file.Close()
 
+	convertLogSub := logSub.Info("converting JSON to ARB").Sub()
+
 	conv := converter.NewConverter(resp.Body, lang.Code, template, requireResourceAttributes)
 	err = conv.Convert(file)
 	if err != nil {
+		convertLogSub.Error(err.Error())
 		return err
 	}
 
-	fmt.Printf("Success converting JSON to ARB for %s (%s).\n", lang.Name, lang.Code)
+	logSub.Success("saved to %s", filePath)
 
 	return nil
 }
