@@ -4,7 +4,6 @@ package log
 import (
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	clr "github.com/TwiN/go-color"
@@ -15,9 +14,9 @@ type Logger struct {
 	depth  int
 }
 
-func NewStdout() *Logger {
+func New(writer io.Writer) *Logger {
 	return &Logger{
-		writer: os.Stdout,
+		writer: writer,
 		depth:  0,
 	}
 }
