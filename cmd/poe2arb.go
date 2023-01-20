@@ -27,6 +27,6 @@ func Execute(logger *log.Logger) {
 	rootCmd.ExecuteContext(ctx)
 }
 
-func GetLogger(cmd *cobra.Command) *log.Logger {
+func getLogger(cmd *cobra.Command) *log.Logger {
 	return cmd.Context().Value(loggerKey).(*log.Logger)
 }

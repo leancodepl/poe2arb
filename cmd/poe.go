@@ -39,7 +39,7 @@ func init() {
 }
 
 func runPoe(cmd *cobra.Command, args []string) error {
-	log := GetLogger(cmd)
+	log := getLogger(cmd)
 
 	logSub := log.Info("loading options").Sub()
 
