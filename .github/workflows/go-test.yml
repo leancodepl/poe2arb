@@ -62,7 +62,9 @@ jobs:
           cache: true
 
       - name: Build binary
-        run: go install .
+        run: |
+          go build
+          mv ./poe2arb /usr/local/bin
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
