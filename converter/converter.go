@@ -3,7 +3,6 @@ package converter
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"regexp"
 	"strings"
@@ -133,15 +132,13 @@ var (
 type parseContext struct {
 	plural bool
 
-	posParamCount int
-	namedParams   *orderedmap.OrderedMap[string, string] // name to type
+	namedParams *orderedmap.OrderedMap[string, string] // name to type
 }
 
 func (c *Converter) newParseContext(plural bool) *parseContext {
 	return &parseContext{
-		plural:        plural,
-		posParamCount: -1,
-		namedParams:   orderedmap.New[string, string](),
+		plural:      plural,
+		namedParams: orderedmap.New[string, string](),
 	}
 }
 
@@ -173,16 +170,6 @@ func (pc *parseContext) parseTranslation(message string) (string, error) {
 
 func (pc parseContext) buildMessageAttributes() *arbMessageAttributes {
 	var placeholders []*arbPlaceholder
-
-	for i := 0; i <= pc.posParamCount; i++ {
-		placeholders = append(
-			placeholders,
-			&arbPlaceholder{
-				Name: fmt.Sprintf("pos%d", i),
-				Type: "Object",
-			},
-		)
-	}
 
 	for pair := pc.namedParams.Oldest(); pair != nil; pair = pair.Next() {
 		name, placeholderType := pair.Key, pair.Value
