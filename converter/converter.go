@@ -133,7 +133,6 @@ const (
 
 var (
 	messageNameRegexp = regexp.MustCompile(`^[a-z][a-zA-Z_\d]*$`)
-	namedParamRegexp  = regexp.MustCompile("{(" + messageParameterPattern + ")}")
 	placeholderRegexp = regexp.MustCompile(`{(` + messageParameterPattern + `)(?:,([a-zA-Z]+)(?:,([a-zA-Z]+))?)?}`)
 )
 
