@@ -46,8 +46,7 @@ func TestConverterConvert(t *testing.T) {
 	}
 
 	// https://github.com/leancodepl/poe2arb/issues/41
-	t.Run("issue 41", func(t *testing.T) {
-		source := `[
+	issue41Source := `[
 		{
 			"term": "testPlural",
 			"definition": {
@@ -64,11 +63,19 @@ func TestConverterConvert(t *testing.T) {
 	]
 `
 
-		actual, err := convert(t, source, true, false)
+	t.Run("issue 41 template", func(t *testing.T) {
+		actual, err := convert(t, issue41Source, true, false)
 
 		assert.Error(t, err)
 		assert.EqualError(t, err, `decoding term "testPlural" failed: missing "other" plural category`)
 		assert.Equal(t, "", actual)
+	})
+
+	t.Run("issue 41 non-template", func(t *testing.T) {
+		actual, err := convert(t, issue41Source, false, false)
+
+		assert.NoError(t, err)
+		assert.Equal(t, "{\n    \"@@locale\": \"en\"\n}\n", actual)
 	})
 }
 
