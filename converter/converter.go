@@ -4,6 +4,7 @@ package converter
 import (
 	"encoding/json"
 	"io"
+	"strings"
 
 	"github.com/pkg/errors"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
@@ -44,10 +45,14 @@ func (c *Converter) Convert(output io.Writer) error {
 	arb := orderedmap.New[string, any]()
 	arb.Set(localeKey, c.lang)
 
+	var errs []error
+
 	for _, term := range jsonContents {
 		message, err := c.parseTerm(term)
 		if err != nil {
-			return errors.Wrapf(err, `decoding term "%s" failed`, term.Term)
+			err = errors.Wrapf(err, `decoding term "%s" failed`, term.Term)
+			errs = append(errs, err)
+			continue
 		}
 
 		if message == nil {
@@ -69,12 +74,32 @@ func (c *Converter) Convert(output io.Writer) error {
 		}
 	}
 
+	if len(errs) > 0 {
+		return errorsToError(errs)
+	}
+
 	encoder := json.NewEncoder(output)
 	encoder.SetEscapeHTML(false)
 	encoder.SetIndent("", "    ") // 4 spaces
 
 	err = encoder.Encode(arb)
 	return errors.Wrap(err, "encoding arb failed")
+}
+
+func errorsToError(errs []error) error {
+	if len(errs) == 0 {
+		return nil
+	}
+
+	var sb strings.Builder
+	for i, err := range errs {
+		if i > 0 {
+			sb.WriteString("\n")
+		}
+		sb.WriteString(err.Error())
+	}
+
+	return errors.New(sb.String())
 }
 
 func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
