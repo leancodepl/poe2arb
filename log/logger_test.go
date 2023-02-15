@@ -58,3 +58,13 @@ func TestLoggerSub(t *testing.T) {
 
 	assert.Equal(t, "  "+blue+" • "+reset+"test\n    "+blue+" • "+reset+"test2\n", buf.String())
 }
+
+func TestLoggerMultilineInfo(t *testing.T) {
+	var buf bytes.Buffer
+
+	l := log.New(&buf)
+
+	l.Info("test one line\ntest second line")
+
+	assert.Equal(t, blue+" • "+reset+"test one line\n"+blue+" • "+reset+"test second line\n", buf.String())
+}
