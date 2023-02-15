@@ -101,12 +101,11 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 			return nil, err
 		}
 
-		if plural.Other != "" {
-			value = plural.ToICUMessageFormat()
-		} else {
-			return nil, nil
-			// TODO: Log note about missing "other" plural
+		if plural.Other == "" {
+			return nil, errors.New(`missing "other" plural category`)
 		}
+
+		value = plural.ToICUMessageFormat()
 	}
 
 	message := &arbMessage{
