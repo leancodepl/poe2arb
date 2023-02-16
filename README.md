@@ -5,7 +5,7 @@
 [![Latest GitHub release][github-release-img]][github-release-link]
 [![CI status(main branch)][ci-status-img]][ci-status-link]
 
-<img src="art/terminal-screenshot.png" width="600">
+![][screenshot-img]
 </div>
 
 `poe2arb` is a CLI tool that lets the POEditor work with Flutter's native
@@ -148,6 +148,7 @@ git push --tags
 [github-release-img]: https://img.shields.io/github/v/release/leancodepl/poe2arb?label=version&sort=semver
 [ci-status-link]: https://github.com/leancodepl/poe2arb/actions/workflows/go-test.yml
 [ci-status-img]: https://img.shields.io/github/actions/workflow/status/leancodepl/poe2arb/go-test.yml?branch=main
+[screenshot-img]: art/terminal-screenshot.png
 [releases]: https://github.com/leancodepl/poe2arb/releases
 [poeditor-tokens]: https://poeditor.com/account/api
 [term-name-constraint]: https://github.com/flutter/flutter/blob/ce318b7b539e228b806f81b3fa7b33793c2a2685/packages/flutter_tools/lib/src/localizations/gen_l10n.dart#L868-L886
