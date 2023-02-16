@@ -1,1 +1,2 @@
 synthetic-package: false
+header: "// ignore_for_file: unused_local_variable"
