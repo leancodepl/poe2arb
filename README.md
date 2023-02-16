@@ -88,6 +88,9 @@ of [the `NumberFormat` constructors][numberformat-constructors], e.g. `decimalPa
 In plurals, the `count` placeholder must be of `int` or `num` type. It can be left with no definition, or with just
 a `num` type, without the format, the number won't be formatted but simply to-stringed then. [This is Flutter's behavior.][count-placeholder-num-no-format]
 
+**Only template files can define placeholders with their type and format.** In non-template languages, placeholders' types and formats
+are ignored and no logical errors are reported.
+
 #### Examples
 
 Below are some examples of strings that make use of placeholders. Simple and well-defined.
