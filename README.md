@@ -72,18 +72,53 @@ lowercase letter ([Flutter's constraint][term-name-constraint]).
 
 ### Placeholders
 
-Placeholders are created by putting a text between brackets inside a term.
-Placeholder name must be a valid Dart parameter name.
+Placeholders can be as simple as a text between brackets, but they can also be
+well-defined with a type and format, to make use of date and number formatting.
 
-Example:
+By default, simple `{placeholder}` will have an `Object` type and will be `toString()`ed.
+
+Each unique placeholder must be defined only once. I.e. for one `{placeholder,String}` you may have many
+`{placeholder}` (that use the same definition), but no other `{placeholder,String}` must be found in the term.
+
+Placeholders with type `DateTime` must have a format specified. The valid values are the names of
+[the `DateFormat` constructors][dateformat-constructors], e.g. `yMd`, `jms`, or `EEEEE`.
+
+Placeholders with type `num`, `int`, or `double` must also have a format specified. The valid values are the names
+of [the `NumberFormat` constructors][numberformat-constructors], e.g. `decimalPattern`, or `percentPattern`.
+In plurals, the `count` placeholder must be of `int` or `num` type. It can be left with no definition, or with just
+a `num` type, without the format, the number won't be formatted but simply to-stringed then. [This is Flutter's behavior.][count-placeholder-num-no-format]
+
+**Only template files can define placeholders with their type and format.** In non-template languages, placeholders' types and formats
+are ignored and no logical errors are reported.
+
+#### Examples
+
+Below are some examples of strings that make use of placeholders. Simple and well-defined.
 
 ```
 Hello, {name}!
 ```
 
-Placeholders have an `Object` type and are displayed using `toString()`. An
-exception for that is the `count` placeholder when the term is plural, which has
-an `int` type.
+```
+Hello, {name,String}!
+```
+
+```
+You have {coins,int,decimalPattern} coins left in your {wallet,String} wallet.
+```
+
+```
+last modified on {date,DateTime,yMMMEEEEd}
+```
+
+#### Placeholder syntax diagram
+
+![][placeholder-diagram-img]
+
+##### `count` placeholder syntax diagram
+
+![][count-placeholder-diagram-img]
+
 
 ### Plurals
 
@@ -91,8 +126,7 @@ POEditor plurals are also supported. Simply mark the the term as plural and
 give it _any_ name (it's never used, but required by POEditor to enable plurals
 for the term).
 
-In translations, a `{count}` placeholder (`num` formatted as `decimalPattern`)
-can be used. You can use other placeholders too. Example:
+In translations, a `{count}` placeholder can be used. You can use other placeholders too. Example:
 
 ```
 one:    Andy has 1 kilogram of {fruit}.
@@ -152,6 +186,11 @@ git push --tags
 [releases]: https://github.com/leancodepl/poe2arb/releases
 [poeditor-tokens]: https://poeditor.com/account/api
 [term-name-constraint]: https://github.com/flutter/flutter/blob/ce318b7b539e228b806f81b3fa7b33793c2a2685/packages/flutter_tools/lib/src/localizations/gen_l10n.dart#L868-L886
+[count-placeholder-num-no-format]: https://github.com/flutter/flutter/blob/1faa95009e947c66e8139903e11b1866365f282c/packages/flutter_tools/lib/src/localizations/gen_l10n_types.dart#L507-L512
+[dateformat-constructors]: https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html#constructors
+[numberformat-constructors]: https://pub.dev/documentation/intl/latest/intl/NumberFormat-class.html#constructors
+[placeholder-diagram-img]: art/placeholder-syntax.svg
+[count-placeholder-diagram-img]: art/count-placeholder-syntax.svg
 [gofumpt]: https://github.com/mvdan/gofumpt
 [gofmt]: https://pkg.go.dev/cmd/gofmt
 [staticcheck]: https://staticcheck.io

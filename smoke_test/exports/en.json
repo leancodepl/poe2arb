@@ -24,9 +24,17 @@
         "comment": ""
     },
     {
+        "term": "complexExample",
+        "definition": "This is {complex} {example,String} with {time,DateTime,jms}",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    },
+    {
         "term": "testPlural",
         "definition": {
-            "one": "One {count}",
+            "one": "One {count,int,decimalPattern}",
             "other": "Many {count}s"
         },
         "context": "",

@@ -40,9 +40,16 @@ func (l *Logger) Error(msg string, params ...any) *Logger {
 }
 
 func (l *Logger) log(color, msg string, params ...any) {
-	str := strings.Repeat("  ", l.depth)
-	str += color + " • " + clr.Reset + fmt.Sprintf(msg, params...) + "\n"
+	prefix := strings.Repeat("  ", l.depth) + color + " • " + clr.Reset
 
+	lines := strings.Split(msg, "\n")
+	for i, line := range lines {
+		lines[i] = prefix + line + "\n"
+	}
+
+	msg = strings.Join(lines, "")
+
+	str := fmt.Sprintf(msg, params...)
 	fmt.Fprint(l.writer, str)
 }
 
