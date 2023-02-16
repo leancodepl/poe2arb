@@ -73,7 +73,7 @@ lowercase letter ([Flutter's constraint][term-name-constraint]).
 ### Placeholders
 
 Placeholders can be as simple as a text between brackets, but they can also be
-well-defined with a type and format, to make us of date and number formatting.
+well-defined with a type and format, to make use of date and number formatting.
 
 By default, simple `{placeholder}` will have an `Object` type and will be `toString()`ed.
 
