@@ -54,18 +54,18 @@ func newTranslationParser(plural bool) *translationParser {
 
 // ParseDummy is used to parse a translation string without actually adding the placeholders to the parser
 // and checking for errors. Used for non-template terms.
-func (tpc *translationParser) ParseDummy(message string) string {
-	return placeholderRegexp.ReplaceAllString(message, "{$1}")
+func (tp *translationParser) ParseDummy(translation string) string {
+	return placeholderRegexp.ReplaceAllString(translation, "{$1}")
 }
 
-func (tpc *translationParser) Parse(message string) (string, error) {
+func (tp *translationParser) Parse(translation string) (string, error) {
 	var errors translationParserErrors
 
-	replaced := placeholderRegexp.ReplaceAllStringFunc(message, func(match string) string {
+	replaced := placeholderRegexp.ReplaceAllStringFunc(translation, func(match string) string {
 		matchGroup := placeholderRegexp.FindStringSubmatch(match)
 		name, placeholderType, format := matchGroup[1], matchGroup[2], matchGroup[3]
 
-		err := tpc.addPlaceholder(name, placeholderType, format)
+		err := tp.addPlaceholder(name, placeholderType, format)
 		if err != nil {
 			errors.AddError(name, err)
 		}
@@ -80,8 +80,8 @@ func (tpc *translationParser) Parse(message string) (string, error) {
 	return replaced, nil
 }
 
-func (tpc *translationParser) addPlaceholder(name, placeholderType, format string) error {
-	if placeholder, _ := tpc.namedParams.Get(name); placeholder != nil {
+func (tp *translationParser) addPlaceholder(name, placeholderType, format string) error {
+	if placeholder, _ := tp.namedParams.Get(name); placeholder != nil {
 		// doesn't exist - placeholder was never seen
 		// exists but nil - placeholder was only seen (used only with name, with no definition)
 		// exists and not nil - placeholder was defined
@@ -92,27 +92,27 @@ func (tpc *translationParser) addPlaceholder(name, placeholderType, format strin
 		}
 	}
 
-	if tpc.plural && name == countPlaceholderName {
+	if tp.plural && name == countPlaceholderName {
 		if placeholderType == "" {
 			// filled in by fallbackPlaceholderTypes
-			tpc.namedParams.Set(name, nil)
+			tp.namedParams.Set(name, nil)
 			return nil
 		} else if placeholderType == "num" && format == "" {
 			// Special edge-case, when plural variable doesn't have a type defined, it falls back to num
 			// and because no actual type in ARB is specified, requires no format.
 			// https://github.com/flutter/flutter/blob/1faa95009e947c66e8139903e11b1866365f282c/packages/flutter_tools/lib/src/localizations/gen_l10n_types.dart#L507-L512
 
-			tpc.namedParams.Set(name, &placeholder{"", ""})
+			tp.namedParams.Set(name, &placeholder{"", ""})
 			return nil
 		} else if placeholderType == "num" {
-			tpc.namedParams.Set(name, &placeholder{"num", format})
+			tp.namedParams.Set(name, &placeholder{"num", format})
 			return nil
 		} else if placeholderType == "int" {
 			if format == "" {
 				return errors.New("format is required for int plural placeholders")
 			}
 
-			tpc.namedParams.Set(name, &placeholder{"int", format})
+			tp.namedParams.Set(name, &placeholder{"int", format})
 			return nil
 		}
 
@@ -121,16 +121,16 @@ func (tpc *translationParser) addPlaceholder(name, placeholderType, format strin
 
 	if placeholderType == "" {
 		// filled in by fallbackPlaceholderTypes
-		tpc.namedParams.Set(name, nil)
+		tp.namedParams.Set(name, nil)
 		return nil
 	}
 
 	if format != "" {
 		if placeholderType == "DateTime" {
-			tpc.namedParams.Set(name, &placeholder{"DateTime", format})
+			tp.namedParams.Set(name, &placeholder{"DateTime", format})
 			return nil
 		} else if placeholderType == "num" || placeholderType == "int" || placeholderType == "double" {
-			tpc.namedParams.Set(name, &placeholder{placeholderType, format})
+			tp.namedParams.Set(name, &placeholder{placeholderType, format})
 			return nil
 		} else {
 			return errors.New("format is only supported for DateTime and int, num or double placeholders")
@@ -138,19 +138,19 @@ func (tpc *translationParser) addPlaceholder(name, placeholderType, format strin
 	}
 
 	if placeholderType == "String" || placeholderType == "Object" {
-		tpc.namedParams.Set(name, &placeholder{placeholderType, ""})
+		tp.namedParams.Set(name, &placeholder{placeholderType, ""})
 		return nil
 	}
 
 	return errors.New("unknown placeholder type. Supported types: String, Object, DateTime, num, int, double")
 }
 
-func (tpc *translationParser) BuildMessageAttributes() *arbMessageAttributes {
-	tpc.fallbackPlaceholderTypes()
+func (tp *translationParser) BuildMessageAttributes() *arbMessageAttributes {
+	tp.fallbackPlaceholderTypes()
 
 	var placeholders []*arbPlaceholder
 
-	for pair := tpc.namedParams.Oldest(); pair != nil; pair = pair.Next() {
+	for pair := tp.namedParams.Oldest(); pair != nil; pair = pair.Next() {
 		name, placeholder := pair.Key, pair.Value
 
 		arbPlaceholder := &arbPlaceholder{
@@ -174,23 +174,23 @@ func (tpc *translationParser) BuildMessageAttributes() *arbMessageAttributes {
 	return &arbMessageAttributes{Placeholders: placeholdersMap}
 }
 
-func (tpc *translationParser) fallbackPlaceholderTypes() {
-	_, hasCountPlaceholder := tpc.namedParams.Get(countPlaceholderName)
-	if tpc.plural && !hasCountPlaceholder {
-		tpc.namedParams.Set(countPlaceholderName, &placeholder{"", ""})
+func (tp *translationParser) fallbackPlaceholderTypes() {
+	_, hasCountPlaceholder := tp.namedParams.Get(countPlaceholderName)
+	if tp.plural && !hasCountPlaceholder {
+		tp.namedParams.Set(countPlaceholderName, &placeholder{"", ""})
 	}
 
-	for pair := tpc.namedParams.Oldest(); pair != nil; pair = pair.Next() {
+	for pair := tp.namedParams.Oldest(); pair != nil; pair = pair.Next() {
 		name, aPlaceholder := pair.Key, pair.Value
 
 		if aPlaceholder != nil {
 			continue
 		}
 
-		if tpc.plural && name == countPlaceholderName {
-			tpc.namedParams.Set(name, &placeholder{"", ""})
+		if tp.plural && name == countPlaceholderName {
+			tp.namedParams.Set(name, &placeholder{"", ""})
 		} else {
-			tpc.namedParams.Set(name, &placeholder{"Object", ""})
+			tp.namedParams.Set(name, &placeholder{"Object", ""})
 		}
 	}
 }

@@ -104,7 +104,7 @@ func errorsToError(errs []error) error {
 
 func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 	var value string
-	pc := newTranslationParser(term.Definition.IsPlural)
+	tp := newTranslationParser(term.Definition.IsPlural)
 
 	name, err := parseName(term.Term)
 	if err != nil {
@@ -113,13 +113,13 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 
 	if !term.Definition.IsPlural {
 		var err error
-		value, err = c.parseSingleTranslation(pc, *term.Definition.Value)
+		value, err = c.parseSingleTranslation(tp, *term.Definition.Value)
 		if err != nil {
 			return nil, err
 		}
 	} else {
 		plural, err := term.Definition.Plural.Map(func(s string) (string, error) {
-			s, err := c.parseSingleTranslation(pc, s)
+			s, err := c.parseSingleTranslation(tp, s)
 			return s, err
 		})
 		if err != nil {
@@ -140,7 +140,7 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 	message := &arbMessage{
 		Name:        name,
 		Translation: value,
-		Attributes:  pc.BuildMessageAttributes(),
+		Attributes:  tp.BuildMessageAttributes(),
 	}
 
 	return message, nil
