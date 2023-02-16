@@ -148,8 +148,8 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 
 func (c Converter) parseSingleTranslation(tp *translationParser, translation string) (string, error) {
 	if c.template {
-		return tp.ParseDummy(translation), nil
-	} else {
 		return tp.Parse(translation)
+	} else {
+		return tp.ParseDummy(translation), nil
 	}
 }
