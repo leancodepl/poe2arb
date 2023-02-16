@@ -52,6 +52,12 @@ func newTranslationParser(plural bool) *translationParser {
 	}
 }
 
+// ParseDummy is used to parse a translation string without actually adding the placeholders to the parser
+// and checking for errors. Used for non-template terms.
+func (tpc *translationParser) ParseDummy(message string) string {
+	return placeholderRegexp.ReplaceAllString(message, "{$1}")
+}
+
 func (tpc *translationParser) Parse(message string) (string, error) {
 	var errors translationParserErrors
 

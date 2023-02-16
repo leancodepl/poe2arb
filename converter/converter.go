@@ -113,13 +113,13 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 
 	if !term.Definition.IsPlural {
 		var err error
-		value, err = pc.Parse(*term.Definition.Value)
+		value, err = c.parseSingleTranslation(pc, *term.Definition.Value)
 		if err != nil {
 			return nil, err
 		}
 	} else {
 		plural, err := term.Definition.Plural.Map(func(s string) (string, error) {
-			s, err := pc.Parse(s)
+			s, err := c.parseSingleTranslation(pc, s)
 			return s, err
 		})
 		if err != nil {
@@ -144,4 +144,12 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 	}
 
 	return message, nil
+}
+
+func (c Converter) parseSingleTranslation(tp *translationParser, translation string) (string, error) {
+	if c.template {
+		return tp.ParseDummy(translation), nil
+	} else {
+		return tp.Parse(translation)
+	}
 }

@@ -39,6 +39,29 @@ func TestParseName(t *testing.T) {
 	}
 }
 
+func TestTranslationParseDummy(t *testing.T) {
+	type testCase struct {
+		Input          string
+		ExpectedOutput string
+	}
+
+	cases := []testCase{
+		{"some text", "some text"},
+		{"some {placeholder} text", "some {placeholder} text"},
+		{"a {placeholder} with {placeholder,DateTime,yMd} {default} and {default}", "a {placeholder} with {placeholder} {default} and {default}"},
+	}
+
+	for _, testCase := range cases {
+		t.Run(testCase.Input, func(t *testing.T) {
+			parser := newTranslationParser(false)
+
+			output := parser.ParseDummy(testCase.Input)
+
+			assert.Equal(t, testCase.ExpectedOutput, output)
+		})
+	}
+}
+
 func TestTranslationParserParseErrors(t *testing.T) {
 	type testCase struct {
 		TestName             string
