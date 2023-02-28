@@ -5,9 +5,7 @@ on:
     tags: ['*']
 
 jobs:
-  release:
-    name: Publish
-
+  main:
     runs-on: ubuntu-latest
 
     steps:
