@@ -1,4 +1,4 @@
-name: Prepare
+name: Test
 
 on:
   push:
@@ -7,7 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  main:
+  test:
+    name: Test
+
     runs-on: ubuntu-latest
 
     steps:
