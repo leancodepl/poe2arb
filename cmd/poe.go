@@ -45,7 +45,7 @@ func runPoe(cmd *cobra.Command, args []string) error {
 
 	sel, err := getOptionsSelector(cmd)
 	if err != nil {
-		logSub.Error("failed " + err.Error())
+		logSub.Error("failed: " + err.Error())
 		return err
 	}
 
