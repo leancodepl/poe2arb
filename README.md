@@ -171,7 +171,7 @@ workflow will take care of the rest.
 
 ```
 git tag v0.1.1
-git push --tags
+git push origin v0.1.1
 ```
 
 [github-release-link]: https://github.com/leancodepl/poe2arb/releases
