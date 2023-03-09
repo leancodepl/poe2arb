@@ -26,26 +26,6 @@ brew install poe2arb
 `poe2arb` operates on POEditor's _JSON_ (not _JSON key-value_) export file
 format.
 
-**TL;DR:** Use `poe2arb poe` command for a seamless integration.
-
-### Conversion
-
-`poe2arb convert` command only converts the POE export to ARB format. Refer to
-[Supported features](#syntax--supported-features) section.
-
-For conversion, you need to pass the translation file language in the
-`--lang/-l` flag.
-
-By default, a template ARB file is generated. So no empty message is skipped and attributes are generated. If you want to skip that, pass `--no-template` flag.
-
-Currently, only an stdin/stdout is supported for the `poe2arb convert` command.
-
-#### stdin/stdout
-
-```
-poe2arb convert io --lang en < Hello_World_English.json > lib/l10n/app_en.arb
-```
-
 ### Full POEditor integration
 
 `poe2arb poe` command is your Swiss Army Knife enabling integrating POEditor
@@ -64,6 +44,22 @@ into your Flutter workspace in one command:
 | `-t, --token`      | **Required.** POEditor API read-only access token. Available in [Account settings > API access][poeditor-tokens]. | Defaults to `POEDITOR_TOKEN` env.                                                                                   |
 | `-o, --output-dir` | ARB files output directory.                                                                                       | Defaults to `arb-dir` from `l10n.yaml`. If it's empty, then defaults to `.`.                                        |
 | `--langs`          | Exported languages override.                                                                                      | Defaults to empty, no override.                                                                                     |
+
+### Conversion
+
+`poe2arb convert` command only converts the POE export to ARB format. Refer to
+[Supported features](#syntax--supported-features) section.
+
+For conversion, you need to pass the translation file language in the
+`--lang/-l` flag.
+
+By default, a template ARB file is generated. So no empty message is skipped and attributes are generated. If you want to skip that, pass `--no-template` flag.
+
+Currently, only an stdin/stdout is supported for the `poe2arb convert` command.
+
+```
+poe2arb convert io --lang en < Hello_World_English.json > lib/l10n/app_en.arb
+```
 
 ## Syntax & supported features
 
@@ -175,7 +171,7 @@ workflow will take care of the rest.
 
 ```
 git tag v0.1.1
-git push --tags
+git push origin v0.1.1
 ```
 
 [github-release-link]: https://github.com/leancodepl/poe2arb/releases
