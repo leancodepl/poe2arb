@@ -3,6 +3,7 @@ package cmd
 
 import (
 	"context"
+	"os"
 
 	"github.com/leancodepl/poe2arb/log"
 	"github.com/spf13/cobra"
@@ -24,7 +25,9 @@ func Execute(logger *log.Logger) {
 
 	ctx := context.WithValue(context.Background(), loggerKey, logger)
 
-	rootCmd.ExecuteContext(ctx)
+	if err := rootCmd.ExecuteContext(ctx); err != nil {
+		os.Exit(1)
+	}
 }
 
 func getLogger(cmd *cobra.Command) *log.Logger {
