@@ -210,11 +210,11 @@ func (e *translationParserErrors) HasErrors() bool {
 func (e translationParserErrors) Error() string {
 	var sb strings.Builder
 
-	sb.WriteString("some errors occurred while parsing translation:\n")
+	sb.WriteString("some errors occurred while parsing translation:")
 
 	for placeholderName, errs := range e.errors {
 		for _, err := range errs {
-			sb.WriteString(fmt.Sprintf("  - %s: %s\n", placeholderName, err))
+			sb.WriteString(fmt.Sprintf("\n  - %s: %s", placeholderName, err))
 		}
 	}
 

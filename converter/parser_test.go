@@ -98,7 +98,7 @@ func TestTranslationParserParseErrors(t *testing.T) {
 		{
 			TestName:      "placeholder double definitions",
 			Input:         "{placeholder,String} with {placeholder,DateTime,yMd}",
-			ExpectedError: "some errors occurred while parsing translation:\n  - placeholder: placeholder type can only be defined once\n",
+			ExpectedError: "some errors occurred while parsing translation:\n  - placeholder: placeholder type can only be defined once",
 		},
 	}
 
