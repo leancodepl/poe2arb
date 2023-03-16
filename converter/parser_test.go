@@ -162,14 +162,14 @@ func TestTranslationParserAddPlaceholder(t *testing.T) {
 			Name:          "param",
 			Type:          "Object",
 			Format:        "format",
-			ExpectedError: "format is only supported for DateTime and int, num or double placeholders",
+			ExpectedError: "format is not supported for Object placeholders",
 		},
 		{
 			TestName:      "name, type String and format",
 			Name:          "param",
 			Type:          "String",
 			Format:        "format",
-			ExpectedError: "format is only supported for DateTime and int, num or double placeholders",
+			ExpectedError: "format is not supported for String placeholders",
 		},
 		{
 			TestName: "name, type DateTime and format",
@@ -179,6 +179,12 @@ func TestTranslationParserAddPlaceholder(t *testing.T) {
 			ExpectedPlaceholders: map[string]*placeholder{
 				"param": {"DateTime", "format"},
 			},
+		},
+		{
+			TestName:      "name, type DateTime and no format",
+			Name:          "param",
+			Type:          "DateTime",
+			ExpectedError: "format is required for DateTime placeholders",
 		},
 		{
 			TestName: "name, type num and format",
@@ -208,10 +214,34 @@ func TestTranslationParserAddPlaceholder(t *testing.T) {
 			},
 		},
 		{
+			TestName: "name, type double and no format",
+			Name:     "param",
+			Type:     "double",
+			ExpectedPlaceholders: map[string]*placeholder{
+				"param": {"double", ""},
+			},
+		},
+		{
+			TestName: "name, type int and no format",
+			Name:     "param",
+			Type:     "int",
+			ExpectedPlaceholders: map[string]*placeholder{
+				"param": {"int", ""},
+			},
+		},
+		{
+			TestName: "name, type num and no format",
+			Name:     "param",
+			Type:     "num",
+			ExpectedPlaceholders: map[string]*placeholder{
+				"param": {"num", ""},
+			},
+		},
+		{
 			TestName:      "name, and invalid type",
 			Name:          "param",
 			Type:          "invalid",
-			ExpectedError: "unknown placeholder type. Supported types: String, Object, DateTime, num, int, double",
+			ExpectedError: "unknown placeholder type invalid. Supported types: String, Object, DateTime, num, int, double",
 		},
 		{
 			TestName: "name count, but not in plural",
@@ -221,12 +251,15 @@ func TestTranslationParserAddPlaceholder(t *testing.T) {
 				"count": {"String", ""},
 			},
 		},
+		//
+		// Plural tests
+		//
 		{
 			TestName:      "name count, type String in plural",
 			Plural:        true,
 			Name:          "count",
 			Type:          "String",
-			ExpectedError: "unknown placeholder type. Supported types: num, int",
+			ExpectedError: "invalid count placeholder type. Supported types: num, int",
 		},
 		{
 			TestName: "just name count in plural",
@@ -242,7 +275,7 @@ func TestTranslationParserAddPlaceholder(t *testing.T) {
 			Name:     "count",
 			Type:     "num",
 			ExpectedPlaceholders: map[string]*placeholder{
-				"count": {"", ""},
+				"count": {"num", ""},
 			},
 		},
 		{
@@ -256,11 +289,13 @@ func TestTranslationParserAddPlaceholder(t *testing.T) {
 			},
 		},
 		{
-			TestName:      "name count, type int, without format in plural",
-			Plural:        true,
-			Name:          "count",
-			Type:          "int",
-			ExpectedError: "format is required for int plural placeholders",
+			TestName: "name count, type int, without format in plural",
+			Plural:   true,
+			Name:     "count",
+			Type:     "int",
+			ExpectedPlaceholders: map[string]*placeholder{
+				"count": {"int", ""},
+			},
 		},
 		{
 			TestName: "name count, type int, with format in plural",

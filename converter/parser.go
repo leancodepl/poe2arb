@@ -81,10 +81,11 @@ func (tp *translationParser) Parse(translation string) (string, error) {
 }
 
 func (tp *translationParser) addPlaceholder(name, placeholderType, format string) error {
-	if placeholder, _ := tp.namedParams.Get(name); placeholder != nil {
-		// doesn't exist - placeholder was never seen
-		// exists but nil - placeholder was only seen (used only with name, with no definition)
-		// exists and not nil - placeholder was defined
+	if placeholder, present := tp.namedParams.Get(name); placeholder != nil {
+		_ = present
+		// present == false - placeholder was never seen
+		// placeholder == nil - placeholder was only seen (used only with name, with no definition)
+		// placeholder != nil - placeholder was defined
 		if placeholderType == "" {
 			return nil
 		} else {
@@ -93,30 +94,19 @@ func (tp *translationParser) addPlaceholder(name, placeholderType, format string
 	}
 
 	if tp.plural && name == countPlaceholderName {
-		if placeholderType == "" {
+		switch placeholderType {
+		case "":
 			// filled in by fallbackPlaceholderTypes
 			tp.namedParams.Set(name, nil)
 			return nil
-		} else if placeholderType == "num" && format == "" {
-			// Special edge-case, when plural variable doesn't have a type defined, it falls back to num
-			// and because no actual type in ARB is specified, requires no format.
-			// https://github.com/flutter/flutter/blob/1faa95009e947c66e8139903e11b1866365f282c/packages/flutter_tools/lib/src/localizations/gen_l10n_types.dart#L507-L512
 
-			tp.namedParams.Set(name, &placeholder{"", ""})
+		case "num", "int":
+			tp.namedParams.Set(name, &placeholder{placeholderType, format})
 			return nil
-		} else if placeholderType == "num" {
-			tp.namedParams.Set(name, &placeholder{"num", format})
-			return nil
-		} else if placeholderType == "int" {
-			if format == "" {
-				return errors.New("format is required for int plural placeholders")
-			}
 
-			tp.namedParams.Set(name, &placeholder{"int", format})
-			return nil
+		default:
+			return errors.New("invalid count placeholder type. Supported types: num, int")
 		}
-
-		return errors.New("unknown placeholder type. Supported types: num, int")
 	}
 
 	if placeholderType == "" {
@@ -125,24 +115,30 @@ func (tp *translationParser) addPlaceholder(name, placeholderType, format string
 		return nil
 	}
 
-	if format != "" {
-		if placeholderType == "DateTime" {
-			tp.namedParams.Set(name, &placeholder{"DateTime", format})
-			return nil
-		} else if placeholderType == "num" || placeholderType == "int" || placeholderType == "double" {
-			tp.namedParams.Set(name, &placeholder{placeholderType, format})
-			return nil
-		} else {
-			return errors.New("format is only supported for DateTime and int, num or double placeholders")
-		}
-	}
+	switch placeholderType {
+	case "num", "int", "double":
+		tp.namedParams.Set(name, &placeholder{placeholderType, format})
+		return nil
 
-	if placeholderType == "String" || placeholderType == "Object" {
+	case "String", "Object":
+		if format != "" {
+			return fmt.Errorf("format is not supported for %s placeholders", placeholderType)
+		}
+
 		tp.namedParams.Set(name, &placeholder{placeholderType, ""})
 		return nil
-	}
 
-	return errors.New("unknown placeholder type. Supported types: String, Object, DateTime, num, int, double")
+	case "DateTime":
+		if format == "" {
+			return errors.New("format is required for DateTime placeholders")
+		}
+
+		tp.namedParams.Set(name, &placeholder{"DateTime", format})
+		return nil
+
+	default:
+		return fmt.Errorf("unknown placeholder type %s. Supported types: String, Object, DateTime, num, int, double", placeholderType)
+	}
 }
 
 func (tp *translationParser) BuildMessageAttributes() *arbMessageAttributes {
