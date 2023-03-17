@@ -5,11 +5,11 @@
 class Poe2arb < Formula
   desc "POEditor JSON to Flutter ARB converter."
   homepage "https://github.com/leancodepl/poe2arb"
-  version "1.0.1"
+  version "1.1.0"
 
   on_macos do
-    url "https://github.com/leancodepl/poe2arb/releases/download/v1.0.1/poe2arb_1.0.1_darwin_all.tar.gz"
-    sha256 "a56b11f470b44eaeb0e61ff7866d0eb4efe7f5037737a655b8f6128713eeb9f7"
+    url "https://github.com/leancodepl/poe2arb/releases/download/v1.1.0/poe2arb_1.1.0_darwin_all.tar.gz"
+    sha256 "7b08596d92cb935afef26c362e83a01638de03ba7d99362c3ec8fee009b3f9e5"
 
     def install
       bin.install "poe2arb"
@@ -18,8 +18,8 @@ class Poe2arb < Formula
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/leancodepl/poe2arb/releases/download/v1.0.1/poe2arb_1.0.1_linux_amd64.tar.gz"
-      sha256 "25a9d04a363c515d6c681278b851fbfef68f9f9298ab74a6f8620c334067c449"
+      url "https://github.com/leancodepl/poe2arb/releases/download/v1.1.0/poe2arb_1.1.0_linux_amd64.tar.gz"
+      sha256 "323c5934bb48771a80f7a58fc86278b45b36f24b766ce1454665064d4cd63637"
 
       def install
         bin.install "poe2arb"
