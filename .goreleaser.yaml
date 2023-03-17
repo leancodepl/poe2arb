@@ -14,10 +14,7 @@ builds:
 universal_binaries:
   - replace: true
 changelog:
-  use: github
-  filters:
-    exclude:
-      - '^Merge pull request'
+  use: github-native
 release:
 brews:
   - tap:
