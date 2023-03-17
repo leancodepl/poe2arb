@@ -79,13 +79,18 @@ Each unique placeholder must be defined only once. I.e. for one `{placeholder,St
 Placeholders with type `DateTime` must have a format specified. The valid values are the names of
 [the `DateFormat` constructors][dateformat-constructors], e.g. `yMd`, `jms`, or `EEEEE`.
 
-Placeholders with type `num`, `int`, or `double` must also have a format specified. The valid values are the names
+Placeholders with type `num`, `int`, or `double` **may have\*** a format specified. The valid values are the names
 of [the `NumberFormat` constructors][numberformat-constructors], e.g. `decimalPattern`, or `percentPattern`.
-In plurals, the `count` placeholder must be of `int` or `num` type. It can be left with no definition, or with just
-a `num` type, without the format, the number won't be formatted but simply to-stringed then. [This is Flutter's behavior.][count-placeholder-num-no-format]
+In plurals, the `count` placeholder must be of `int` or `num` type. It can be left with no definition.
+
+Number placeholders without a specified format will be simply `toString()`ed.
 
 **Only template files can define placeholders with their type and format.** In non-template languages, placeholders' types and formats
 are ignored and no logical errors are reported.
+
+> \*If you're using Flutter 3.5 or older, you need to specify format for numeric placeholders.
+> Otherwise `flutter gen-l10n` will fail. You can look at the legacy placeholder syntax diagrams
+> [for placeholders here][flutter35-placeholders-diagram] and for [plural's `count` placeholders here][flutter35-count-placeholders-diagram].
 
 #### Examples
 
@@ -182,9 +187,10 @@ git push origin v0.1.1
 [releases]: https://github.com/leancodepl/poe2arb/releases
 [poeditor-tokens]: https://poeditor.com/account/api
 [term-name-constraint]: https://github.com/flutter/flutter/blob/ce318b7b539e228b806f81b3fa7b33793c2a2685/packages/flutter_tools/lib/src/localizations/gen_l10n.dart#L868-L886
-[count-placeholder-num-no-format]: https://github.com/flutter/flutter/blob/1faa95009e947c66e8139903e11b1866365f282c/packages/flutter_tools/lib/src/localizations/gen_l10n_types.dart#L507-L512
 [dateformat-constructors]: https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html#constructors
 [numberformat-constructors]: https://pub.dev/documentation/intl/latest/intl/NumberFormat-class.html#constructors
+[flutter35-placeholders-diagram]: https://github.com/leancodepl/poe2arb/blob/24be17d6721698526c879b3fada87183b359e8e8/art/placeholder-syntax.svg
+[flutter35-count-placeholders-diagram]: https://github.com/leancodepl/poe2arb/blob/24be17d6721698526c879b3fada87183b359e8e8/art/count-placeholder-syntax.svg
 [placeholder-diagram-img]: art/placeholder-syntax.svg
 [count-placeholder-diagram-img]: art/count-placeholder-syntax.svg
 [gofumpt]: https://github.com/mvdan/gofumpt
