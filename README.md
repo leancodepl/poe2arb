@@ -38,12 +38,14 @@ into your Flutter workspace in one command:
 
 #### Options
 
-| Flag               | Description                                                                                                       | Default                                                                                                             |
-|--------------------|-------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
-| `-p, --project-id` | **Required.** POEditor project ID. It is visible in the URL of the project on POEditor website.                   | Defaults to `poeditor-project-id` from `l10n.yaml` file. If it's empty, then defaults to `POEDITOR_PROJECT_ID` env. |
-| `-t, --token`      | **Required.** POEditor API read-only access token. Available in [Account settings > API access][poeditor-tokens]. | Defaults to `POEDITOR_TOKEN` env.                                                                                   |
-| `-o, --output-dir` | ARB files output directory.                                                                                       | Defaults to `arb-dir` from `l10n.yaml`. If it's empty, then defaults to `.`.                                        |
-| `--langs`          | Exported languages override.                                                                                      | Defaults to empty, no override.                                                                                     |
+If a command-line flag is not specified, an environment variable is used, then `l10n.yaml` option, then it fallbacks to default.
+
+| Description                                                                                                       | Flag                   | Env              | `l10n.yaml`           |
+|-------------------------------------------------------------------------------------------------------------------|------------------------|------------------|-----------------------|
+| **Required.** POEditor project ID. It is visible in the URL of the project on POEditor website.                   | `-p`<br>`--project-id` |                  | `poeditor-project-id` |
+| **Required.** POEditor API read-only access token. Available in [Account settings > API access][poeditor-tokens]. | `-t`<br>`--token`      | `POEDITOR_TOKEN` |                       |
+| ARB files output directory.<br>Defaults to current directory.                                                     | `-o`<br>`--output-dir` |                  | `arb-dir`             |
+| Exported languages override.<br>Defaults to using all languages from POEditor.                                    | `--langs`              |                  | `poeditor-langs`      |
 
 ### Conversion
 
