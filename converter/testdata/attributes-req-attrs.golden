@@ -6,7 +6,7 @@
     "@attrs": {
         "placeholders": {
             "bar": {
-                "type": "Object"
+                "type": "String"
             }
         }
     }

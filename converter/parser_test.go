@@ -408,10 +408,10 @@ func TestTranslationParserFallbackPlaceholderTypes(t *testing.T) {
 			},
 			After: map[string]*placeholder{
 				"param1": {"String", ""},
-				"param2": {"Object", ""},
+				"param2": {"String", ""},
 				"param3": {"DateTime", "format"},
-				"param4": {"Object", ""},
-				"count":  {"Object", ""},
+				"param4": {"String", ""},
+				"count":  {"String", ""},
 			},
 		},
 		{
@@ -426,9 +426,9 @@ func TestTranslationParserFallbackPlaceholderTypes(t *testing.T) {
 			},
 			After: map[string]*placeholder{
 				"param1": {"String", ""},
-				"param2": {"Object", ""},
+				"param2": {"String", ""},
 				"param3": {"DateTime", "format"},
-				"param4": {"Object", ""},
+				"param4": {"String", ""},
 				"count":  {"", ""},
 			},
 		},

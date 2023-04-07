@@ -4,10 +4,10 @@
     "@textWithUniqueNamedPlaceholders": {
         "placeholders": {
             "something": {
-                "type": "Object"
+                "type": "String"
             },
             "somethingElse": {
-                "type": "Object"
+                "type": "String"
             }
         }
     }
