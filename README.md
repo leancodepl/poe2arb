@@ -73,19 +73,25 @@ lowercase letter ([Flutter's constraint][term-name-constraint]).
 Placeholders can be as simple as a text between brackets, but they can also be
 well-defined with a type and format, to make use of date and number formatting.
 
-By default, simple `{placeholder}` will have an `Object` type and will be `toString()`ed.
+Placeholders that have no type specified will have a `String` type, as opposed to Flutter's `Object` default type.
 
-Each unique placeholder must be defined only once. I.e. for one `{placeholder,String}` you may have many
+Each unique placeholder must be **defined**  only once. I.e. for one `{placeholder,String}` you may have many
 `{placeholder}` (that use the same definition), but no other `{placeholder,String}` must be found in the term.
 
-Placeholders with type `DateTime` must have a format specified. The valid values are the names of
-[the `DateFormat` constructors][dateformat-constructors], e.g. `yMd`, `jms`, or `EEEEE`.
+Available placeholder types:
+* `String` - default when no type is specified.
+* `Object` - is `toString()`ed.
+* `DateTime`
 
-Placeholders with type `num`, `int`, or `double` **may have\*** a format specified. The valid values are the names
-of [the `NumberFormat` constructors][numberformat-constructors], e.g. `decimalPattern`, or `percentPattern`.
-In plurals, the `count` placeholder must be of `int` or `num` type. It can be left with no definition.
+  Placeholders with type `DateTime` must have a format specified. The valid values are the names of
+  [the `DateFormat` constructors][dateformat-constructors], e.g. `yMd`, `jms`, or `EEEEE`.
+* `num`, `int`, `double`
 
-Number placeholders without a specified format will be simply `toString()`ed.
+  Placeholders with type `num`, `int`, or `double` **may have\*** a format specified. The valid values are the names
+  of [the `NumberFormat` constructors][numberformat-constructors], e.g. `decimalPattern`, or `percentPattern`.
+  In plurals, the `count` placeholder must be of `int` or `num` type. It can be left with no definition.
+
+  Number placeholders without a specified format will be simply `toString()`ed.
 
 **Only template files can define placeholders with their type and format.** In non-template languages, placeholders' types and formats
 are ignored and no logical errors are reported.
