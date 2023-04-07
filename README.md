@@ -21,6 +21,18 @@ brew tap leancodepl/poe2arb
 brew install poe2arb
 ```
 
+### `POEDITOR_TOKEN`
+
+The `poe2arb poe` command requires a POEditor read-only API token.
+It's available in [Account settings > API access][poeditor-tokens].
+
+You can export this token in your `~/.bashrc` or `~/.zshrc` so that it's always
+available:
+
+```bash
+export POEDITOR_TOKEN="YOUR_API_TOKEN_HERE"
+```
+
 ## Usage
 
 `poe2arb` operates on POEditor's _JSON_ (not _JSON key-value_) export file
