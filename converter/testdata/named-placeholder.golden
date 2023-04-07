@@ -4,7 +4,7 @@
     "@textWithNamedPlaceholder": {
         "placeholders": {
             "text": {
-                "type": "Object"
+                "type": "String"
             }
         }
     }

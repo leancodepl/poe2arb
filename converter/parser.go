@@ -186,7 +186,9 @@ func (tp *translationParser) fallbackPlaceholderTypes() {
 		if tp.plural && name == countPlaceholderName {
 			tp.namedParams.Set(name, &placeholder{"", ""})
 		} else {
-			tp.namedParams.Set(name, &placeholder{"Object", ""})
+			// Flutter uses Object as the default type, but we want to use String
+			// https://github.com/leancodepl/poe2arb/issues/70
+			tp.namedParams.Set(name, &placeholder{"String", ""})
 		}
 	}
 }

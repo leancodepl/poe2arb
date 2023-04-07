@@ -4,13 +4,13 @@
     "@home_SiteContact": {
         "placeholders": {
             "fullName": {
-                "type": "Object"
+                "type": "String"
             },
             "phoneNumber": {
-                "type": "Object"
+                "type": "String"
             },
             "emailAddress": {
-                "type": "Object"
+                "type": "String"
             }
         }
     }
