@@ -1,6 +1,5 @@
 builds:
-  -
-    targets:
+  - targets:
       - linux_amd64
       - windows_amd64
       - darwin_amd64
