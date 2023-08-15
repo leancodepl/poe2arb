@@ -1,6 +1,6 @@
 module github.com/leancodepl/poe2arb
 
-go 1.20
+go 1.21
 
 require (
 	github.com/TwiN/go-color v1.4.0
