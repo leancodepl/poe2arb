@@ -17,7 +17,7 @@ changelog:
   use: github-native
 release:
 brews:
-  - tap:
+  - repository:
       owner: leancodepl
       name: poe2arb
     folder: Formula
