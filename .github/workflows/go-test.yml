@@ -29,7 +29,7 @@ jobs:
       - name: Run linter
         if: always()
         run: |
-          go install honnef.co/go/tools/cmd/staticcheck@v0.4.3
+          go install honnef.co/go/tools/cmd/staticcheck@v0.4
           staticcheck ./...
 
       - name: Run tests with coverage
