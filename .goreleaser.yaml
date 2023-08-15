@@ -23,3 +23,6 @@ brews:
     folder: Formula
     homepage: "https://github.com/leancodepl/poe2arb"
     description: "POEditor JSON to Flutter ARB converter."
+    install: |
+      bin.install "poe2arb"
+      generate_completions_from_executable(bin/"poe2arb", "completion")
