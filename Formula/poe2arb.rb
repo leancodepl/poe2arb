@@ -5,24 +5,26 @@
 class Poe2arb < Formula
   desc "POEditor JSON to Flutter ARB converter."
   homepage "https://github.com/leancodepl/poe2arb"
-  version "2.0.0"
+  version "2.0.1"
 
   on_macos do
-    url "https://github.com/leancodepl/poe2arb/releases/download/v2.0.0/poe2arb_2.0.0_darwin_all.tar.gz"
-    sha256 "bc923b3a4ac35886391d67244f68df038bdbe5e2035699170785246886cdc4d3"
+    url "https://github.com/leancodepl/poe2arb/releases/download/v2.0.1/poe2arb_2.0.1_darwin_all.tar.gz"
+    sha256 "7044322d2410177c065dc31d7b042c202e3fc61d7ca7fb958945a0ac54bb02b6"
 
     def install
       bin.install "poe2arb"
+      generate_completions_from_executable(bin/"poe2arb", "completion")
     end
   end
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/leancodepl/poe2arb/releases/download/v2.0.0/poe2arb_2.0.0_linux_amd64.tar.gz"
-      sha256 "828c105bfa0da2ff8675a53ad6b1fb6d8d6f1e09da618b9734c29dd2da543a13"
+      url "https://github.com/leancodepl/poe2arb/releases/download/v2.0.1/poe2arb_2.0.1_linux_amd64.tar.gz"
+      sha256 "e5b734bb8371b89a8cac6bbd312516668443f2eaed59fe65a09005168f230dfd"
 
       def install
         bin.install "poe2arb"
+        generate_completions_from_executable(bin/"poe2arb", "completion")
       end
     end
   end
