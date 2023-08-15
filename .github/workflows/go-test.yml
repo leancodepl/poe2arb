@@ -43,7 +43,7 @@ jobs:
 
     strategy:
       matrix:
-        flutter_version: ['3.3', '3.7']
+        flutter_version: ['3.3', '3.7', '3.10']
 
     steps:
       - name: Checkout
