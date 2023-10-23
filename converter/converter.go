@@ -4,6 +4,7 @@ package converter
 import (
 	"encoding/json"
 	"io"
+	"regexp"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -13,25 +14,30 @@ import (
 type Converter struct {
 	input io.Reader
 
-	lang     string
-	template bool
-
+	lang                      string
+	template                  bool
 	requireResourceAttributes bool
+	termPrefix                string
+}
+
+type ConverterOptions struct {
+	Lang                      string
+	Template                  bool
+	RequireResourceAttributes bool
+	TermPrefix                string
 }
 
 func NewConverter(
 	input io.Reader,
-	lang string,
-	template bool,
-	requireResourceAttributes bool,
+	options *ConverterOptions,
 ) *Converter {
 	return &Converter{
 		input: input,
 
-		lang:     lang,
-		template: template,
-
-		requireResourceAttributes: requireResourceAttributes,
+		lang:                      options.Lang,
+		template:                  options.Template,
+		requireResourceAttributes: options.RequireResourceAttributes,
+		termPrefix:                options.TermPrefix,
 	}
 }
 
@@ -45,9 +51,18 @@ func (c *Converter) Convert(output io.Writer) error {
 	arb := orderedmap.New[string, any]()
 	arb.Set(localeKey, c.lang)
 
+	prefixedRegexp := regexp.MustCompile("(?:(.+):)?(.*)")
 	var errs []error
 
 	for _, term := range jsonContents {
+		// Filter by term prefix
+		matches := prefixedRegexp.FindStringSubmatch(term.Term)
+		if matches[1] == c.termPrefix {
+			term.Term = matches[2]
+		} else {
+			continue
+		}
+
 		message, err := c.parseTerm(term)
 		if err != nil {
 			err = errors.Wrapf(err, `decoding term "%s" failed`, term.Term)

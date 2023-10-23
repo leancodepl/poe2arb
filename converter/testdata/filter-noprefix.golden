@@ -1,0 +1,12 @@
+{
+    "@@locale": "en",
+    "fooBar": "Content",
+    "fooBarWithParam": "That's a {param}",
+    "@fooBarWithParam": {
+        "placeholders": {
+            "param": {
+                "type": "String"
+            }
+        }
+    }
+}
