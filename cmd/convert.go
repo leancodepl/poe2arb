@@ -29,7 +29,7 @@ func init() {
 	convertCmd.PersistentFlags().StringP(langFlag, "l", "", "Language of the input")
 	convertCmd.MarkPersistentFlagRequired(langFlag)
 
-	convertCmd.PersistentFlags().StringP(termPrefixFlag, "t", "", "POEditor term prefix")
+	convertCmd.PersistentFlags().StringP(termPrefixFlag, "", "", "POEditor term prefix")
 	convertCmd.PersistentFlags().Bool(noTemplateFlag, false, "Whether the output should NOT be generated as a template ARB")
 
 	convertCmd.AddCommand(convertIoCmd)
