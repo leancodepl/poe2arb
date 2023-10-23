@@ -51,7 +51,7 @@ func (c *Converter) Convert(output io.Writer) error {
 	arb := orderedmap.New[string, any]()
 	arb.Set(localeKey, c.lang)
 
-	prefixedRegexp := regexp.MustCompile("(?:(.+):)?(.*)")
+	prefixedRegexp := regexp.MustCompile("(?:([a-zA-Z]+):)?(.*)")
 	var errs []error
 
 	for _, term := range jsonContents {
