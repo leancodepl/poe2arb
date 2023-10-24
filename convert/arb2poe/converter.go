@@ -34,7 +34,7 @@ func (c *Converter) Convert(output io.Writer) (lang string, err error) {
 
 	var poeTerms []*convert.POETerm
 	for _, message := range messages {
-		poeTerm, err := arbMessageToPOETerm(message, !template)
+		poeTerm, err := arbMessageToPOETerm(message, !template, c.termPrefix)
 		if err != nil {
 			return "", errors.Wrapf(err, "decoding term %q failed", message.Name)
 		}

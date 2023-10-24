@@ -14,7 +14,7 @@ import (
 
 var seedCmd = &cobra.Command{
 	Use:           "seed",
-	Short:         "EXPERIMENTAL! Seeds POEditor with data from ARBs",
+	Short:         "EXPERIMENTAL! Seeds POEditor with data from ARBs. To be used only on empty projects!",
 	SilenceErrors: true,
 	SilenceUsage:  true,
 	RunE:          runSeed,

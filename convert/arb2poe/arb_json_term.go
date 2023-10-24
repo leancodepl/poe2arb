@@ -8,7 +8,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-func arbMessageToPOETerm(m *convert.ARBMessage, skipPlaceholderDefinitions bool) (*convert.POETerm, error) {
+func arbMessageToPOETerm(
+	m *convert.ARBMessage,
+	skipPlaceholderDefinitions bool,
+	termPrefix string,
+) (*convert.POETerm, error) {
 	translation := m.Translation
 	if !skipPlaceholderDefinitions && m.Attributes != nil && m.Attributes.Placeholders != nil {
 		for pair := m.Attributes.Placeholders.Oldest(); pair != nil; pair = pair.Next() {
@@ -119,8 +123,13 @@ func arbMessageToPOETerm(m *convert.ARBMessage, skipPlaceholderDefinitions bool)
 		termPlural = "."
 	}
 
+	termName := m.Name
+	if termPrefix != "" {
+		termName = termPrefix + ":" + termName
+	}
+
 	return &convert.POETerm{
-		Term:       m.Name,
+		Term:       termName,
 		TermPlural: termPlural,
 		Definition: definition,
 	}, nil
