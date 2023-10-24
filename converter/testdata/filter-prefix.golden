@@ -1,0 +1,12 @@
+{
+    "@@locale": "en",
+    "prefixedFooBar": "Other content",
+    "prefixedFooBarWithParam": "This is {param}",
+    "@prefixedFooBarWithParam": {
+        "placeholders": {
+            "param": {
+                "type": "String"
+            }
+        }
+    }
+}

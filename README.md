@@ -52,12 +52,13 @@ into your Flutter workspace in one command:
 
 If a command-line flag is not specified, an environment variable is used, then `l10n.yaml` option, then it fallbacks to default.
 
-| Description                                                                                                       | Flag                   | Env              | `l10n.yaml`           |
-|-------------------------------------------------------------------------------------------------------------------|------------------------|------------------|-----------------------|
-| **Required.** POEditor project ID. It is visible in the URL of the project on POEditor website.                   | `-p`<br>`--project-id` |                  | `poeditor-project-id` |
-| **Required.** POEditor API read-only access token. Available in [Account settings > API access][poeditor-tokens]. | `-t`<br>`--token`      | `POEDITOR_TOKEN` |                       |
-| ARB files output directory.<br>Defaults to current directory.                                                     | `-o`<br>`--output-dir` |                  | `arb-dir`             |
-| Exported languages override.<br>Defaults to using all languages from POEditor.                                    | `--langs`              |                  | `poeditor-langs`      |
+| Description                                                                                                       | Flag                   | Env              | `l10n.yaml`            |
+|-------------------------------------------------------------------------------------------------------------------|------------------------|------------------|------------------------|
+| **Required.** POEditor project ID. It is visible in the URL of the project on POEditor website.                   | `-p`<br>`--project-id` |                  | `poeditor-project-id`  |
+| **Required.** POEditor API read-only access token. Available in [Account settings > API access][poeditor-tokens]. | `-t`<br>`--token`      | `POEDITOR_TOKEN` |                        |
+| ARB files output directory.<br>Defaults to current directory.                                                     | `-o`<br>`--output-dir` |                  | `arb-dir`              |
+| Exported languages override.<br>Defaults to using all languages from POEditor.                                    | `--langs`              |                  | `poeditor-langs`       |
+| Term prefix, used to filter generated messages.<br>Defaults to empty.                                             | `--term-prefix`        |                  | `poeditor-term-prefix` |
 
 ### Conversion
 
@@ -69,6 +70,8 @@ For conversion, you need to pass the translation file language in the
 
 By default, a template ARB file is generated. So no empty message is skipped and attributes are generated. If you want to skip that, pass `--no-template` flag.
 
+You may filter terms with `--term-prefix`. Defaults to empty (no prefix).
+
 Currently, only an stdin/stdout is supported for the `poe2arb convert` command.
 
 ```
@@ -79,6 +82,29 @@ poe2arb convert io --lang en < Hello_World_English.json > lib/l10n/app_en.arb
 
 Term name must be a valid Dart field name, additionaly, it must start with a
 lowercase letter ([Flutter's constraint][term-name-constraint]).
+
+### Term prefix filtering
+
+If you wish to use one POEditor project for multiple packages, ideally you do not want
+one package's terms to pollute all other packages. This is what term prefixes are for.
+
+Term names in POEditor can be defined starting with a prefix (only letters), followed by a colon `:`.
+E.g. `loans:helpPage_title` or `design_system:modalClose`. Then, in your `l10n.yaml` or with the `--term-prefix` flag you may
+define which terms should be imported, filtered by the prefix.
+
+If you don't pass a prefix to `poe2arb` (or pass an empty one), it will only import the terms that have no prefix. If you pass
+prefix to `poe2arb`, it will import only the terms with this prefix.
+
+<details><summary>Examples</summary>
+
+| Term name in POEditor | `--term-prefix` or<br>`poeditor-term-prefix` (`l10n.yaml`) | Message name in ARB |
+|-----------------------|------------------------------------------------------------|---------------------|
+| `appTitle`            | none                                                       | `appTitle`          |
+| `somePrefix:appTitle` | none                                                       | not imported        |
+| `appTitle`            | `somePrefix`                                               | not imported        |
+| `somePrefix:appTitle` | `somePrefix`                                               | `appTitle`          |
+
+</details>
 
 ### Placeholders
 

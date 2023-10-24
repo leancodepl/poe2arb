@@ -29,6 +29,11 @@ func TestConverterConvert(t *testing.T) {
 			template := !strings.Contains(testname, "-no-template")
 			requireResourceAttributes := strings.Contains(testname, "-req-attrs")
 
+			var termPrefix string
+			if strings.Contains(testname, "-prefix") {
+				termPrefix = "prefix"
+			}
+
 			goldenfile := filepath.Join("testdata", testname+".golden")
 			golden, err := os.ReadFile(goldenfile)
 			if err != nil {
@@ -38,7 +43,7 @@ func TestConverterConvert(t *testing.T) {
 			expect := string(golden)
 
 			// Actual test
-			actual, err := convert(t, string(source), template, requireResourceAttributes)
+			actual, err := convert(t, string(source), template, requireResourceAttributes, termPrefix)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expect, actual)
@@ -64,7 +69,7 @@ func TestConverterConvert(t *testing.T) {
 `
 
 	t.Run("issue 41 template", func(t *testing.T) {
-		actual, err := convert(t, issue41Source, true, false)
+		actual, err := convert(t, issue41Source, true, false, "")
 
 		assert.Error(t, err)
 		assert.EqualError(t, err, `decoding term "testPlural" failed: missing "other" plural category`)
@@ -72,17 +77,27 @@ func TestConverterConvert(t *testing.T) {
 	})
 
 	t.Run("issue 41 non-template", func(t *testing.T) {
-		actual, err := convert(t, issue41Source, false, false)
+		actual, err := convert(t, issue41Source, false, false, "")
 
 		assert.NoError(t, err)
 		assert.Equal(t, "{\n    \"@@locale\": \"en\"\n}\n", actual)
 	})
 }
 
-func convert(t *testing.T, input string, template bool, requireResourceAttributes bool) (converted string, err error) {
+func convert(
+	t *testing.T,
+	input string,
+	template bool,
+	requireResourceAttributes bool,
+	termPrefix string,
+) (converted string, err error) {
 	reader := strings.NewReader(input)
-	conv := converter.NewConverter(reader, "en", template, requireResourceAttributes)
-
+	conv := converter.NewConverter(reader, &converter.ConverterOptions{
+		Lang:                      "en",
+		Template:                  template,
+		RequireResourceAttributes: requireResourceAttributes,
+		TermPrefix:                termPrefix,
+	})
 	out := new(bytes.Buffer)
 	err = conv.Convert(out)
 

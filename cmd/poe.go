@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/leancodepl/poe2arb/converter"
@@ -15,18 +16,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var poeCmd = &cobra.Command{
-	Use: "poe",
-	Short: "Exports POEditor terms and converts them to ARB. " +
-		"Must be run from the Flutter project root directory or its subdirectory.",
-	SilenceErrors: true,
-	SilenceUsage:  true,
-	RunE:          runPoe,
-}
+var (
+	poeCmd = &cobra.Command{
+		Use: "poe",
+		Short: "Exports POEditor terms and converts them to ARB. " +
+			"Must be run from the Flutter project root directory or its subdirectory.",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		RunE:          runPoe,
+	}
+	termPrefixRegexp = regexp.MustCompile("[a-zA-Z]*")
+)
 
 const (
 	projectIDFlag     = "project-id"
 	tokenFlag         = "token"
+	termPrefixFlag    = "term-prefix"
 	outputDirFlag     = "output-dir"
 	overrideLangsFlag = "langs"
 )
@@ -34,6 +39,7 @@ const (
 func init() {
 	poeCmd.Flags().StringP(projectIDFlag, "p", "", "POEditor project ID")
 	poeCmd.Flags().StringP(tokenFlag, "t", "", "POEditor API token")
+	poeCmd.Flags().StringP(termPrefixFlag, "", "", "POEditor term prefix")
 	poeCmd.Flags().StringP(outputDirFlag, "o", "", `Output directory [default: "."]`)
 	poeCmd.Flags().StringSliceP(overrideLangsFlag, "", []string{}, "Override downloaded languages")
 }
@@ -75,7 +81,7 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	for _, lang := range langs {
 		template := options.TemplateLocale == lang.Code
 
-		err := poeCmd.ExportLanguage(lang, template, options.RequireResourceAttributes)
+		err := poeCmd.ExportLanguage(lang, template)
 		if err != nil {
 			msg := fmt.Sprintf("exporting %s (%s) language", lang.Name, lang.Code)
 			return errors.Wrap(err, msg)
@@ -154,6 +160,10 @@ func validatePoeOptions(options *poeOptions) []error {
 		errs = append(errs, errors.New("no POEditor API token provided"))
 	}
 
+	if !termPrefixRegexp.MatchString(options.TermPrefix) {
+		errs = append(errs, errors.New("term prefix must contain only letters or be empty"))
+	}
+
 	return errs
 }
 
@@ -209,7 +219,7 @@ func (c *poeCommand) EnsureOutputDirectory() error {
 	return nil
 }
 
-func (c *poeCommand) ExportLanguage(lang poeditor.Language, template, requireResourceAttributes bool) error {
+func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error {
 	logSub := c.log.Info("fetching JSON export for %s (%s)", lang.Name, lang.Code).Sub()
 	url, err := c.client.GetExportURL(c.options.ProjectID, lang.Code)
 	if err != nil {
@@ -232,7 +242,12 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template, requireRes
 
 	convertLogSub := logSub.Info("converting JSON to ARB").Sub()
 
-	conv := converter.NewConverter(resp.Body, lang.Code, template, requireResourceAttributes)
+	conv := converter.NewConverter(resp.Body, &converter.ConverterOptions{
+		Lang:                      lang.Code,
+		Template:                  template,
+		RequireResourceAttributes: c.options.RequireResourceAttributes,
+		TermPrefix:                c.options.TermPrefix,
+	})
 	err = conv.Convert(file)
 	if err != nil {
 		convertLogSub.Error(err.Error())

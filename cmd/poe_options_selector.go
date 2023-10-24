@@ -20,8 +20,10 @@ type poeOptionsSelector struct {
 
 // poeOptions describes options passed or otherwise obtained to the poe command.
 type poeOptions struct {
-	ProjectID                 string
-	Token                     string
+	ProjectID  string
+	Token      string
+	TermPrefix string
+
 	ARBPrefix                 string
 	TemplateLocale            string
 	OutputDir                 string
@@ -37,6 +39,11 @@ func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
 	}
 
 	token, err := s.SelectToken()
+	if err != nil {
+		return nil, err
+	}
+
+	termPrefix, err := s.SelectTermPrefix()
 	if err != nil {
 		return nil, err
 	}
@@ -61,6 +68,7 @@ func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
 	return &poeOptions{
 		ProjectID:                 projectID,
 		Token:                     token,
+		TermPrefix:                termPrefix,
 		ARBPrefix:                 arbPrefix,
 		TemplateLocale:            templateLocale,
 		OutputDir:                 outputDir,
@@ -93,6 +101,19 @@ func (s *poeOptionsSelector) SelectToken() (string, error) {
 	}
 
 	return s.env.Token, nil
+}
+
+// SelectTermPrefix returns POEditor term prefix option from available sources.
+func (s *poeOptionsSelector) SelectTermPrefix() (string, error) {
+	fromCmd, err := s.flags.GetString(termPrefixFlag)
+	if err != nil {
+		return "", err
+	}
+	if fromCmd != "" {
+		return fromCmd, nil
+	}
+
+	return s.l10n.POEditorTermPrefix, nil
 }
 
 // SelectARBPrefix returns ARB files prefix option from available sources.

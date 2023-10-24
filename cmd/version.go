@@ -1,15 +1,14 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"errors"
+	"runtime/debug"
 
-var (
-	// Version is the version of the application. It is set during the build process using ldflags.
-	Version = "dev"
-	// Commit is the commit hash of the application. It is set during the build process using ldflags.
-	Commit = "none"
-	// Date is the date of the build. It is set during the build process using ldflags.
-	BuiltDate = "unknown"
+	"github.com/spf13/cobra"
 )
+
+// Version is the version of the application. It is set during the build process using ldflags.
+var Version string
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
@@ -20,7 +19,47 @@ var versionCmd = &cobra.Command{
 func runVersion(cmd *cobra.Command, args []string) error {
 	log := getLogger(cmd)
 
-	log.Info("poe2arb version %s, commit %s, built at %s", Version, Commit, BuiltDate)
+	revision, time, modified, err := getVcsInfo()
+	if err != nil {
+		return err
+	}
+
+	msg := "poe2arb"
+	if Version != "" {
+		msg += " version " + Version
+	} else {
+		msg += " built from source"
+	}
+
+	msg += ", commit " + revision
+
+	if modified {
+		msg += " (with local modifications)"
+	}
+
+	msg += ", built at " + time
+
+	log.Info(msg)
 
 	return nil
+}
+
+func getVcsInfo() (revision, time string, modified bool, err error) {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		err = errors.New("error reading build info")
+		return
+	}
+
+	for _, setting := range info.Settings {
+		if setting.Key == "vcs.revision" {
+			revision = setting.Value
+		} else if setting.Key == "vcs.time" {
+			time = setting.Value
+		} else if setting.Key == "vcs.modified" {
+			modified = setting.Value == "true"
+		}
+	}
+
+	return
 }

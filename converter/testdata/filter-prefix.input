@@ -1,0 +1,34 @@
+[
+    {
+        "term": "fooBar",
+        "definition": "Content",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    },
+    {
+        "term": "fooBarWithParam",
+        "definition": "That's a {param}",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    },
+    {
+        "term": "prefix:prefixedFooBar",
+        "definition": "Other content",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    },
+    {
+        "term": "prefix:prefixedFooBarWithParam",
+        "definition": "This is {param}",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    }
+]

@@ -8,8 +8,6 @@ builds:
       - >
         -s -w
         -X github.com/leancodepl/poe2arb/cmd.Version={{.Version}}
-        -X github.com/leancodepl/poe2arb/cmd.Commit={{.Commit}}
-        -X github.com/leancodepl/poe2arb/cmd.BuiltDate={{.Date}}
 universal_binaries:
   - replace: true
 changelog:
