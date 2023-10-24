@@ -7,7 +7,9 @@
 *.dll
 *.so
 *.dylib
+
 poe2arb
+!poe2arb/
 
 # Test binary, built with `go test -c`
 *.test

@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/leancodepl/poe2arb/converter"
+	"github.com/leancodepl/poe2arb/convert/poe2arb"
 	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/leancodepl/poe2arb/log"
 	"github.com/leancodepl/poe2arb/poeditor"
@@ -242,7 +242,7 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error
 
 	convertLogSub := logSub.Info("converting JSON to ARB").Sub()
 
-	conv := converter.NewConverter(resp.Body, &converter.ConverterOptions{
+	conv := poe2arb.NewConverter(resp.Body, &poe2arb.ConverterOptions{
 		Lang:                      lang.Code,
 		Template:                  template,
 		RequireResourceAttributes: c.options.RequireResourceAttributes,

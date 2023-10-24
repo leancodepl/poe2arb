@@ -1,4 +1,4 @@
-package converter
+package convert
 
 import (
 	"testing"
@@ -10,36 +10,36 @@ import (
 func TestArbMessageAttributesIsEmpty(t *testing.T) {
 	type testCase struct {
 		Name       string
-		Attributes arbMessageAttributes
+		Attributes ARBMessageAttributes
 		Expected   bool
 	}
 
-	nonEmptyMap := orderedmap.New[string, *arbPlaceholder]()
-	nonEmptyMap.Set("foo", &arbPlaceholder{Name: "foo"})
+	nonEmptyMap := orderedmap.New[string, *ARBPlaceholder]()
+	nonEmptyMap.Set("foo", &ARBPlaceholder{Name: "foo"})
 
 	testCases := []testCase{
 		{
 			"all empty",
-			arbMessageAttributes{},
+			ARBMessageAttributes{},
 			true,
 		},
 		{
 			"empty placeholders",
-			arbMessageAttributes{
-				Placeholders: orderedmap.New[string, *arbPlaceholder](),
+			ARBMessageAttributes{
+				Placeholders: orderedmap.New[string, *ARBPlaceholder](),
 			},
 			true,
 		},
 		{
 			"non-empty description",
-			arbMessageAttributes{
+			ARBMessageAttributes{
 				Description: "foo",
 			},
 			false,
 		},
 		{
 			"non-empty placeholders",
-			arbMessageAttributes{
+			ARBMessageAttributes{
 				Placeholders: nonEmptyMap,
 			},
 			false,
