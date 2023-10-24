@@ -25,7 +25,7 @@ var (
 		SilenceUsage:  true,
 		RunE:          runPoe,
 	}
-	termPrefixRegexp = regexp.MustCompile("[a-z]*")
+	termPrefixRegexp = regexp.MustCompile("[a-zA-Z]*")
 )
 
 const (
@@ -160,8 +160,8 @@ func validatePoeOptions(options *poeOptions) []error {
 		errs = append(errs, errors.New("no POEditor API token provided"))
 	}
 
-	if termPrefixRegexp.MatchString(options.TermPrefix) {
-		errs = append(errs, errors.New("term prefix must contain only lowercase letters or be empty"))
+	if !termPrefixRegexp.MatchString(options.TermPrefix) {
+		errs = append(errs, errors.New("term prefix must contain only letters or be empty"))
 	}
 
 	return errs
