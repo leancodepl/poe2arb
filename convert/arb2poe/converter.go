@@ -12,13 +12,15 @@ import (
 type Converter struct {
 	input io.Reader
 
-	template bool
+	templateLocale string
+	termPrefix     string
 }
 
-func NewConverter(input io.Reader, template bool) *Converter {
+func NewConverter(input io.Reader, templateLocale, termPrefix string) *Converter {
 	return &Converter{
-		input:    input,
-		template: template,
+		input:          input,
+		templateLocale: templateLocale,
+		termPrefix:     termPrefix,
 	}
 }
 
@@ -28,9 +30,11 @@ func (c *Converter) Convert(output io.Writer) (lang string, err error) {
 		return "", errors.Wrap(err, "failed to parse ARB")
 	}
 
+	template := c.templateLocale == lang
+
 	var poeTerms []*convert.POETerm
 	for _, message := range messages {
-		poeTerm, err := arbMessageToPOETerm(message, !c.template)
+		poeTerm, err := arbMessageToPOETerm(message, !template)
 		if err != nil {
 			return "", errors.Wrapf(err, "decoding term %q failed", message.Name)
 		}

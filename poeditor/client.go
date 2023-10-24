@@ -4,9 +4,11 @@
 package poeditor
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strings"
@@ -74,6 +76,20 @@ func handleRequestErr(err error, resp baseResponse) error {
 	return TryNewErrorFromResponse(resp.Response)
 }
 
+func (c *Client) AddLanguage(projectID, languageCode string) error {
+	var resp baseResponse
+	params := map[string]string{
+		"id":       projectID,
+		"language": languageCode,
+	}
+	err := c.request("/languages/add", params, &resp)
+	if err := handleRequestErr(err, resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Client) GetProjectLanguages(projectID string) ([]Language, error) {
 	var resp languagesListResponse
 
@@ -108,4 +124,54 @@ func (c *Client) GetExportURL(projectID, languageCode string) (string, error) {
 	}
 
 	return resp.Result.URL, nil
+}
+
+func (c *Client) Upload(projectID, languageCode string, file io.Reader) error {
+	url := fmt.Sprintf("%s%s", c.apiURL, "/projects/upload")
+
+	var b bytes.Buffer
+	w := multipart.NewWriter(&b)
+	w.WriteField("api_token", c.token)
+	w.WriteField("id", projectID)
+	w.WriteField("updating", "terms_translations")
+
+	fileWriter, err := w.CreateFormFile("file", "file.json")
+	if err != nil {
+		return errors.Wrap(err, "creating form field")
+	}
+	if _, err = io.Copy(fileWriter, file); err != nil {
+		return errors.Wrap(err, "copying file to form field")
+	}
+
+	w.WriteField("language", languageCode)
+	w.WriteField("overwrite", "0")
+
+	err = w.Close()
+	if err != nil {
+		return errors.Wrap(err, "closing multipart writer")
+	}
+
+	req, err := http.NewRequest("POST", url, &b)
+	if err != nil {
+		return errors.Wrap(err, "creating HTTP request")
+	}
+
+	req.Header.Set("Content-Type", w.FormDataContentType())
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return errors.Wrap(err, "making HTTP request")
+	}
+
+	var respBody baseResponse
+	err = json.NewDecoder(resp.Body).Decode(&respBody)
+	if err != nil {
+		return errors.Wrap(err, "decoding response")
+	}
+
+	if err := handleRequestErr(err, respBody); err != nil {
+		return err
+	}
+
+	return nil
 }
