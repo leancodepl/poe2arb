@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,7 +15,7 @@ import (
 
 var seedCmd = &cobra.Command{
 	Use:           "seed",
-	Short:         "EXPERIMENTAL! Seeds POEditor with data from ARBs. To be used only on empty projects!",
+	Short:         "EXPERIMENTAL! Seeds POEditor with data from ARBs. To be used only on empty projects.",
 	SilenceErrors: true,
 	SilenceUsage:  true,
 	RunE:          runSeed,
@@ -31,26 +32,26 @@ func init() {
 func runSeed(cmd *cobra.Command, args []string) error {
 	log := getLogger(cmd)
 
-	logSub := log.Info("loading options").Sub()
+	fileLog := log.Info("loading options").Sub()
 
 	sel, err := getOptionsSelector(cmd)
 	if err != nil {
-		logSub.Error("failed: " + err.Error())
+		fileLog.Error("failed: " + err.Error())
 		return err
 	}
 
 	options, err := sel.SelectOptions()
 	if err != nil {
-		logSub.Error("failed: " + err.Error())
+		fileLog.Error("failed: " + err.Error())
 		return err
 	}
 
-	logSub = log.Info("reading ARB files in %s", options.OutputDir).Sub()
+	fileLog = log.Info("reading ARB files in %s", options.OutputDir).Sub()
 
 	var files []string
 	rawFiles, err := os.ReadDir(options.OutputDir)
 	if err != nil {
-		logSub.Error("failed: " + err.Error())
+		fileLog.Error("failed: " + err.Error())
 		return err
 	}
 	for _, file := range rawFiles {
@@ -67,10 +68,10 @@ func runSeed(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(files) == 0 {
-		logSub.Error("no ARB files found")
+		fileLog.Error("no ARB files found")
 		return err
 	} else {
-		logSub.Info("found %d ARB files", len(files))
+		fileLog.Info("found %d ARB files", len(files))
 	}
 
 	poeClient := poeditor.NewClient(options.Token)
@@ -83,12 +84,12 @@ func runSeed(cmd *cobra.Command, args []string) error {
 
 	first := true
 	for _, filePath := range files {
-		logSub = log.Info("seeding %s", filepath.Base(filePath)).Sub()
-		logSub.Info("converting ARB to JSON")
+		fileLog = log.Info("seeding %s", filepath.Base(filePath)).Sub()
+		fileLog.Info("converting ARB to JSON")
 
 		file, err := os.Open(filePath)
 		if err != nil {
-			logSub.Error("failed: " + err.Error())
+			fileLog.Error("failed: " + err.Error())
 			return err
 		}
 
@@ -97,41 +98,61 @@ func runSeed(cmd *cobra.Command, args []string) error {
 		var b bytes.Buffer
 		lang, err := converter.Convert(&b)
 		if err != nil {
-			logSub.Error("failed: " + err.Error())
+			if errors.Is(err, arb2poe.NoTermsError) {
+				fileLog.Info("no terms to convert")
+				continue
+			}
+
+			fileLog.Error("failed: " + err.Error())
 			return err
 		}
 
-		langFound := false
+		if len(options.OverrideLangs) > 0 {
+			langFound := false
+			for _, overridenLang := range options.OverrideLangs {
+				if lang == overridenLang {
+					langFound = true
+					break
+				}
+			}
+
+			if !langFound {
+				fileLog.Info("skipping language %s", lang)
+				continue
+			}
+		}
+
+		availableLangFound := false
 		for _, availableLang := range availableLangs {
 			if lang == availableLang.Code {
-				langFound = true
+				availableLangFound = true
 				break
 			}
 		}
 
-		if !langFound {
-			langSub := logSub.Info("adding language %s to project", lang).Sub()
+		if !availableLangFound {
+			langLog := fileLog.Info("adding language %s to project", lang).Sub()
 
 			err = poeClient.AddLanguage(options.ProjectID, lang)
 			if err != nil {
-				langSub.Error("failed: " + err.Error())
+				langLog.Error("failed: " + err.Error())
 				return err
 			}
 		}
 
 		if !first {
-			logSub.Info("waiting 30 seconds to avoid rate limiting")
+			fileLog.Info("waiting 30 seconds to avoid rate limiting")
 			time.Sleep(30 * time.Second)
 		}
 
-		uploadSub := logSub.Info("uploading JSON to POEditor").Sub()
+		uploadLog := fileLog.Info("uploading JSON to POEditor").Sub()
 
 		err = poeClient.Upload(options.ProjectID, lang, &b)
 		if err != nil {
-			uploadSub.Error("failed: " + err.Error())
+			uploadLog.Error("failed: " + err.Error())
 			return err
 		} else {
-			logSub.Success("done")
+			fileLog.Success("done")
 		}
 
 		first = false

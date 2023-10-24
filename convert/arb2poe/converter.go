@@ -24,6 +24,8 @@ func NewConverter(input io.Reader, templateLocale, termPrefix string) *Converter
 	}
 }
 
+var NoTermsError = errors.New("no terms to convert")
+
 func (c *Converter) Convert(output io.Writer) (lang string, err error) {
 	lang, messages, err := parseARB(c.input)
 	if err != nil {
@@ -40,6 +42,10 @@ func (c *Converter) Convert(output io.Writer) (lang string, err error) {
 		}
 
 		poeTerms = append(poeTerms, poeTerm)
+	}
+
+	if len(poeTerms) == 0 {
+		return "", NoTermsError
 	}
 
 	err = json.NewEncoder(output).Encode(poeTerms)
