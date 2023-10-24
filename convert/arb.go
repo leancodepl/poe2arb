@@ -1,4 +1,4 @@
-// Package converter holds structures common to both directions of conversion.
+// Package convert holds structures common to both directions of conversion.
 package convert
 
 import (
