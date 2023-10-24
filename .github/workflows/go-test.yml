@@ -66,20 +66,23 @@ jobs:
 
       - name: Run integration test
         env:
+          # Read-only POEditor token for albert+poe2arb@...
           POEDITOR_TOKEN: ${{ secrets.POEDITOR_INTEGRATION_TESTS_TOKEN }}
+        working-directory: integration_test
         run: |
-          cd integration_test
           poe2arb poe
           poe2arb poe --output-dir lib/l10n_prefixed --term-prefix prefixed
           flutter gen-l10n
 
-      - name: Upload ARBs artifact
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: integration-test-arbs
-          path: |
-            integration_test/lib/l10n/app_en.arb
-            integration_test/lib/l10n/app_pl.arb
-            integration_test/lib/l10n_prefixed/app_en.arb
-            integration_test/lib/l10n_prefixed/app_pl.arb
+      - name: Print ARBs
+        working-directory: integration_test
+        run: |
+          echo "=== lib/l10n/app_en.arb ==="
+          cat lib/l10n/app_en.arb
+          echo "=== lib/l10n/app_pl.arb ==="
+          cat lib/l10n/app_pl.arb
+
+          echo "=== lib/l10n_prefixed/app_en.arb ==="
+          cat lib/l10n_prefixed/app_en.arb
+          echo "=== lib/l10n_prefixed/app_pl.arb ==="
+          cat lib/l10n_prefixed/app_pl.arb
