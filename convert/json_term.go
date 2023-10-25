@@ -1,4 +1,4 @@
-package converter
+package convert
 
 import (
 	"encoding/json"
@@ -6,19 +6,20 @@ import (
 	"fmt"
 )
 
-type jsonTerm struct {
-	Term       string             `json:"term"`
-	Definition jsonTermDefinition `json:"definition"`
+type POETerm struct {
+	Term       string            `json:"term"`
+	TermPlural string            `json:"term_plural"`
+	Definition POETermDefinition `json:"definition"`
 }
 
-type jsonTermDefinition struct {
+type POETermDefinition struct {
 	IsPlural bool
 
 	Value  *string
-	Plural *jsonTermPluralDefinition
+	Plural *POETermPluralDefinition
 }
 
-func (d *jsonTermDefinition) UnmarshalJSON(data []byte) error {
+func (d *POETermDefinition) UnmarshalJSON(data []byte) error {
 	var v interface{}
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -40,16 +41,24 @@ func (d *jsonTermDefinition) UnmarshalJSON(data []byte) error {
 	return errors.New("invalid definition type")
 }
 
-type jsonTermPluralDefinition struct {
-	Zero  *string `json:"zero"`
-	One   *string `json:"one"`
-	Two   *string `json:"two"`
-	Few   *string `json:"few"`
-	Many  *string `json:"many"`
+func (d POETermDefinition) MarshalJSON() ([]byte, error) {
+	if d.IsPlural {
+		return json.Marshal(d.Plural)
+	}
+
+	return json.Marshal(d.Value)
+}
+
+type POETermPluralDefinition struct {
+	Zero  *string `json:"zero,omitempty"`
+	One   *string `json:"one,omitempty"`
+	Two   *string `json:"two,omitempty"`
+	Few   *string `json:"few,omitempty"`
+	Many  *string `json:"many,omitempty"`
 	Other string  `json:"other"`
 }
 
-func (p jsonTermPluralDefinition) Map(mapper func(string) (string, error)) (*jsonTermPluralDefinition, error) {
+func (p POETermPluralDefinition) Map(mapper func(string) (string, error)) (*POETermPluralDefinition, error) {
 	var zero, one, two, few, many *string
 
 	if p.Zero != nil {
@@ -93,14 +102,14 @@ func (p jsonTermPluralDefinition) Map(mapper func(string) (string, error)) (*jso
 		return nil, err
 	}
 
-	return &jsonTermPluralDefinition{
+	return &POETermPluralDefinition{
 		Zero: zero, One: one,
 		Two: two, Few: few,
 		Many: many, Other: v,
 	}, nil
 }
 
-func (p jsonTermPluralDefinition) ToICUMessageFormat() string {
+func (p POETermPluralDefinition) ToICUMessageFormat() string {
 	str := "{count, plural,"
 	if p.Zero != nil {
 		str += fmt.Sprintf(" =0 {%s}", *p.Zero)

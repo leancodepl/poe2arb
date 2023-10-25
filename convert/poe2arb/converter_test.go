@@ -1,4 +1,4 @@
-package converter_test
+package poe2arb_test
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/leancodepl/poe2arb/converter"
+	"github.com/leancodepl/poe2arb/convert/poe2arb"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -92,7 +92,7 @@ func convert(
 	termPrefix string,
 ) (converted string, err error) {
 	reader := strings.NewReader(input)
-	conv := converter.NewConverter(reader, &converter.ConverterOptions{
+	conv := poe2arb.NewConverter(reader, &poe2arb.ConverterOptions{
 		Lang:                      "en",
 		Template:                  template,
 		RequireResourceAttributes: requireResourceAttributes,

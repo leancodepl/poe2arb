@@ -1,4 +1,4 @@
-package converter
+package convert
 
 import (
 	"encoding/json"
@@ -16,7 +16,7 @@ func TestJSONTermDefinitionUnmarshalJSON(t *testing.T) {
 		ExpectedValueExists  bool
 		ExpectedValue        string
 		ExpectedPluralExists bool
-		ExpectedPlural       jsonTermPluralDefinition
+		ExpectedPlural       POETermPluralDefinition
 	}
 
 	cases := []testCase{
@@ -36,7 +36,7 @@ func TestJSONTermDefinitionUnmarshalJSON(t *testing.T) {
 			Name:                 "plural with only other",
 			Input:                `{"other": "Something"}`,
 			ExpectedPluralExists: true,
-			ExpectedPlural: jsonTermPluralDefinition{
+			ExpectedPlural: POETermPluralDefinition{
 				Other: "Something",
 			},
 		},
@@ -45,7 +45,7 @@ func TestJSONTermDefinitionUnmarshalJSON(t *testing.T) {
 			Input: `{"zero": "Zero", "one": "One", "two": "Two",
             "few": "Few", "many": "Many", "other": "Other"}`,
 			ExpectedPluralExists: true,
-			ExpectedPlural: jsonTermPluralDefinition{
+			ExpectedPlural: POETermPluralDefinition{
 				Zero:  ptr("Zero"),
 				One:   ptr("One"),
 				Two:   ptr("Two"),
@@ -58,7 +58,7 @@ func TestJSONTermDefinitionUnmarshalJSON(t *testing.T) {
 
 	for _, testCase := range cases {
 		t.Run(testCase.Name, func(t *testing.T) {
-			var d jsonTermDefinition
+			var d POETermDefinition
 			err := json.Unmarshal([]byte(testCase.Input), &d)
 
 			assert.NoError(t, err)
@@ -83,24 +83,24 @@ func TestJSONTermDefinitionUnmarshalJSON(t *testing.T) {
 func TestJSONTermPluralDefinitionToICUMessageFormat(t *testing.T) {
 	type testCase struct {
 		Name           string
-		Input          jsonTermPluralDefinition
+		Input          POETermPluralDefinition
 		ExpectedOutput string
 	}
 
 	cases := []testCase{
 		{
 			"only other",
-			jsonTermPluralDefinition{Other: "test"},
+			POETermPluralDefinition{Other: "test"},
 			"{count, plural, other {test}}",
 		},
 		{
 			"one and other",
-			jsonTermPluralDefinition{One: ptr("foobar"), Other: "baz"},
+			POETermPluralDefinition{One: ptr("foobar"), Other: "baz"},
 			"{count, plural, =1 {foobar} other {baz}}",
 		},
 		{
 			"all",
-			jsonTermPluralDefinition{
+			POETermPluralDefinition{
 				Zero: ptr("zero"), One: ptr("one"),
 				Two: ptr("two"), Few: ptr("few"),
 				Many: ptr("many"), Other: "other",

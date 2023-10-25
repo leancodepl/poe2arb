@@ -1,4 +1,4 @@
-package converter
+package poe2arb
 
 import (
 	"errors"
@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/leancodepl/poe2arb/convert"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
@@ -141,15 +142,15 @@ func (tp *translationParser) addPlaceholder(name, placeholderType, format string
 	}
 }
 
-func (tp *translationParser) BuildMessageAttributes() *arbMessageAttributes {
+func (tp *translationParser) BuildMessageAttributes() *convert.ARBMessageAttributes {
 	tp.fallbackPlaceholderTypes()
 
-	var placeholders []*arbPlaceholder
+	var placeholders []*convert.ARBPlaceholder
 
 	for pair := tp.namedParams.Oldest(); pair != nil; pair = pair.Next() {
 		name, placeholder := pair.Key, pair.Value
 
-		arbPlaceholder := &arbPlaceholder{
+		arbPlaceholder := &convert.ARBPlaceholder{
 			Name:   name,
 			Type:   placeholder.Type,
 			Format: placeholder.Format,
@@ -159,15 +160,15 @@ func (tp *translationParser) BuildMessageAttributes() *arbMessageAttributes {
 	}
 
 	// json:omitempty isn't possible for custom structs, so return nil on empty
-	var placeholdersMap *orderedmap.OrderedMap[string, *arbPlaceholder]
+	var placeholdersMap *orderedmap.OrderedMap[string, *convert.ARBPlaceholder]
 	if len(placeholders) > 0 {
-		placeholdersMap = orderedmap.New[string, *arbPlaceholder]()
+		placeholdersMap = orderedmap.New[string, *convert.ARBPlaceholder]()
 		for _, placeholder := range placeholders {
 			placeholdersMap.Set(placeholder.Name, placeholder)
 		}
 	}
 
-	return &arbMessageAttributes{Placeholders: placeholdersMap}
+	return &convert.ARBMessageAttributes{Placeholders: placeholdersMap}
 }
 
 func (tp *translationParser) fallbackPlaceholderTypes() {

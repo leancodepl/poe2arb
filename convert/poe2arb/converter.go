@@ -1,5 +1,5 @@
-// Package converter handles coversion from POEditor's JSON to Flutter's ARB.
-package converter
+// Package poe2arb handles coversion from POEditor's JSON to Flutter's ARB.
+package poe2arb
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/leancodepl/poe2arb/convert"
 	"github.com/pkg/errors"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
@@ -42,14 +43,14 @@ func NewConverter(
 }
 
 func (c *Converter) Convert(output io.Writer) error {
-	var jsonContents []*jsonTerm
+	var jsonContents []*convert.POETerm
 	err := json.NewDecoder(c.input).Decode(&jsonContents)
 	if err != nil {
 		return errors.Wrap(err, "decoding json failed")
 	}
 
 	arb := orderedmap.New[string, any]()
-	arb.Set(localeKey, c.lang)
+	arb.Set(convert.LocaleKey, c.lang)
 
 	prefixedRegexp := regexp.MustCompile("(?:([a-zA-Z]+):)?(.*)")
 	var errs []error
@@ -117,7 +118,7 @@ func errorsToError(errs []error) error {
 	return errors.New(sb.String())
 }
 
-func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
+func (c Converter) parseTerm(term *convert.POETerm) (*convert.ARBMessage, error) {
 	var value string
 	tp := newTranslationParser(term.Definition.IsPlural)
 
@@ -152,7 +153,7 @@ func (c Converter) parseTerm(term *jsonTerm) (*arbMessage, error) {
 		value = plural.ToICUMessageFormat()
 	}
 
-	message := &arbMessage{
+	message := &convert.ARBMessage{
 		Name:        name,
 		Translation: value,
 		Attributes:  tp.BuildMessageAttributes(),

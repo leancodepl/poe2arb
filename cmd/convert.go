@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/leancodepl/poe2arb/converter"
+	"github.com/leancodepl/poe2arb/convert/poe2arb"
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +40,7 @@ func runConvertIo(cmd *cobra.Command, args []string) error {
 	noTemplate, _ := cmd.Flags().GetBool(noTemplateFlag)
 	termPrefix, _ := cmd.Flags().GetString(termPrefixFlag)
 
-	conv := converter.NewConverter(os.Stdin, &converter.ConverterOptions{
+	conv := poe2arb.NewConverter(os.Stdin, &poe2arb.ConverterOptions{
 		Lang:                      lang,
 		Template:                  !noTemplate,
 		RequireResourceAttributes: true,

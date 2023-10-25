@@ -1,4 +1,4 @@
-package converter
+package poe2arb
 
 import (
 	"testing"

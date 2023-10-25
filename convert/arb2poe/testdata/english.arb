@@ -1,0 +1,72 @@
+{
+    "@@locale": "en",
+    "simpleTerm": "Hello, world!",
+    "termOnlyInTemplate": "Hello!",
+    "termOnlyInNonTemplate": "",
+    "pluralNoParams": "{count, plural, =1 {One thing} other {Many things}}",
+    "@pluralNoParams": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "pluralCountParam": "{count, plural, =1 {{count} apple} other {{count} apples}}",
+    "@pluralCountParam": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "pluralComplexParams": "{count, plural, =1 {{count} apple and {oranges}, I repeat, {oranges} oranges} other {{count} apples and {oranges}, I repeat, {oranges} oranges}}",
+    "@pluralComplexParams": {
+        "placeholders": {
+            "count": {},
+            "oranges": {
+                "type": "int"
+            }
+        }
+    },
+    "params": "{simple} param, {definedDate} date, {someCount} integer, {percentage} percentage",
+    "@params": {
+        "placeholders": {
+            "simple": {
+                "type": "String"
+            },
+            "definedDate": {
+                "type": "DateTime",
+                "format": "yMd"
+            },
+            "someCount": {
+                "type": "int"
+            },
+            "percentage": {
+                "type": "double",
+                "format": "percentPattern"
+            }
+        }
+    },
+    "repeatedParams": "{simple} param, {definedDate} date, {someCount} integer and {definedDate} date once again",
+    "@repeatedParams": {
+        "placeholders": {
+            "simple": {
+                "type": "String"
+            },
+            "definedDate": {
+                "type": "DateTime",
+                "format": "yMd"
+            },
+            "someCount": {
+                "type": "int"
+            }
+        }
+    },
+    "redefinedParams": "{simple}, {aNumber}",
+    "@redefinedParams": {
+        "placeholders": {
+            "simple": {
+                "type": "String"
+            },
+            "aNumber": {
+                "type": "int"
+            }
+        }
+    }
+}
