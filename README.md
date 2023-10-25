@@ -83,7 +83,7 @@ poe2arb convert io --lang en < Hello_World_English.json > lib/l10n/app_en.arb
 **EXPERIMENTAL FEATURE**
 
 If you're setting up a project from some template code, you probably already have some ARB files that need
-to be imported into the POEditor project. Using the POEditor's built-in tool won't give a satisfying results,
+to be imported into the POEditor project. Using the POEditor's built-in tool won't give a satisfying result,
 as it will completely ignore placeholders along with their types and other parameters, as well as it won't
 "understand" the plural ICU message format. This is where `poe2arb seed` command comes into place.
 
