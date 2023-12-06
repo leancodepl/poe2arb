@@ -111,21 +111,21 @@ func runSeed(cmd *cobra.Command, args []string) error {
 		if len(options.OverrideLangs) > 0 {
 			langFound := false
 			for _, overridenLang := range options.OverrideLangs {
-				if lang == overridenLang {
+				if strings.EqualFold(lang, overridenLang) {
 					langFound = true
 					break
 				}
 			}
 
 			if !langFound {
-				fileLog.Info("skipping language %s", flutterLocale)
+				fileLog.Info("skipping language %s", lang)
 				continue
 			}
 		}
 
 		availableLangFound := false
 		for _, availableLang := range availableLangs {
-			if lang == availableLang.Code {
+			if strings.EqualFold(lang, availableLang.Code) {
 				availableLangFound = true
 				break
 			}

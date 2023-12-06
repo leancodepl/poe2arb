@@ -183,7 +183,7 @@ func (c *poeCommand) GetExportLanguages() ([]poeditor.Language, error) {
 		var filteredLangs []poeditor.Language
 		for _, lang := range langs {
 			for _, overridenLang := range c.options.OverrideLangs {
-				if lang.Code == overridenLang {
+				if strings.EqualFold(lang.Code, overridenLang) {
 					filteredLangs = append(filteredLangs, lang)
 					break
 				}
