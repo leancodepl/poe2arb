@@ -81,8 +81,12 @@ jobs:
           cat lib/l10n/app_en.arb
           echo "=== lib/l10n/app_pl.arb ==="
           cat lib/l10n/app_pl.arb
+          echo "=== lib/l10n/app_en_hk.arb ==="
+          cat lib/l10n/app_en_hk.arb
 
           echo "=== lib/l10n_prefixed/app_en.arb ==="
           cat lib/l10n_prefixed/app_en.arb
           echo "=== lib/l10n_prefixed/app_pl.arb ==="
           cat lib/l10n_prefixed/app_pl.arb
+          echo "=== lib/l10n_prefixed/app_en_hk.arb ==="
+          cat lib/l10n_prefixed/app_en_hk.arb
