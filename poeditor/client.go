@@ -103,7 +103,7 @@ func (c *Client) GetProjectLanguages(projectID string) ([]Language, error) {
 	for _, lang := range resp.Result.Languages {
 		langs = append(langs, Language{
 			Name: lang.Name,
-			Code: lang.Code,
+			Code: NewLocale(lang.Code),
 		})
 	}
 

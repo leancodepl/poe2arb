@@ -124,7 +124,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 
 		availableLangFound := false
 		for _, availableLang := range availableLangs {
-			if lang == availableLang.Code {
+			if lang == availableLang.Code.StringUnderscores() {
 				availableLangFound = true
 				break
 			}

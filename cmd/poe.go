@@ -79,7 +79,7 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, lang := range langs {
-		template := options.TemplateLocale == lang.Code
+		template := options.TemplateLocale == lang.Code.StringUnderscores()
 
 		err := poeCmd.ExportLanguage(lang, template)
 		if err != nil {
@@ -178,7 +178,7 @@ func (c *poeCommand) GetExportLanguages() ([]poeditor.Language, error) {
 		var filteredLangs []poeditor.Language
 		for _, lang := range langs {
 			for _, overridenLang := range c.options.OverrideLangs {
-				if lang.Code == overridenLang {
+				if lang.Code.String() == overridenLang {
 					filteredLangs = append(filteredLangs, lang)
 					break
 				}
@@ -192,7 +192,7 @@ func (c *poeCommand) GetExportLanguages() ([]poeditor.Language, error) {
 			}
 			var available []string
 			for _, lang := range langs {
-				available = append(available, lang.Code)
+				available = append(available, lang.Code.String())
 			}
 			return nil, fmt.Errorf(
 				`--%s specified %d %s, but none of them were available in the POEditor project. Available langs: %s`,
@@ -221,7 +221,7 @@ func (c *poeCommand) EnsureOutputDirectory() error {
 
 func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error {
 	logSub := c.log.Info("fetching JSON export for %s (%s)", lang.Name, lang.Code).Sub()
-	url, err := c.client.GetExportURL(c.options.ProjectID, lang.Code)
+	url, err := c.client.GetExportURL(c.options.ProjectID, lang.Code.String())
 	if err != nil {
 		return err
 	}
@@ -232,8 +232,7 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error
 		return errors.Wrap(err, "making HTTP request for export")
 	}
 
-	locale := strings.ReplaceAll(lang.Code, "-", "_")
-	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, locale))
+	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, lang.Code.StringUnderscores()))
 	file, err := os.Create(filePath)
 	if err != nil {
 		logSub.Error("creating file failed: " + err.Error())
@@ -244,7 +243,7 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error
 	convertLogSub := logSub.Info("converting JSON to ARB").Sub()
 
 	conv := poe2arb.NewConverter(resp.Body, &poe2arb.ConverterOptions{
-		Lang:                      lang.Code,
+		Lang:                      lang.Code.StringUnderscores(),
 		Template:                  template,
 		RequireResourceAttributes: c.options.RequireResourceAttributes,
 		TermPrefix:                c.options.TermPrefix,
