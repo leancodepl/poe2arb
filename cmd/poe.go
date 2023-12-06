@@ -79,9 +79,14 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, lang := range langs {
-		template := options.TemplateLocale == lang.Code.StringUnderscores()
+		flutterLang, err := flutter.ParseLocale(lang.Code)
+		if err != nil {
+			return errors.Wrap(err, fmt.Sprintf("parsing %s language code", lang.Code))
+		}
 
-		err := poeCmd.ExportLanguage(lang, template)
+		template := options.TemplateLocale == flutterLang
+
+		err = poeCmd.ExportLanguage(lang, template)
 		if err != nil {
 			msg := fmt.Sprintf("exporting %s (%s) language", lang.Name, lang.Code)
 			return errors.Wrap(err, msg)
@@ -178,7 +183,7 @@ func (c *poeCommand) GetExportLanguages() ([]poeditor.Language, error) {
 		var filteredLangs []poeditor.Language
 		for _, lang := range langs {
 			for _, overridenLang := range c.options.OverrideLangs {
-				if lang.Code.String() == overridenLang {
+				if lang.Code == overridenLang {
 					filteredLangs = append(filteredLangs, lang)
 					break
 				}
@@ -192,7 +197,7 @@ func (c *poeCommand) GetExportLanguages() ([]poeditor.Language, error) {
 			}
 			var available []string
 			for _, lang := range langs {
-				available = append(available, lang.Code.String())
+				available = append(available, lang.Code)
 			}
 			return nil, fmt.Errorf(
 				`--%s specified %d %s, but none of them were available in the POEditor project. Available langs: %s`,
@@ -221,7 +226,7 @@ func (c *poeCommand) EnsureOutputDirectory() error {
 
 func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error {
 	logSub := c.log.Info("fetching JSON export for %s (%s)", lang.Name, lang.Code).Sub()
-	url, err := c.client.GetExportURL(c.options.ProjectID, lang.Code.String())
+	url, err := c.client.GetExportURL(c.options.ProjectID, lang.Code)
 	if err != nil {
 		return err
 	}
@@ -232,7 +237,12 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error
 		return errors.Wrap(err, "making HTTP request for export")
 	}
 
-	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, lang.Code.StringUnderscores()))
+	flutterLocale, err := flutter.ParseLocale(lang.Code)
+	if err != nil {
+		return errors.Wrap(err, fmt.Sprintf("parsing %s language code", lang.Code))
+	}
+
+	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, flutterLocale))
 	file, err := os.Create(filePath)
 	if err != nil {
 		logSub.Error("creating file failed: " + err.Error())
@@ -243,7 +253,7 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error
 	convertLogSub := logSub.Info("converting JSON to ARB").Sub()
 
 	conv := poe2arb.NewConverter(resp.Body, &poe2arb.ConverterOptions{
-		Lang:                      lang.Code.StringUnderscores(),
+		Locale:                    flutterLocale,
 		Template:                  template,
 		RequireResourceAttributes: c.options.RequireResourceAttributes,
 		TermPrefix:                c.options.TermPrefix,

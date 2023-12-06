@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/leancodepl/poe2arb/convert/poe2arb"
+	"github.com/leancodepl/poe2arb/flutter"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -40,8 +43,13 @@ func runConvertIo(cmd *cobra.Command, args []string) error {
 	noTemplate, _ := cmd.Flags().GetBool(noTemplateFlag)
 	termPrefix, _ := cmd.Flags().GetString(termPrefixFlag)
 
+	flutterLocale, err := flutter.ParseLocale(lang)
+	if err != nil {
+		return errors.Wrap(err, fmt.Sprintf("failed to parse locale %s", lang))
+	}
+
 	conv := poe2arb.NewConverter(os.Stdin, &poe2arb.ConverterOptions{
-		Lang:                      lang,
+		Locale:                    flutterLocale,
 		Template:                  !noTemplate,
 		RequireResourceAttributes: true,
 		TermPrefix:                termPrefix,

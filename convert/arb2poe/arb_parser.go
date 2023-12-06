@@ -7,22 +7,29 @@ import (
 	"strings"
 
 	"github.com/leancodepl/poe2arb/convert"
+	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/pkg/errors"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
-func parseARB(r io.Reader) (lang string, messages []*convert.ARBMessage, err error) {
+func parseARB(r io.Reader) (locale flutter.Locale, messages []*convert.ARBMessage, err error) {
 	var arb map[string]any
 	err = json.NewDecoder(r).Decode(&arb)
 	if err != nil {
 		err = errors.Wrap(err, "failed to decode ARB")
-		return "", nil, err
+		return flutter.Locale{}, nil, err
 	}
 
 	lang, ok := arb[convert.LocaleKey].(string)
 	if !ok {
 		err = errors.New("missing locale key")
-		return "", nil, err
+		return flutter.Locale{}, nil, err
+	}
+
+	locale, err = flutter.ParseLocale(lang)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("parsing locale %s", lang))
+		return flutter.Locale{}, nil, err
 	}
 
 	for key, value := range arb {
@@ -33,7 +40,7 @@ func parseARB(r io.Reader) (lang string, messages []*convert.ARBMessage, err err
 		var translation string
 		if translation, ok = value.(string); !ok {
 			err = errors.Errorf("invalid translation value for %s", key)
-			return "", nil, err
+			return flutter.Locale{}, nil, err
 		}
 
 		message := &convert.ARBMessage{
@@ -44,7 +51,8 @@ func parseARB(r io.Reader) (lang string, messages []*convert.ARBMessage, err err
 		if attrs, ok := arb["@"+key].(map[string]any); ok {
 			encoded, err := json.Marshal(attrs)
 			if err != nil {
-				return "", nil, errors.Wrap(err, fmt.Sprintf("failed to encode attributes for %s", key))
+				return flutter.Locale{}, nil,
+					errors.Wrap(err, fmt.Sprintf("failed to encode attributes for %s", key))
 			}
 
 			var attributes struct {
@@ -55,7 +63,8 @@ func parseARB(r io.Reader) (lang string, messages []*convert.ARBMessage, err err
 			}
 			err = json.Unmarshal(encoded, &attributes)
 			if err != nil {
-				return "", nil, errors.Wrap(err, fmt.Sprintf("failed to decode attributes for %s", key))
+				return flutter.Locale{}, nil,
+					errors.Wrap(err, fmt.Sprintf("failed to decode attributes for %s", key))
 			}
 
 			attrsOm := orderedmap.New[string, *convert.ARBPlaceholder]()

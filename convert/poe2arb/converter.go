@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/leancodepl/poe2arb/convert"
+	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/pkg/errors"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
@@ -15,14 +16,14 @@ import (
 type Converter struct {
 	input io.Reader
 
-	lang                      string
+	locale                    flutter.Locale
 	template                  bool
 	requireResourceAttributes bool
 	termPrefix                string
 }
 
 type ConverterOptions struct {
-	Lang                      string
+	Locale                    flutter.Locale
 	Template                  bool
 	RequireResourceAttributes bool
 	TermPrefix                string
@@ -35,7 +36,7 @@ func NewConverter(
 	return &Converter{
 		input: input,
 
-		lang:                      options.Lang,
+		locale:                    options.Locale,
 		template:                  options.Template,
 		requireResourceAttributes: options.RequireResourceAttributes,
 		termPrefix:                options.TermPrefix,
@@ -50,7 +51,7 @@ func (c *Converter) Convert(output io.Writer) error {
 	}
 
 	arb := orderedmap.New[string, any]()
-	arb.Set(convert.LocaleKey, c.lang)
+	arb.Set(convert.LocaleKey, c.locale.String())
 
 	prefixedRegexp := regexp.MustCompile("(?:([a-zA-Z]+):)?(.*)")
 	var errs []error
