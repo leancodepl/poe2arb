@@ -232,7 +232,8 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error
 		return errors.Wrap(err, "making HTTP request for export")
 	}
 
-	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, lang.Code))
+	locale := strings.ReplaceAll(lang.Code, "-", "_")
+	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, locale))
 	file, err := os.Create(filePath)
 	if err != nil {
 		logSub.Error("creating file failed: " + err.Error())
