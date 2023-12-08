@@ -101,7 +101,11 @@ func (c *Converter) Convert(output io.Writer) error {
 	encoder.SetIndent("", "    ") // 4 spaces
 
 	err = encoder.Encode(arb)
-	return fmt.Errorf("encoding arb failed: %w", err)
+	if err != nil {
+		return fmt.Errorf("encoding arb failed: %w", err)
+	} else {
+		return nil
+	}
 }
 
 func errorsToError(errs []error) error {
