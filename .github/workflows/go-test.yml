@@ -78,7 +78,7 @@ jobs:
         working-directory: integration_test
         run: |
           for dir in l10n l10n_prefixed; do
-            for locale in en pl en_HK sr sr_Cyrl es es_419; do
+            for locale in en pl en_hk sr sr_cyrl es es_419; do
               echo "=== lib/$dir/app_$locale.arb ==="
               cat lib/$dir/app_$locale.arb
             done
