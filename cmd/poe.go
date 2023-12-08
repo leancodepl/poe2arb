@@ -236,7 +236,7 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, flutterLocale flutte
 		return fmt.Errorf("making HTTP request for export: %w", err)
 	}
 
-	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, flutterLocale))
+	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, flutterLocale.StringFilename()))
 	file, err := os.Create(filePath)
 	if err != nil {
 		logSub.Error("creating file failed: " + err.Error())

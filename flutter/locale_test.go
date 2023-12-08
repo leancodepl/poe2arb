@@ -67,6 +67,28 @@ func TestLocaleString(t *testing.T) {
 	}
 }
 
+func TestLocaleStringFilename(t *testing.T) {
+	testCases := []struct {
+		Input    flutter.Locale
+		Expected string
+	}{
+		{flutter.Locale{Language: "en"}, "en"},
+		{flutter.Locale{Language: "en", Country: "US"}, "en_us"},
+		{flutter.Locale{Language: "es", Country: "419"}, "es_419"},
+		{flutter.Locale{Language: "zh", Script: "Hans"}, "zh_hans"},
+		{flutter.Locale{Language: "zh", Script: "Hant", Country: "CN"}, "zh_hant_cn"},
+		{flutter.Locale{Language: "sr", Script: "Cyrl"}, "sr_cyrl"},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Expected, func(t *testing.T) {
+			actual := testCase.Input.StringFilename()
+
+			assert.Equal(t, testCase.Expected, actual)
+		})
+	}
+}
+
 func TestLocaleStringHyphen(t *testing.T) {
 	testCases := []struct {
 		Input    flutter.Locale

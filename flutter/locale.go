@@ -71,6 +71,10 @@ func (l Locale) String() string {
 	return locale
 }
 
+func (l Locale) StringFilename() string {
+	return strings.ToLower(l.String())
+}
+
 func (l Locale) StringHyphen() string {
 	locale := l.Language
 	if l.Script != "" {
