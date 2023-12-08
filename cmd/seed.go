@@ -96,7 +96,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 		converter := arb2poe.NewConverter(file, options.TemplateLocale, options.TermPrefix)
 
 		var b bytes.Buffer
-		lang, err := converter.Convert(&b)
+		flutterLocale, err := converter.Convert(&b)
 		if err != nil {
 			if errors.Is(err, arb2poe.NoTermsError) {
 				fileLog.Info("no terms to convert")
@@ -106,11 +106,12 @@ func runSeed(cmd *cobra.Command, args []string) error {
 			fileLog.Error("failed: " + err.Error())
 			return err
 		}
+		lang := flutterLocale.StringHyphen()
 
 		if len(options.OverrideLangs) > 0 {
 			langFound := false
 			for _, overridenLang := range options.OverrideLangs {
-				if lang == overridenLang {
+				if strings.EqualFold(lang, overridenLang) {
 					langFound = true
 					break
 				}
@@ -124,14 +125,14 @@ func runSeed(cmd *cobra.Command, args []string) error {
 
 		availableLangFound := false
 		for _, availableLang := range availableLangs {
-			if lang == availableLang.Code {
+			if strings.EqualFold(lang, availableLang.Code) {
 				availableLangFound = true
 				break
 			}
 		}
 
 		if !availableLangFound {
-			langLog := fileLog.Info("adding language %s to project", lang).Sub()
+			langLog := fileLog.Info("adding language %s to project", flutterLocale).Sub()
 
 			err = poeClient.AddLanguage(options.ProjectID, lang)
 			if err != nil {

@@ -25,7 +25,7 @@ type poeOptions struct {
 	TermPrefix string
 
 	ARBPrefix                 string
-	TemplateLocale            string
+	TemplateLocale            flutter.Locale
 	OutputDir                 string
 	OverrideLangs             []string
 	RequireResourceAttributes bool
@@ -117,13 +117,17 @@ func (s *poeOptionsSelector) SelectTermPrefix() (string, error) {
 }
 
 // SelectARBPrefix returns ARB files prefix option from available sources.
-func (s *poeOptionsSelector) SelectARBPrefixAndTemplate() (prefix, templateLocale string, err error) {
+func (s *poeOptionsSelector) SelectARBPrefixAndTemplate() (prefix string, templateLocale flutter.Locale, err error) {
 	prefix, err = prefixFromTemplateFileName(s.l10n.TemplateArbFile)
 	if err != nil {
-		return "", "", err
+		return "", flutter.Locale{}, err
 	}
 
-	templateLocale = strings.TrimSuffix(strings.TrimPrefix(s.l10n.TemplateArbFile, prefix), ".arb")
+	templateLocaleString := strings.TrimSuffix(strings.TrimPrefix(s.l10n.TemplateArbFile, prefix), ".arb")
+	templateLocale, err = flutter.ParseLocale(templateLocaleString)
+	if err != nil {
+		return "", flutter.Locale{}, errors.Wrap(err, "could not parse template locale")
+	}
 
 	return prefix, templateLocale, nil
 }

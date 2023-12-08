@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/leancodepl/poe2arb/convert/poe2arb"
+	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -84,6 +85,14 @@ func TestConverterConvert(t *testing.T) {
 	})
 }
 
+func flutterMustParseLocale(lang string) flutter.Locale {
+	locale, err := flutter.ParseLocale(lang)
+	if err != nil {
+		panic(err)
+	}
+	return locale
+}
+
 func convert(
 	t *testing.T,
 	input string,
@@ -93,7 +102,7 @@ func convert(
 ) (converted string, err error) {
 	reader := strings.NewReader(input)
 	conv := poe2arb.NewConverter(reader, &poe2arb.ConverterOptions{
-		Lang:                      "en",
+		Locale:                    flutterMustParseLocale("en"),
 		Template:                  template,
 		RequireResourceAttributes: requireResourceAttributes,
 		TermPrefix:                termPrefix,

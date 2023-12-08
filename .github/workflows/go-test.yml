@@ -77,12 +77,9 @@ jobs:
       - name: Print ARBs
         working-directory: integration_test
         run: |
-          echo "=== lib/l10n/app_en.arb ==="
-          cat lib/l10n/app_en.arb
-          echo "=== lib/l10n/app_pl.arb ==="
-          cat lib/l10n/app_pl.arb
-
-          echo "=== lib/l10n_prefixed/app_en.arb ==="
-          cat lib/l10n_prefixed/app_en.arb
-          echo "=== lib/l10n_prefixed/app_pl.arb ==="
-          cat lib/l10n_prefixed/app_pl.arb
+          for dir in l10n l10n_prefixed; do
+            for locale in en pl en_HK sr sr_Cyrl es es_419; do
+              echo "=== lib/$dir/app_$locale.arb ==="
+              cat lib/$dir/app_$locale.arb
+            done
+          done
