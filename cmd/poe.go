@@ -79,14 +79,14 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, lang := range langs {
-		flutterLang, err := flutter.ParseLocale(lang.Code)
+		flutterLocale, err := flutter.ParseLocale(lang.Code)
 		if err != nil {
 			return errors.Wrap(err, fmt.Sprintf("parsing %s language code", lang.Code))
 		}
 
-		template := options.TemplateLocale == flutterLang
+		template := options.TemplateLocale == flutterLocale
 
-		err = poeCmd.ExportLanguage(lang, template)
+		err = poeCmd.ExportLanguage(lang, flutterLocale, template)
 		if err != nil {
 			msg := fmt.Sprintf("exporting %s (%s) language", lang.Name, lang.Code)
 			return errors.Wrap(err, msg)
@@ -224,7 +224,7 @@ func (c *poeCommand) EnsureOutputDirectory() error {
 	return nil
 }
 
-func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error {
+func (c *poeCommand) ExportLanguage(lang poeditor.Language, flutterLocale flutter.Locale, template bool) error {
 	logSub := c.log.Info("fetching JSON export for %s (%s)", lang.Name, lang.Code).Sub()
 	url, err := c.client.GetExportURL(c.options.ProjectID, lang.Code)
 	if err != nil {
@@ -235,11 +235,6 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, template bool) error
 	if err != nil {
 		logSub.Error("making HTTP request failed: " + err.Error())
 		return errors.Wrap(err, "making HTTP request for export")
-	}
-
-	flutterLocale, err := flutter.ParseLocale(lang.Code)
-	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("parsing %s language code", lang.Code))
 	}
 
 	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, flutterLocale))
