@@ -98,7 +98,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 		var b bytes.Buffer
 		flutterLocale, err := converter.Convert(&b)
 		if err != nil {
-			if errors.Is(err, arb2poe.NoTermsError) {
+			if errors.Is(err, arb2poe.ErrNoTerms) {
 				fileLog.Info("no terms to convert")
 				continue
 			}

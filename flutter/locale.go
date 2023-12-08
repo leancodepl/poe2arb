@@ -1,10 +1,9 @@
 package flutter
 
 import (
+	"fmt"
 	"slices"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 type Locale struct {
@@ -48,7 +47,7 @@ func ParseLocale(locale string) (Locale, error) {
 		}, nil
 	case 3:
 		if !slices.Contains(knownScripts, strings.ToLower(parts[1])) {
-			return Locale{}, errors.Errorf("invalid script: %s", parts[1])
+			return Locale{}, fmt.Errorf(`invalid script "%s"`, parts[1])
 		}
 
 		return Locale{
@@ -57,7 +56,7 @@ func ParseLocale(locale string) (Locale, error) {
 			Country:  strings.ToUpper(parts[2]),
 		}, nil
 	default:
-		return Locale{}, errors.Errorf("invalid locale: %s", locale)
+		return Locale{}, fmt.Errorf(`invalid locale "%s"`, locale)
 	}
 }
 
@@ -70,6 +69,10 @@ func (l Locale) String() string {
 		locale += "_" + l.Country
 	}
 	return locale
+}
+
+func (l Locale) StringFilename() string {
+	return strings.ToLower(l.String())
 }
 
 func (l Locale) StringHyphen() string {

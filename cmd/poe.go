@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"github.com/leancodepl/poe2arb/flutter"
 	"github.com/leancodepl/poe2arb/log"
 	"github.com/leancodepl/poe2arb/poeditor"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -81,15 +81,14 @@ func runPoe(cmd *cobra.Command, args []string) error {
 	for _, lang := range langs {
 		flutterLocale, err := flutter.ParseLocale(lang.Code)
 		if err != nil {
-			return errors.Wrap(err, fmt.Sprintf("parsing %s language code", lang.Code))
+			return fmt.Errorf("parsing %s language code: %w", lang.Code, err)
 		}
 
 		template := options.TemplateLocale == flutterLocale
 
 		err = poeCmd.ExportLanguage(lang, flutterLocale, template)
 		if err != nil {
-			msg := fmt.Sprintf("exporting %s (%s) language", lang.Name, lang.Code)
-			return errors.Wrap(err, msg)
+			return fmt.Errorf("exporting %s (%s) language: %w", lang.Name, lang.Code, err)
 		}
 	}
 
@@ -234,14 +233,14 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, flutterLocale flutte
 	resp, err := http.Get(url)
 	if err != nil {
 		logSub.Error("making HTTP request failed: " + err.Error())
-		return errors.Wrap(err, "making HTTP request for export")
+		return fmt.Errorf("making HTTP request for export: %w", err)
 	}
 
-	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, flutterLocale))
+	filePath := path.Join(c.options.OutputDir, fmt.Sprintf("%s%s.arb", c.options.ARBPrefix, flutterLocale.StringFilename()))
 	file, err := os.Create(filePath)
 	if err != nil {
 		logSub.Error("creating file failed: " + err.Error())
-		return errors.Wrap(err, "creating ARB file")
+		return fmt.Errorf("creating ARB file: %w", err)
 	}
 	defer file.Close()
 
