@@ -153,7 +153,7 @@ func prefixFromTemplateFileName(templateFile string) (string, error) {
 
 	return "", errors.New(
 		"invalid template-arb-file. Should be a filename with prefix ending " +
-			"with an underscore followed by a valid BCP-47 locale.",
+			"with an underscore followed by a valid BCP-47 locale",
 	)
 }
 

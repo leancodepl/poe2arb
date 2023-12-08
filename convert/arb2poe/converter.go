@@ -26,7 +26,7 @@ func NewConverter(input io.Reader, templateLocale flutter.Locale, termPrefix str
 	}
 }
 
-var NoTermsError = errors.New("no terms to convert")
+var ErrNoTerms = errors.New("no terms to convert")
 
 func (c *Converter) Convert(output io.Writer) (lang flutter.Locale, err error) {
 	lang, messages, err := parseARB(c.input)
@@ -47,7 +47,7 @@ func (c *Converter) Convert(output io.Writer) (lang flutter.Locale, err error) {
 	}
 
 	if len(poeTerms) == 0 {
-		return flutter.Locale{}, NoTermsError
+		return flutter.Locale{}, ErrNoTerms
 	}
 
 	err = json.NewEncoder(output).Encode(poeTerms)
