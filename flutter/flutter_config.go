@@ -3,11 +3,12 @@
 package flutter
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
 
-	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
 
@@ -63,7 +64,7 @@ func NewFromDirectory(dir string) (*FlutterConfig, error) {
 		// l10n.yaml file found
 		err = yaml.NewDecoder(l10nFile).Decode(&l10n)
 		if err != nil {
-			return nil, errors.Wrap(err, "failure decoding l10n.yaml")
+			return nil, fmt.Errorf("failure decoding l10n.yaml: %w", err)
 		}
 	}
 
@@ -80,7 +81,7 @@ func walkUpForPubspec(dir string) (file *os.File, err error) {
 		}
 
 		if !errors.Is(err, os.ErrNotExist) {
-			return nil, errors.Wrap(err, "failure searching for pubspec.yaml")
+			return nil, fmt.Errorf("failure searching for pubspec.yaml: %w", err)
 		}
 
 		parent := filepath.Dir(dir)
@@ -98,7 +99,7 @@ func getL10nFile(pubspecDir string) (*os.File, error) {
 	file, err := os.Open(path.Join(pubspecDir, "l10n.yaml"))
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
-			return nil, errors.Wrap(err, "failure reading l10n.yaml")
+			return nil, fmt.Errorf("failure reading l10n.yaml: %w", err)
 		}
 
 		return nil, nil

@@ -12,8 +12,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 const apiURL = "https://api.poeditor.com/v2"
@@ -50,19 +48,19 @@ func (c *Client) request(path string, params map[string]string, respBody interfa
 
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
-		return errors.Wrap(err, "creating HTTP request")
+		return fmt.Errorf("creating HTTP request: %w", err)
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return errors.Wrap(err, "making HTTP request")
+		return fmt.Errorf("making HTTP request: %w", err)
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&respBody)
 	if err != nil {
-		return errors.Wrap(err, "decoding response")
+		return fmt.Errorf("decoding response: %w", err)
 	}
 
 	return nil
@@ -137,10 +135,10 @@ func (c *Client) Upload(projectID, languageCode string, file io.Reader) error {
 
 	fileWriter, err := w.CreateFormFile("file", "file.json")
 	if err != nil {
-		return errors.Wrap(err, "creating form field")
+		return fmt.Errorf("creating form field: %w", err)
 	}
 	if _, err = io.Copy(fileWriter, file); err != nil {
-		return errors.Wrap(err, "copying file to form field")
+		return fmt.Errorf("copying file to form field: %w", err)
 	}
 
 	w.WriteField("language", languageCode)
@@ -148,25 +146,25 @@ func (c *Client) Upload(projectID, languageCode string, file io.Reader) error {
 
 	err = w.Close()
 	if err != nil {
-		return errors.Wrap(err, "closing multipart writer")
+		return fmt.Errorf("closing multipart writer: %w", err)
 	}
 
 	req, err := http.NewRequest("POST", url, &b)
 	if err != nil {
-		return errors.Wrap(err, "creating HTTP request")
+		return fmt.Errorf("creating HTTP request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", w.FormDataContentType())
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return errors.Wrap(err, "making HTTP request")
+		return fmt.Errorf("making HTTP request: %w", err)
 	}
 
 	var respBody baseResponse
 	err = json.NewDecoder(resp.Body).Decode(&respBody)
 	if err != nil {
-		return errors.Wrap(err, "decoding response")
+		return fmt.Errorf("decoding response: %w", err)
 	}
 
 	if err := handleRequestErr(err, respBody); err != nil {

@@ -1,11 +1,12 @@
 package cmd
 
 import (
+	"errors"
+	"fmt"
 	"path/filepath"
 	"strings"
 
 	"github.com/leancodepl/poe2arb/flutter"
-	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
 	"golang.org/x/text/language"
 )
@@ -126,7 +127,7 @@ func (s *poeOptionsSelector) SelectARBPrefixAndTemplate() (prefix string, templa
 	templateLocaleString := strings.TrimSuffix(strings.TrimPrefix(s.l10n.TemplateArbFile, prefix), ".arb")
 	templateLocale, err = flutter.ParseLocale(templateLocaleString)
 	if err != nil {
-		return "", flutter.Locale{}, errors.Wrap(err, "could not parse template locale")
+		return "", flutter.Locale{}, fmt.Errorf("could not parse template locale: %w", err)
 	}
 
 	return prefix, templateLocale, nil

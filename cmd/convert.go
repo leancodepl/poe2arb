@@ -6,7 +6,6 @@ import (
 
 	"github.com/leancodepl/poe2arb/convert/poe2arb"
 	"github.com/leancodepl/poe2arb/flutter"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -45,7 +44,7 @@ func runConvertIo(cmd *cobra.Command, args []string) error {
 
 	flutterLocale, err := flutter.ParseLocale(lang)
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("failed to parse locale %s", lang))
+		return fmt.Errorf("failed to parse locale %s: %w", lang, err)
 	}
 
 	conv := poe2arb.NewConverter(os.Stdin, &poe2arb.ConverterOptions{

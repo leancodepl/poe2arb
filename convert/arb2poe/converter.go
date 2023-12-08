@@ -3,11 +3,12 @@ package arb2poe
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 
 	"github.com/leancodepl/poe2arb/convert"
 	"github.com/leancodepl/poe2arb/flutter"
-	"github.com/pkg/errors"
 )
 
 type Converter struct {
@@ -30,7 +31,7 @@ var NoTermsError = errors.New("no terms to convert")
 func (c *Converter) Convert(output io.Writer) (lang flutter.Locale, err error) {
 	lang, messages, err := parseARB(c.input)
 	if err != nil {
-		return flutter.Locale{}, errors.Wrap(err, "failed to parse ARB")
+		return flutter.Locale{}, fmt.Errorf("failed to parse ARB: %w", err)
 	}
 
 	template := c.templateLocale == lang
@@ -39,7 +40,7 @@ func (c *Converter) Convert(output io.Writer) (lang flutter.Locale, err error) {
 	for _, message := range messages {
 		poeTerm, err := arbMessageToPOETerm(message, !template, c.termPrefix)
 		if err != nil {
-			return flutter.Locale{}, errors.Wrapf(err, "decoding term %q failed", message.Name)
+			return flutter.Locale{}, fmt.Errorf("decoding term %q failed: %w", message.Name, err)
 		}
 
 		poeTerms = append(poeTerms, poeTerm)
@@ -51,7 +52,7 @@ func (c *Converter) Convert(output io.Writer) (lang flutter.Locale, err error) {
 
 	err = json.NewEncoder(output).Encode(poeTerms)
 	if err != nil {
-		return flutter.Locale{}, errors.Wrap(err, "failed to encode POEditor JSON")
+		return flutter.Locale{}, fmt.Errorf("failed to encode POEditor JSON: %w", err)
 	}
 
 	return lang, nil

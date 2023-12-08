@@ -1,11 +1,11 @@
 package arb2poe
 
 import (
+	"errors"
 	"regexp"
 	"strings"
 
 	"github.com/leancodepl/poe2arb/convert"
-	"github.com/pkg/errors"
 )
 
 func arbMessageToPOETerm(

@@ -3,13 +3,14 @@ package poe2arb
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"regexp"
 	"strings"
 
 	"github.com/leancodepl/poe2arb/convert"
 	"github.com/leancodepl/poe2arb/flutter"
-	"github.com/pkg/errors"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
@@ -47,7 +48,7 @@ func (c *Converter) Convert(output io.Writer) error {
 	var jsonContents []*convert.POETerm
 	err := json.NewDecoder(c.input).Decode(&jsonContents)
 	if err != nil {
-		return errors.Wrap(err, "decoding json failed")
+		return fmt.Errorf("decoding json failed: %w", err)
 	}
 
 	arb := orderedmap.New[string, any]()
@@ -67,7 +68,7 @@ func (c *Converter) Convert(output io.Writer) error {
 
 		message, err := c.parseTerm(term)
 		if err != nil {
-			err = errors.Wrapf(err, `decoding term "%s" failed`, term.Term)
+			err = fmt.Errorf(`decoding term "%s" failed: %w`, term.Term, err)
 			errs = append(errs, err)
 			continue
 		}
@@ -100,7 +101,7 @@ func (c *Converter) Convert(output io.Writer) error {
 	encoder.SetIndent("", "    ") // 4 spaces
 
 	err = encoder.Encode(arb)
-	return errors.Wrap(err, "encoding arb failed")
+	return fmt.Errorf("encoding arb failed: %w", err)
 }
 
 func errorsToError(errs []error) error {
