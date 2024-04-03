@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/leancodepl/poe2arb/convert"
@@ -56,6 +57,15 @@ func (c *Converter) Convert(output io.Writer) error {
 
 	prefixedRegexp := regexp.MustCompile("(?:([a-zA-Z]+):)?(.*)")
 	var errs []error
+
+	// Sort terms by key alphabetically
+	sort.SliceStable(jsonContents, func(i, j int) bool {
+		a, b := jsonContents[i], jsonContents[j]
+		aKey := prefixedRegexp.FindStringSubmatch(a.Term)[2]
+		bKey := prefixedRegexp.FindStringSubmatch(b.Term)[2]
+
+		return aKey < bKey
+	})
 
 	for _, term := range jsonContents {
 		// Filter by term prefix
