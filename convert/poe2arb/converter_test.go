@@ -17,6 +17,9 @@ func TestConverterConvert(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if len(paths) == 0 {
+		t.Fatal("no test files found")
+	}
 
 	for _, path := range paths {
 		_, filename := filepath.Split(path)
