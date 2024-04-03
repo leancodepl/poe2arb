@@ -17,6 +17,9 @@ func TestConverterConvert(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if len(paths) == 0 {
+		t.Fatal("no test files found")
+	}
 
 	for _, path := range paths {
 		_, filename := filepath.Split(path)
@@ -44,7 +47,7 @@ func TestConverterConvert(t *testing.T) {
 			expect := string(golden)
 
 			// Actual test
-			actual, err := convert(t, string(source), template, requireResourceAttributes, termPrefix)
+			actual, err := convert(string(source), template, requireResourceAttributes, termPrefix)
 
 			assert.NoError(t, err)
 			assert.Equal(t, expect, actual)
@@ -70,7 +73,7 @@ func TestConverterConvert(t *testing.T) {
 `
 
 	t.Run("issue 41 template", func(t *testing.T) {
-		actual, err := convert(t, issue41Source, true, false, "")
+		actual, err := convert(issue41Source, true, false, "")
 
 		assert.Error(t, err)
 		assert.EqualError(t, err, `decoding term "testPlural" failed: missing "other" plural category`)
@@ -78,7 +81,7 @@ func TestConverterConvert(t *testing.T) {
 	})
 
 	t.Run("issue 41 non-template", func(t *testing.T) {
-		actual, err := convert(t, issue41Source, false, false, "")
+		actual, err := convert(issue41Source, false, false, "")
 
 		assert.NoError(t, err)
 		assert.Equal(t, "{\n    \"@@locale\": \"en\"\n}\n", actual)
@@ -94,7 +97,6 @@ func flutterMustParseLocale(lang string) flutter.Locale {
 }
 
 func convert(
-	t *testing.T,
 	input string,
 	template bool,
 	requireResourceAttributes bool,

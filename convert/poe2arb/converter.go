@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"slices"
 	"strings"
 
+	"facette.io/natsort"
 	"github.com/leancodepl/poe2arb/convert"
 	"github.com/leancodepl/poe2arb/flutter"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
@@ -56,6 +58,20 @@ func (c *Converter) Convert(output io.Writer) error {
 
 	prefixedRegexp := regexp.MustCompile("(?:([a-zA-Z]+):)?(.*)")
 	var errs []error
+
+	// Sort terms by key alphabetically
+	slices.SortStableFunc(jsonContents, func(a, b *convert.POETerm) int {
+		aKey := prefixedRegexp.FindStringSubmatch(a.Term)[2]
+		bKey := prefixedRegexp.FindStringSubmatch(b.Term)[2]
+
+		if aKey == bKey {
+			return 0
+		} else if natsort.Compare(aKey, bKey) {
+			return -1
+		} else {
+			return 1
+		}
+	})
 
 	for _, term := range jsonContents {
 		// Filter by term prefix

@@ -21,6 +21,7 @@ require (
 )
 
 require (
+	facette.io/natsort v0.0.0-20181210072756-2cd4dd1e2dcb
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.1

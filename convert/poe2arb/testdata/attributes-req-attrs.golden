@@ -1,7 +1,5 @@
 {
     "@@locale": "en",
-    "noAttrs": "Foobar",
-    "@noAttrs": {},
     "attrs": "Foo {bar}",
     "@attrs": {
         "placeholders": {
@@ -9,5 +7,7 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "noAttrs": "Foobar",
+    "@noAttrs": {}
 }
