@@ -17,7 +17,7 @@ brews:
   - repository:
       owner: leancodepl
       name: poe2arb
-    folder: Formula
+    directory: Formula
     homepage: https://github.com/leancodepl/poe2arb
     description: POEditor JSON to Flutter ARB converter.
     install: |
