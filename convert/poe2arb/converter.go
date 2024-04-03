@@ -2,12 +2,13 @@
 package poe2arb
 
 import (
+	"cmp"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"regexp"
-	"sort"
+	"slices"
 	"strings"
 
 	"github.com/leancodepl/poe2arb/convert"
@@ -59,12 +60,10 @@ func (c *Converter) Convert(output io.Writer) error {
 	var errs []error
 
 	// Sort terms by key alphabetically
-	sort.SliceStable(jsonContents, func(i, j int) bool {
-		a, b := jsonContents[i], jsonContents[j]
+	slices.SortStableFunc(jsonContents, func(a, b *convert.POETerm) int {
 		aKey := prefixedRegexp.FindStringSubmatch(a.Term)[2]
 		bKey := prefixedRegexp.FindStringSubmatch(b.Term)[2]
-
-		return aKey < bKey
+		return cmp.Compare(aKey, bKey)
 	})
 
 	for _, term := range jsonContents {
