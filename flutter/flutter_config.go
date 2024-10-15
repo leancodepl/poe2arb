@@ -24,6 +24,8 @@ type FlutterConfig struct {
 //
 // https://github.com/flutter/flutter/blob/61a0add2865c51bfee33939c1820709d1115c77d/packages/flutter_tools/lib/src/localizations/localizations_utils.dart#L291
 type L10n struct {
+	Poe2ArbVersion            string `yaml:"poe2arb-version"`
+
 	ARBDir                    string `yaml:"arb-dir"`
 	TemplateArbFile           string `yaml:"template-arb-file"`
 	RequireResourceAttributes bool   `yaml:"required-resource-attributes"`
