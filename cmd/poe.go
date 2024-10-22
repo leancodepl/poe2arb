@@ -24,6 +24,7 @@ var (
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		RunE:          runPoe,
+		PreRun:        getFlutterConfigAndEnsureSufficientVersion,
 	}
 	termPrefixRegexp = regexp.MustCompile("[a-zA-Z]*")
 )
@@ -103,30 +104,13 @@ func getOptionsSelector(cmd *cobra.Command) (*poeOptionsSelector, error) {
 		return nil, err
 	}
 
-	flutterCfg, err := getFlutterConfig()
-	if err != nil {
-		return nil, err
-	}
+	flutterCfg, _ := flutterConfigFromContext(cmd.Context())
 
 	return &poeOptionsSelector{
 		flags: cmd.Flags(),
 		l10n:  flutterCfg.L10n,
 		env:   envVars,
 	}, nil
-}
-
-func getFlutterConfig() (*flutter.FlutterConfig, error) {
-	workDir, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	flutterCfg, err := flutter.NewFromDirectory(workDir)
-	if err != nil {
-		return nil, err
-	}
-
-	return flutterCfg, nil
 }
 
 type poeCommand struct {
