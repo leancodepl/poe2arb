@@ -200,6 +200,15 @@ other:  Andy has {count} kilograms of {fruit}.
 
 You must provide at least `other` plural category for your translations, otherwise it won't be converted.
 
+## Constraining version for a Flutter project
+
+You can constrain poe2arb version by specifying `poe2arb-version` option in `l10n.yaml`.
+
+Available formats:
+* specific version - `0.5.1`
+* version range - `>=0.5.1, <0.7`
+* min/max version - `>0.5.1`, `<=0.7`
+
 ## Contributing
 
 ### Formatting
