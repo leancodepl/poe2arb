@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/hashicorp/go-version"
 	"github.com/leancodepl/poe2arb/flutter"
@@ -28,7 +27,7 @@ func ensureSufficientVersion(versionConstraint string) error {
 		return nil
 	}
 
-	constraint, err := newConstraintFromString(versionConstraint)
+	constraint, err := version.NewConstraint(versionConstraint)
 	if err != nil {
 		return fmt.Errorf("invalid poe2arb-version format in l10n.yaml: %s", versionConstraint)
 	}
@@ -43,10 +42,6 @@ func ensureSufficientVersion(versionConstraint string) error {
 	}
 
 	return nil
-}
-
-func newConstraintFromString(versionConstraint string) (version.Constraints, error) {
-	return version.NewConstraint(strings.ReplaceAll(versionConstraint, " ", ", "))
 }
 
 func getFlutterConfig() (*flutter.FlutterConfig, error) {
