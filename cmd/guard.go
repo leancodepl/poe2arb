@@ -19,9 +19,8 @@ func contextWithFlutterConfig(ctx context.Context, flutterConfig *flutter.Flutte
 	return context.WithValue(ctx, key, flutterConfig)
 }
 
-func flutterConfigFromContext(ctx context.Context) (*flutter.FlutterConfig, bool) {
-	flutterCfg, ok := ctx.Value(key).(*flutter.FlutterConfig)
-	return flutterCfg, ok
+func flutterConfigFromCommand(cmd *cobra.Command) *flutter.FlutterConfig {
+	return cmd.Context().Value(key).(*flutter.FlutterConfig)
 }
 
 func ensureSufficientVersion(versionConstraint string) error {
@@ -34,7 +33,10 @@ func ensureSufficientVersion(versionConstraint string) error {
 		return fmt.Errorf("invalid poe2arb-version format in l10n.yaml: %s", versionConstraint)
 	}
 
-	version, _ := version.NewVersion(Version)
+	version, err := version.NewVersion(Version)
+	if err != nil {
+		return fmt.Errorf("poe2arb version format is invalid: %s", err)
+	}
 
 	if !constraint.Check(version) {
 		return fmt.Errorf("Poe2Arb version %s does not match constraint %s defined in l10n.yaml", version, versionConstraint)
@@ -61,7 +63,7 @@ func getFlutterConfig() (*flutter.FlutterConfig, error) {
 	return flutterCfg, nil
 }
 
-func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) {
+func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) error {
 	log := getLogger(cmd)
 
 	logSub := log.Info("loading Flutter config").Sub()
@@ -69,15 +71,17 @@ func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) 
 	flutterCfg, err := getFlutterConfig()
 	if err != nil {
 		logSub.Error("failed: " + err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	err = ensureSufficientVersion(flutterCfg.L10n.Poe2ArbVersion)
 	if err != nil {
 		logSub.Error("failed: " + err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	ctx := contextWithFlutterConfig(cmd.Context(), flutterCfg)
 	cmd.SetContext(ctx)
+
+	return nil
 }

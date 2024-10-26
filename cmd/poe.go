@@ -24,7 +24,7 @@ var (
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		RunE:          runPoe,
-		PreRun:        getFlutterConfigAndEnsureSufficientVersion,
+		PreRunE:        getFlutterConfigAndEnsureSufficientVersion,
 	}
 	termPrefixRegexp = regexp.MustCompile("[a-zA-Z]*")
 )
@@ -104,7 +104,7 @@ func getOptionsSelector(cmd *cobra.Command) (*poeOptionsSelector, error) {
 		return nil, err
 	}
 
-	flutterCfg, _ := flutterConfigFromContext(cmd.Context())
+	flutterCfg := flutterConfigFromCommand(cmd)
 
 	return &poeOptionsSelector{
 		flags: cmd.Flags(),
