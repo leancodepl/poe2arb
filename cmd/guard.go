@@ -10,16 +10,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type flutterConfigKey int
-
-const key flutterConfigKey = 1
+const flutterConfigKey = ctxKey(2)
 
 func contextWithFlutterConfig(ctx context.Context, flutterConfig *flutter.FlutterConfig) context.Context {
-	return context.WithValue(ctx, key, flutterConfig)
+	return context.WithValue(ctx, flutterConfigKey, flutterConfig)
 }
 
 func flutterConfigFromCommand(cmd *cobra.Command) *flutter.FlutterConfig {
-	return cmd.Context().Value(key).(*flutter.FlutterConfig)
+	return cmd.Context().Value(flutterConfigKey).(*flutter.FlutterConfig)
 }
 
 func ensureSufficientVersion(versionConstraint string) error {
