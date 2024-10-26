@@ -17,7 +17,7 @@ func flutterConfigFromCommand(cmd *cobra.Command) *flutter.FlutterConfig {
 }
 
 // getFlutterConfigAndEnsureSufficientVersion gets Flutter project configuration,
-// puts it in the context and verifies if poe2arb version matches constraint.
+// puts it in the command's context and verifies if poe2arb version matches constraint.
 func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) error {
 	log := getLogger(cmd)
 
