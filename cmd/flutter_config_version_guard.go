@@ -16,6 +16,31 @@ func flutterConfigFromCommand(cmd *cobra.Command) *flutter.FlutterConfig {
 	return cmd.Context().Value(flutterConfigKey).(*flutter.FlutterConfig)
 }
 
+// getFlutterConfigAndEnsureSufficientVersion gets Flutter project configuration,
+// puts it in the context and verifies if poe2arb version matches constraint.
+func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) error {
+	log := getLogger(cmd)
+
+	logSub := log.Info("loading Flutter config").Sub()
+
+	flutterCfg, err := getFlutterConfig()
+	if err != nil {
+		logSub.Error("failed: " + err.Error())
+		return err
+	}
+
+	err = ensureSufficientVersion(flutterCfg.L10n.Poe2ArbVersion)
+	if err != nil {
+		logSub.Error("failed: " + err.Error())
+		return err
+	}
+
+	ctx := context.WithValue(cmd.Context(), flutterConfigKey, flutterCfg)
+	cmd.SetContext(ctx)
+
+	return nil
+}
+
 func ensureSufficientVersion(versionConstraint string) error {
 	if versionConstraint == "" {
 		return nil
@@ -50,29 +75,4 @@ func getFlutterConfig() (*flutter.FlutterConfig, error) {
 	}
 
 	return flutterCfg, nil
-}
-
-// getFlutterConfigAndEnsureSufficientVersion gets Flutter project configuration,
-// puts it in the context and verifies if poe2arb version matches constraint.
-func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) error {
-	log := getLogger(cmd)
-
-	logSub := log.Info("loading Flutter config").Sub()
-
-	flutterCfg, err := getFlutterConfig()
-	if err != nil {
-		logSub.Error("failed: " + err.Error())
-		return err
-	}
-
-	err = ensureSufficientVersion(flutterCfg.L10n.Poe2ArbVersion)
-	if err != nil {
-		logSub.Error("failed: " + err.Error())
-		return err
-	}
-
-	ctx := context.WithValue(cmd.Context(), flutterConfigKey, flutterCfg)
-	cmd.SetContext(ctx)
-
-	return nil
 }
