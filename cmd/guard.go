@@ -39,7 +39,7 @@ func ensureSufficientVersion(versionConstraint string) error {
 	}
 
 	if !constraint.Check(version) {
-		return fmt.Errorf("Poe2Arb version %s does not match constraint %s defined in l10n.yaml", version, versionConstraint)
+		return fmt.Errorf("poe2arb version %s does not match constraint %s defined in l10n.yaml", version, versionConstraint)
 	}
 
 	return nil
