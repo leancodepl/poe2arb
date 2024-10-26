@@ -12,10 +12,6 @@ import (
 
 const flutterConfigKey = ctxKey(2)
 
-func contextWithFlutterConfig(ctx context.Context, flutterConfig *flutter.FlutterConfig) context.Context {
-	return context.WithValue(ctx, flutterConfigKey, flutterConfig)
-}
-
 func flutterConfigFromCommand(cmd *cobra.Command) *flutter.FlutterConfig {
 	return cmd.Context().Value(flutterConfigKey).(*flutter.FlutterConfig)
 }
@@ -73,7 +69,7 @@ func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) 
 		return err
 	}
 
-	ctx := contextWithFlutterConfig(cmd.Context(), flutterCfg)
+	ctx := context.WithValue(cmd.Context(), flutterConfigKey, flutterCfg)
 	cmd.SetContext(ctx)
 
 	return nil
