@@ -10,10 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const flutterConfigKey = ctxKey(2)
+type flutterConfigKey struct {}
 
 func flutterConfigFromCommand(cmd *cobra.Command) *flutter.FlutterConfig {
-	return cmd.Context().Value(flutterConfigKey).(*flutter.FlutterConfig)
+	return cmd.Context().Value(flutterConfigKey{}).(*flutter.FlutterConfig)
 }
 
 // getFlutterConfigAndEnsureSufficientVersion gets Flutter project configuration,
@@ -35,7 +35,7 @@ func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) 
 		return err
 	}
 
-	ctx := context.WithValue(cmd.Context(), flutterConfigKey, flutterCfg)
+	ctx := context.WithValue(cmd.Context(), flutterConfigKey{}, flutterCfg)
 	cmd.SetContext(ctx)
 
 	return nil
