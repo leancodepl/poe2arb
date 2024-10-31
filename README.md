@@ -209,6 +209,8 @@ Available formats:
 * version range - `>=0.5.1, <0.7`
 * min/max version - `>0.5.1`, `<=0.7`
 
+You can find more information about version constraints format [here][go-version].
+
 ## Contributing
 
 ### Formatting
@@ -266,6 +268,7 @@ git push origin v0.1.1
 [flutter35-count-placeholders-diagram]: https://github.com/leancodepl/poe2arb/blob/24be17d6721698526c879b3fada87183b359e8e8/art/count-placeholder-syntax.svg
 [placeholder-diagram-img]: art/placeholder-syntax.svg
 [count-placeholder-diagram-img]: art/count-placeholder-syntax.svg
+[go-version]: https://github.com/hashicorp/go-version
 [gofumpt]: https://github.com/mvdan/gofumpt
 [gofmt]: https://pkg.go.dev/cmd/gofmt
 [staticcheck]: https://staticcheck.io
