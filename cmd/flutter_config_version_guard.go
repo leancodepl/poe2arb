@@ -53,7 +53,7 @@ func ensureSufficientVersion(versionConstraint string) error {
 
 	version, err := version.NewVersion(Version)
 	if err != nil {
-		return fmt.Errorf("poe2arb version format is invalid: %s", err)
+		return fmt.Errorf("poe2arb version format is invalid: %w", err)
 	}
 
 	if !constraint.Check(version) {
