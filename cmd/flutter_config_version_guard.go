@@ -12,24 +12,26 @@ import (
 
 type flutterConfigKey struct {}
 
+type flutterConfigVersionGuard struct {}
+
 func flutterConfigFromCommand(cmd *cobra.Command) *flutter.FlutterConfig {
 	return cmd.Context().Value(flutterConfigKey{}).(*flutter.FlutterConfig)
 }
 
 // getFlutterConfigAndEnsureSufficientVersion gets Flutter project configuration,
 // puts it in the command's context and verifies if poe2arb version matches constraint.
-func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) error {
+func (fvg flutterConfigVersionGuard) GetFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) error {
 	log := getLogger(cmd)
 
 	logSub := log.Info("loading Flutter config").Sub()
 
-	flutterCfg, err := getFlutterConfig()
+	flutterCfg, err := fvg.getFlutterConfig()
 	if err != nil {
 		logSub.Error("failed: " + err.Error())
 		return err
 	}
 
-	err = ensureSufficientVersion(flutterCfg.L10n.Poe2ArbVersion)
+	err = fvg.ensureSufficientVersion(flutterCfg.L10n.Poe2ArbVersion)
 	if err != nil {
 		logSub.Error("failed: " + err.Error())
 		return err
@@ -41,7 +43,7 @@ func getFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) 
 	return nil
 }
 
-func ensureSufficientVersion(versionConstraint string) error {
+func (flutterConfigVersionGuard) ensureSufficientVersion(versionConstraint string) error {
 	if versionConstraint == "" {
 		return nil
 	}
@@ -63,7 +65,7 @@ func ensureSufficientVersion(versionConstraint string) error {
 	return nil
 }
 
-func getFlutterConfig() (*flutter.FlutterConfig, error) {
+func (flutterConfigVersionGuard) getFlutterConfig() (*flutter.FlutterConfig, error) {
 	workDir, err := os.Getwd()
 	if err != nil {
 		return nil, err

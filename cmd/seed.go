@@ -19,7 +19,7 @@ var seedCmd = &cobra.Command{
 	SilenceErrors: true,
 	SilenceUsage:  true,
 	RunE:          runSeed,
-	PreRunE:       getFlutterConfigAndEnsureSufficientVersion,
+	PreRunE:       flutterConfigVersionGuard{}.GetFlutterConfigAndEnsureSufficientVersion,
 }
 
 func init() {
