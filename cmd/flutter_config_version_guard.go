@@ -20,18 +20,18 @@ func flutterConfigFromCommand(cmd *cobra.Command) *flutter.FlutterConfig {
 
 // GetFlutterConfigAndEnsureSufficientVersion gets Flutter project configuration,
 // puts it in the command's context and verifies if poe2arb version matches constraint.
-func (fvg flutterConfigVersionGuard) GetFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) error {
+func (fcvg flutterConfigVersionGuard) GetFlutterConfigAndEnsureSufficientVersion(cmd *cobra.Command, _ []string) error {
 	log := getLogger(cmd)
 
 	logSub := log.Info("loading Flutter config").Sub()
 
-	flutterCfg, err := fvg.getFlutterConfig()
+	flutterCfg, err := fcvg.getFlutterConfig()
 	if err != nil {
 		logSub.Error("failed: " + err.Error())
 		return err
 	}
 
-	err = fvg.ensureSufficientVersion(flutterCfg.L10n.Poe2ArbVersion)
+	err = fcvg.ensureSufficientVersion(flutterCfg.L10n.Poe2ArbVersion)
 	if err != nil {
 		logSub.Error("failed: " + err.Error())
 		return err
