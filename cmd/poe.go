@@ -24,7 +24,7 @@ var (
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		RunE:          runPoe,
-		PreRunE:       flutterConfigVersionGuard{}.GetFlutterConfigAndEnsureSufficientVersion,
+		PreRunE:       versionGuard.GetFlutterConfigAndEnsureSufficientVersion,
 	}
 	termPrefixRegexp = regexp.MustCompile("[a-zA-Z]*")
 )

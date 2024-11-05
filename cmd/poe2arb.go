@@ -9,10 +9,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "poe2arb",
-	Short: "POEditor JSON to Flutter ARB converter",
-}
+var (
+	rootCmd = &cobra.Command{
+		Use:   "poe2arb",
+		Short: "POEditor JSON to Flutter ARB converter",
+	}
+	versionGuard = flutterConfigVersionGuard{}
+)
 
 type loggerKey struct{}
 
