@@ -204,10 +204,13 @@ You must provide at least `other` plural category for your translations, otherwi
 
 You can constrain poe2arb version by specifying `poe2arb-version` option in `l10n.yaml`.
 
-Available formats:
-* specific version - `0.5.1`
-* version range - `>=0.5.1, <0.7`
-* min/max version - `>0.5.1`, `<=0.7`
+```yaml
+# Available formats:
+poe2arb-version: "0.5.1"          # Specific version
+poe2arb-version: ">=0.5.1, <0.7"  # Version range
+poe2arb-version: ">0.5.1"         # Minimum version
+poe2arb-version: "<=0.7"          # Maximum version
+```
 
 You can find more information about version constraints format [here][go-version].
 
