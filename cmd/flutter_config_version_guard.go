@@ -10,9 +10,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type flutterConfigKey struct {}
+type flutterConfigKey struct{}
 
-type flutterConfigVersionGuard struct {}
+type flutterConfigVersionGuard struct{}
 
 func flutterConfigFromCommand(cmd *cobra.Command) *flutter.FlutterConfig {
 	return cmd.Context().Value(flutterConfigKey{}).(*flutter.FlutterConfig)
