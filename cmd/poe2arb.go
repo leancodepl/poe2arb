@@ -9,14 +9,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "poe2arb",
-	Short: "POEditor JSON to Flutter ARB converter",
-}
+var (
+	rootCmd = &cobra.Command{
+		Use:   "poe2arb",
+		Short: "POEditor JSON to Flutter ARB converter",
+	}
+	versionGuard = flutterConfigVersionGuard{}
+)
 
-type ctxKey int
-
-const loggerKey = ctxKey(1)
+type loggerKey struct{}
 
 func Execute(logger *log.Logger) {
 	rootCmd.AddCommand(convertCmd)
@@ -24,7 +25,7 @@ func Execute(logger *log.Logger) {
 	rootCmd.AddCommand(seedCmd)
 	rootCmd.AddCommand(versionCmd)
 
-	ctx := context.WithValue(context.Background(), loggerKey, logger)
+	ctx := context.WithValue(context.Background(), loggerKey{}, logger)
 
 	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		os.Exit(1)
@@ -32,5 +33,5 @@ func Execute(logger *log.Logger) {
 }
 
 func getLogger(cmd *cobra.Command) *log.Logger {
-	return cmd.Context().Value(loggerKey).(*log.Logger)
+	return cmd.Context().Value(loggerKey{}).(*log.Logger)
 }

@@ -33,6 +33,7 @@ type L10n struct {
 	POEditorProjectID  string   `yaml:"poeditor-project-id"`
 	POEditorLangs      []string `yaml:"poeditor-langs"`
 	POEditorTermPrefix string   `yaml:"poeditor-term-prefix"`
+	Poe2ArbVersion     string   `yaml:"poe2arb-version"`
 }
 
 func newDefaultL10n() *L10n {

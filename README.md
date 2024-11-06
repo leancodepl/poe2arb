@@ -80,7 +80,8 @@ poe2arb convert io --lang en < Hello_World_English.json > lib/l10n/app_en.arb
 
 ### Seeding POEditor project
 
-**EXPERIMENTAL FEATURE**
+> [!WARNING]
+> **EXPERIMENTAL FEATURE**
 
 If you're setting up a project from some template code, you probably already have some ARB files that need
 to be imported into the POEditor project. Using the POEditor's built-in tool won't give a satisfying result,
@@ -96,8 +97,8 @@ with already populated translations is inadvisable.
 
 ## Syntax & supported features
 
-Term name must be a valid Dart field name, additionaly, it must start with a
-lowercase letter ([Flutter's constraint][term-name-constraint]).
+> [!IMPORTANT]
+> Term name must be a valid Dart field name, additionaly, it must start with a lowercase letter ([Flutter's constraint][term-name-constraint]).
 
 ### Term prefix filtering
 
@@ -150,6 +151,7 @@ Available placeholder types:
 **Only template files can define placeholders with their type and format.** In non-template languages, placeholders' types and formats
 are ignored and no logical errors are reported.
 
+> [!NOTE]
 > \*If you're using Flutter 3.5 or older, you need to specify format for numeric placeholders.
 > Otherwise `flutter gen-l10n` will fail. You can look at the legacy placeholder syntax diagrams
 > [for placeholders here][flutter35-placeholders-diagram] and for [plural's `count` placeholders here][flutter35-count-placeholders-diagram].
@@ -197,6 +199,20 @@ other:  Andy has {count} kilograms of {fruit}.
 ```
 
 You must provide at least `other` plural category for your translations, otherwise it won't be converted.
+
+## Constraining version for a Flutter project
+
+You can constrain poe2arb version by specifying `poe2arb-version` option in `l10n.yaml`.
+
+```yaml
+# Available formats:
+poe2arb-version: "0.5.1"          # Specific version
+poe2arb-version: ">=0.5.1, <0.7"  # Version range
+poe2arb-version: ">0.5.1"         # Minimum version
+poe2arb-version: "<=0.7"          # Maximum version
+```
+
+You can find more information about version constraints format [here][go-version].
 
 ## Contributing
 
@@ -255,6 +271,7 @@ git push origin v0.1.1
 [flutter35-count-placeholders-diagram]: https://github.com/leancodepl/poe2arb/blob/24be17d6721698526c879b3fada87183b359e8e8/art/count-placeholder-syntax.svg
 [placeholder-diagram-img]: art/placeholder-syntax.svg
 [count-placeholder-diagram-img]: art/count-placeholder-syntax.svg
+[go-version]: https://github.com/hashicorp/go-version
 [gofumpt]: https://github.com/mvdan/gofumpt
 [gofmt]: https://pkg.go.dev/cmd/gofmt
 [staticcheck]: https://staticcheck.io

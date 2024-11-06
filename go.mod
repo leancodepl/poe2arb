@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/TwiN/go-color v1.4.0
 	github.com/caarlos0/env/v6 v6.10.1
+	github.com/hashicorp/go-version v1.7.0
 	github.com/spf13/cobra v1.6.1
 	github.com/wk8/go-ordered-map/v2 v2.1.1
 	gopkg.in/yaml.v3 v3.0.1
