@@ -167,8 +167,9 @@ func runSeed(cmd *cobra.Command, args []string) error {
 					// we try again with free account rate limit timeout.
 					freeAccountRateLimit = true
 
-					fileLog.Info("paid account rate limit was not enough, retrying with free account rate limit")
-					time.Sleep(poeditor.FreeAccountUploadRateLimit - poeditor.FreeAccountUploadRateLimit)
+					uploadLog.Info("paid account rate limit was not enough, retrying with free account rate limit")
+					// Yes, we need to wait the full rate limit timeout again, not just the difference.
+					time.Sleep(poeditor.FreeAccountUploadRateLimit)
 
 					continue
 				}
