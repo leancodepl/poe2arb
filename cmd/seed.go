@@ -157,8 +157,9 @@ func runSeed(cmd *cobra.Command, args []string) error {
 
 		uploadLog := fileLog.Info("uploading JSON to POEditor").Sub()
 
+		uploadFileReader := bytes.NewReader(b.Bytes())
 		for {
-			err = poeClient.Upload(options.ProjectID, lang, &b)
+			err = poeClient.Upload(options.ProjectID, lang, uploadFileReader)
 
 			if err != nil {
 				var poeErr *poeditor.Error
@@ -168,6 +169,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 					freeAccountRateLimit = true
 
 					uploadLog.Info("paid account rate limit was not enough, retrying with free account rate limit")
+					uploadFileReader = bytes.NewReader(b.Bytes())
 					// Yes, we need to wait the full rate limit timeout again, not just the difference.
 					time.Sleep(poeditor.FreeAccountUploadRateLimit)
 
