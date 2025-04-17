@@ -151,7 +151,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 				rateLimitName = "(free account)"
 			}
 
-			fileLog.Info("waiting %s seconds %s to avoid rate limiting", rateLimitTimeout.Seconds(), rateLimitName)
+			fileLog.Info("waiting %v %s to avoid rate limiting", rateLimitTimeout, rateLimitName)
 			time.Sleep(rateLimitTimeout)
 		}
 
@@ -169,7 +169,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 					freeAccountRateLimit = true
 
 					freeRateLimit := poeditor.FreeAccountUploadRateLimit
-					uploadLog.Info("paid account rate limit was not enough, retrying with free account rate limit (%s seconds)", freeRateLimit.Seconds())
+					uploadLog.Info("paid account rate limit was not enough, retrying with free account rate limit (%v)", freeRateLimit)
 					uploadFileReader = bytes.NewReader(b.Bytes())
 					// Yes, we need to wait the full rate limit timeout again, not just the difference.
 					time.Sleep(freeRateLimit)
