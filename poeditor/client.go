@@ -51,10 +51,10 @@ func (c *Client) encodeBody(params map[string]string) io.Reader {
 }
 
 func (c *Client) request(path string, params map[string]string, respBody interface{}) error {
-	reqUrl := fmt.Sprintf("%s%s", c.apiURL, path)
+	reqURL := fmt.Sprintf("%s%s", c.apiURL, path)
 	body := c.encodeBody(params)
 
-	req, err := http.NewRequest("POST", reqUrl, body)
+	req, err := http.NewRequest("POST", reqURL, body)
 	if err != nil {
 		return fmt.Errorf("creating HTTP request: %w", err)
 	}
@@ -133,7 +133,7 @@ func (c *Client) GetExportURL(projectID, languageCode string) (string, error) {
 }
 
 func (c *Client) Upload(projectID, languageCode string, file io.Reader) error {
-	reqUrl := fmt.Sprintf("%s%s", c.apiURL, "/projects/upload")
+	reqURL := fmt.Sprintf("%s%s", c.apiURL, "/projects/upload")
 
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
@@ -157,7 +157,7 @@ func (c *Client) Upload(projectID, languageCode string, file io.Reader) error {
 		return fmt.Errorf("closing multipart writer: %w", err)
 	}
 
-	req, err := http.NewRequest("POST", reqUrl, &b)
+	req, err := http.NewRequest("POST", reqURL, &b)
 	if err != nil {
 		return fmt.Errorf("creating HTTP request: %w", err)
 	}
