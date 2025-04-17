@@ -84,6 +84,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 	}
 
 	first := true
+	freeAccountRateLimit := false
 	for _, filePath := range files {
 		fileLog = log.Info("seeding %s", filepath.Base(filePath)).Sub()
 		fileLog.Info("converting ARB to JSON")
@@ -143,18 +144,41 @@ func runSeed(cmd *cobra.Command, args []string) error {
 		}
 
 		if !first {
-			fileLog.Info("waiting 30 seconds to avoid rate limiting")
-			time.Sleep(30 * time.Second)
+			rateLimitTimeout := poeditor.PaidAccountUploadRateLimit
+			rateLimitName := "(paid account)"
+			if freeAccountRateLimit {
+				rateLimitTimeout = poeditor.FreeAccountUploadRateLimit
+				rateLimitName = "(free account)"
+			}
+
+			fileLog.Info("waiting %s seconds %s to avoid rate limiting", rateLimitTimeout, rateLimitName)
+			time.Sleep(rateLimitTimeout)
 		}
 
 		uploadLog := fileLog.Info("uploading JSON to POEditor").Sub()
 
-		err = poeClient.Upload(options.ProjectID, lang, &b)
-		if err != nil {
-			uploadLog.Error("failed: " + err.Error())
-			return err
-		} else {
-			fileLog.Success("done")
+		for {
+			err = poeClient.Upload(options.ProjectID, lang, &b)
+
+			if err != nil {
+				var poeErr *poeditor.Error
+				if errors.As(err, &poeErr) && poeErr.Code == poeditor.RateLimitErrorCode && !freeAccountRateLimit {
+					// We firstly tried to upload the files with paid account rate limit timeout. If that fails,
+					// we try again with free account rate limit timeout.
+					freeAccountRateLimit = true
+
+					fileLog.Info("paid account rate limit was not enough, retrying with free account rate limit")
+					time.Sleep(poeditor.FreeAccountUploadRateLimit - poeditor.FreeAccountUploadRateLimit)
+
+					continue
+				}
+
+				uploadLog.Error("failed: " + err.Error())
+				return err
+			} else {
+				fileLog.Success("done")
+				break
+			}
 		}
 
 		first = false

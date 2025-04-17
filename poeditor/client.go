@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 const apiURL = "https://api.poeditor.com/v2"
@@ -22,6 +23,13 @@ type Client struct {
 
 	client http.Client
 }
+
+const (
+	// PaidAccountUploadRateLimit is from https://poeditor.com/docs/api_rates
+	PaidAccountUploadRateLimit = 10 * time.Second
+	// FreeAccountUploadRateLimit is from https://poeditor.com/docs/api_rates
+	FreeAccountUploadRateLimit = 20 * time.Second
+)
 
 func NewClient(token string) *Client {
 	return &Client{
