@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 const apiURL = "https://api.poeditor.com/v2"
@@ -23,6 +24,13 @@ type Client struct {
 	client http.Client
 }
 
+const (
+	// PaidAccountUploadRateLimit is from https://poeditor.com/docs/api_rates
+	PaidAccountUploadRateLimit = 10 * time.Second
+	// FreeAccountUploadRateLimit is from https://poeditor.com/docs/api_rates
+	FreeAccountUploadRateLimit = 20 * time.Second
+)
+
 func NewClient(token string) *Client {
 	return &Client{
 		apiURL: apiURL,
@@ -31,7 +39,7 @@ func NewClient(token string) *Client {
 	}
 }
 
-func (c Client) encodeBody(params map[string]string) io.Reader {
+func (c *Client) encodeBody(params map[string]string) io.Reader {
 	values := url.Values{}
 	for key, value := range params {
 		values.Set(key, value)
@@ -43,10 +51,10 @@ func (c Client) encodeBody(params map[string]string) io.Reader {
 }
 
 func (c *Client) request(path string, params map[string]string, respBody interface{}) error {
-	url := fmt.Sprintf("%s%s", c.apiURL, path)
+	reqURL := fmt.Sprintf("%s%s", c.apiURL, path)
 	body := c.encodeBody(params)
 
-	req, err := http.NewRequest("POST", url, body)
+	req, err := http.NewRequest("POST", reqURL, body)
 	if err != nil {
 		return fmt.Errorf("creating HTTP request: %w", err)
 	}
@@ -125,13 +133,13 @@ func (c *Client) GetExportURL(projectID, languageCode string) (string, error) {
 }
 
 func (c *Client) Upload(projectID, languageCode string, file io.Reader) error {
-	url := fmt.Sprintf("%s%s", c.apiURL, "/projects/upload")
+	reqURL := fmt.Sprintf("%s%s", c.apiURL, "/projects/upload")
 
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
-	w.WriteField("api_token", c.token)
-	w.WriteField("id", projectID)
-	w.WriteField("updating", "terms_translations")
+	_ = w.WriteField("api_token", c.token)
+	_ = w.WriteField("id", projectID)
+	_ = w.WriteField("updating", "terms_translations")
 
 	fileWriter, err := w.CreateFormFile("file", "file.json")
 	if err != nil {
@@ -141,15 +149,15 @@ func (c *Client) Upload(projectID, languageCode string, file io.Reader) error {
 		return fmt.Errorf("copying file to form field: %w", err)
 	}
 
-	w.WriteField("language", languageCode)
-	w.WriteField("overwrite", "0")
+	_ = w.WriteField("language", languageCode)
+	_ = w.WriteField("overwrite", "0")
 
 	err = w.Close()
 	if err != nil {
 		return fmt.Errorf("closing multipart writer: %w", err)
 	}
 
-	req, err := http.NewRequest("POST", url, &b)
+	req, err := http.NewRequest("POST", reqURL, &b)
 	if err != nil {
 		return fmt.Errorf("creating HTTP request: %w", err)
 	}

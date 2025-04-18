@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+const RateLimitErrorCode = 4048
+
 // Error represents a known error from POEditor API.
 //
 // See: https://poeditor.com/docs/error_codes
@@ -65,8 +67,8 @@ func errorDescriptionFromCode(code int) string {
 		return "The file could not be parsed."
 	case 4047:
 		return "Wrong export file format chosen."
-	case 4048:
-		return "File uploads are limited to one every 30 seconds."
+	case RateLimitErrorCode:
+		return "File uploads are limited according to plan."
 	case 4049:
 		return "The parameter –updating- could not be found in the request."
 	case 4050:

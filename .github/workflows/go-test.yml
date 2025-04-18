@@ -17,19 +17,19 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
 
       - name: Verify code formatting
         run: |
-          go install mvdan.cc/gofumpt@v0.5
+          go install mvdan.cc/gofumpt@latest
           test -z $(gofumpt -l .)
 
       - name: Run linter
         if: always()
         run: |
-          go install honnef.co/go/tools/cmd/staticcheck@v0.4
+          go install honnef.co/go/tools/cmd/staticcheck@latest
           staticcheck ./...
 
       - name: Run tests with coverage
