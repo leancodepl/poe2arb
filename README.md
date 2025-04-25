@@ -220,7 +220,7 @@ You can find more information about version constraints format [here][go-version
 
 We use [gofumpt][gofumpt], which is a superset of [gofmt][gofmt].
 
-To make `gopls` in VS Code use `gofumpt`, add this to your settings:
+You can use `gofumpt` with `go tool`. To make `gopls` in VS Code use `gofumpt`, add this to your settings:
 
 ```json
 "gopls": {
@@ -232,10 +232,9 @@ To make `gopls` in VS Code use `gofumpt`, add this to your settings:
 
 We use [staticcheck][staticcheck] with all checks enabled.
 
-To make VS Code use `staticcheck`, add this to your settings:
+You can use `staticcheck` with `go tool`. VS Code with Go extension uses `staticcheck` by default, add this to your settings:
 
 ```json
-"go.lintTool": "staticcheck",
 "go.lintFlags": ["-checks=all"],
 ```
 
