@@ -39,7 +39,6 @@ require (
 )
 
 tool (
-	github.com/leancodepl/poe2arb
 	honnef.co/go/tools/cmd/staticcheck
 	mvdan.cc/gofumpt
 )
