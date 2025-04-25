@@ -23,14 +23,12 @@ jobs:
 
       - name: Verify code formatting
         run: |
-          go install mvdan.cc/gofumpt@latest
-          test -z $(gofumpt -l .)
+          test -z $(go tool gofumpt -l .)
 
       - name: Run linter
         if: always()
         run: |
-          go install honnef.co/go/tools/cmd/staticcheck@latest
-          staticcheck ./...
+          go tool staticcheck ./...
 
       - name: Run tests with coverage
         if: always()
