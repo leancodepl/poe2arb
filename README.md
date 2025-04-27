@@ -139,7 +139,9 @@ Available placeholder types:
 * `DateTime`
 
   Placeholders with type `DateTime` must have a format specified. The valid values are the names of
-  [the `DateFormat` constructors][dateformat-constructors], e.g. `yMd`, `jms`, or `EEEEE`.
+  [the `DateFormat` constructors][dateformat-constructors], e.g., `yMd`, `jms`, or `EEEEE`.
+  Additionally, the `+` character can be used to combine date and time format information, e.g., `yMd+jms`.
+  This allows specifying both date and time formats in a single placeholder.
 * `num`, `int`, `double`
 
   Placeholders with type `num`, `int`, or `double` **may have\*** a format specified. The valid values are the names

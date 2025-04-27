@@ -17,7 +17,7 @@ const (
 
 var (
 	messageNameRegexp = regexp.MustCompile(`^[a-z][a-zA-Z_\d]*$`)
-	placeholderRegexp = regexp.MustCompile(`{(` + messageParameterPattern + `)(?:,([a-zA-Z]+)(?:,([a-zA-Z]+))?)?}`)
+	placeholderRegexp = regexp.MustCompile(`{(` + messageParameterPattern + `)(?:,([a-zA-Z]+)(?:,([a-zA-Z+]+))?)?}`)
 )
 
 func parseName(name string) (string, error) {
