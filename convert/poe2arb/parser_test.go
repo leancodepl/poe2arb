@@ -88,10 +88,10 @@ func TestTranslationParserParseErrors(t *testing.T) {
 		},
 		{
 			TestName:       "complex placeholders",
-			Input:          "a {placeholder} with {placeholder,DateTime,yMd} {default} and {default}",
+			Input:          "a {placeholder} with {placeholder,DateTime,yMd+jm} {default} and {default}",
 			ExpectedOutput: "a {placeholder} with {placeholder} {default} and {default}",
 			ExpectedPlaceholders: map[string]*placeholder{
-				"placeholder": {"DateTime", "yMd"},
+				"placeholder": {"DateTime", "yMd+jm"},
 				"default":     nil,
 			},
 		},
@@ -178,6 +178,15 @@ func TestTranslationParserAddPlaceholder(t *testing.T) {
 			Format:   "format",
 			ExpectedPlaceholders: map[string]*placeholder{
 				"param": {"DateTime", "format"},
+			},
+		},
+		{
+			TestName: "name, type DateTime and full date-time format",
+			Name:     "param",
+			Type:     "DateTime",
+			Format:   "date-format+time-format",
+			ExpectedPlaceholders: map[string]*placeholder{
+				"param": {"DateTime", "date-format+time-format"},
 			},
 		},
 		{
