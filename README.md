@@ -140,7 +140,7 @@ Available placeholder types:
 
   Placeholders with type `DateTime` must have a format specified. The valid values are the names of
   [the `DateFormat` constructors][dateformat-constructors], e.g., `yMd`, `jms`, or `EEEEE`.
-  Additionally, the `+` character can be used to combine date and time format information, e.g., `yMd+jms`.
+  As of Flutter 3.29.0, the `+` character can be utilized to merge date and time formatting information, for instance, `yMd+jms`.
   This allows specifying both date and time formats in a single placeholder.
 * `num`, `int`, `double`
 
