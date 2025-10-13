@@ -7,6 +7,8 @@ class Poe2arb < Formula
   homepage "https://github.com/leancodepl/poe2arb"
   version "2.4.0"
 
+  disable! date: "2025-10-12", because: "the cask should be used now instead", replacement_cask: "poe2arb"
+
   on_macos do
     url "https://github.com/leancodepl/poe2arb/releases/download/v2.4.0/poe2arb_2.4.0_darwin_all.tar.gz"
     sha256 "a3999d0c3516d6a459bcdd5ed25bd379c0c69d6ec0bb74c28d4a375909e4456e"

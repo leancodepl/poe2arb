@@ -13,13 +13,15 @@ universal_binaries:
 changelog:
   use: github-native
 release:
-brews:
-  - repository:
-      owner: leancodepl
-      name: poe2arb
-    directory: Formula
+homebrew_casks:
+  - name: poe2arb
     homepage: https://github.com/leancodepl/poe2arb
     description: POEditor JSON to Flutter ARB converter.
-    install: |
-      bin.install "poe2arb"
-      generate_completions_from_executable(bin/"poe2arb", "completion")
+    directory: Casks
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/poe2arb"]
+          end
+          generate_completions_from_executable(bin/"poe2arb", "completion")
