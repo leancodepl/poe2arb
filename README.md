@@ -18,7 +18,7 @@ releases][releases] artifacts or using Homebrew:
 
 ```
 brew tap leancodepl/poe2arb
-brew install poe2arb
+brew install --cask poe2arb
 ```
 
 ### `POEDITOR_TOKEN`
