@@ -3,7 +3,7 @@ cask "poe2arb" do
   name "poe2arb"
   desc "POEditor JSON to Flutter ARB converter."
   homepage "https://github.com/leancodepl/poe2arb"
-  version "2.5.3"
+  version "2.5.4"
 
   livecheck do
     skip "Auto-generated on release."
@@ -13,13 +13,13 @@ cask "poe2arb" do
 
   on_macos do
     url "https://github.com/leancodepl/poe2arb/releases/download/v#{version}/poe2arb_#{version}_darwin_all.tar.gz"
-    sha256 "4d594ebaa768b0dfe316d08310e6394dedf7989caefc93157086e9d764fc2cc8"
+    sha256 "128a040de7a950ab7bb001e9d3306f915e84089d6addcd2a241cba9bf8b456ce"
   end
 
   on_linux do
     on_intel do
       url "https://github.com/leancodepl/poe2arb/releases/download/v#{version}/poe2arb_#{version}_linux_amd64.tar.gz"
-      sha256 "9cab7cb98610dfea287d78e056dec1b27f89fefbcc25830ae7ba4fdc5c957261"
+      sha256 "76dff9eab77f5fd2a02ded6d9e5c9bdb7bcb2c5ac5383c2b19fa09a3fb65e5b4"
     end
   end
 
@@ -27,7 +27,6 @@ cask "poe2arb" do
     if OS.mac?
       system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/poe2arb"]
     end
-    generate_completions_from_executable(bin/"poe2arb", "completion")
   end
 
   # No zap stanza required
