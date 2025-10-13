@@ -21,6 +21,14 @@ brew tap leancodepl/poe2arb
 brew install --cask poe2arb
 ```
 
+### If you had poe2arb v2.5.0 or older installed via Homebrew
+
+```
+brew update
+brew uninstall poe2arb
+brew install --cask poe2arb
+```
+
 ### `POEDITOR_TOKEN`
 
 The `poe2arb poe` command requires a POEditor read-only API token.
