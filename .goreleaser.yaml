@@ -18,6 +18,9 @@ homebrew_casks:
     homepage: https://github.com/leancodepl/poe2arb
     description: POEditor JSON to Flutter ARB converter.
     directory: Casks
+    repository:
+      owner: leancodepl
+      name: poe2arb
     hooks:
       post:
         install: |
