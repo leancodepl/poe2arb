@@ -29,4 +29,3 @@ homebrew_casks:
           if OS.mac?
             system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/poe2arb"]
           end
-          generate_completions_from_executable(bin/"poe2arb", "completion")
