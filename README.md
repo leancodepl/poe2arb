@@ -285,6 +285,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 - **Creators of [Patrol][patrol-landing]** – the next-gen testing framework for Flutter.
 
 - **Production-Ready** – We use this package in apps with millions of users.
+
 - **Full-Cycle Product Development** – We take your product from scratch to long-term maintenance.
 
 <div align="center">
