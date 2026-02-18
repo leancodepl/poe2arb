@@ -1,5 +1,7 @@
 <div align="center">
 
+[![Banner][banner-img]][leancode-landing]
+
 # poe2arb
 
 [![Latest GitHub release][github-release-img]][github-release-link]
@@ -266,6 +268,37 @@ git tag v0.1.1
 git push origin v0.1.1
 ```
 
+---
+
+## 🛠️ Maintained by LeanCode
+<div align="center">
+
+  [<img src="https://leancodepublic.blob.core.windows.net/public/wide.png" alt="LeanCode Logo" height="100" />][leancode-landing]
+
+</div>
+
+This package is built with 💙 by **[LeanCode][leancode-landing]**.
+We are **top-tier experts** focused on Flutter Enterprise solutions.
+
+### Why LeanCode?
+
+- **Creators of [Patrol][patrol-landing]** – the next-gen testing framework for Flutter.
+
+- **Production-Ready** – We use this package in apps with millions of users.
+
+- **Full-Cycle Product Development** – We take your product from scratch to long-term maintenance.
+
+<div align="center">
+  <br />
+
+  **Need help with your Flutter project?**
+
+  [**👉 Hire our team**][leancode-estimate]
+  &nbsp;&nbsp;•&nbsp;&nbsp;
+  [Check our other packages][leancode-packages]
+
+</div>
+
 [github-release-link]: https://github.com/leancodepl/poe2arb/releases
 [github-release-img]: https://img.shields.io/github/v/release/leancodepl/poe2arb?label=version&sort=semver
 [ci-status-link]: https://github.com/leancodepl/poe2arb/actions/workflows/go-test.yml
@@ -284,3 +317,8 @@ git push origin v0.1.1
 [gofumpt]: https://github.com/mvdan/gofumpt
 [gofmt]: https://pkg.go.dev/cmd/gofmt
 [staticcheck]: https://staticcheck.io
+[banner-img]: art/banner.png
+[leancode-landing]: https://leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=poe2arb
+[leancode-estimate]: https://leancode.co/get-estimate?utm_source=github.com&utm_medium=referral&utm_campaign=poe2arb
+[leancode-packages]: https://pub.dev/packages?q=publisher%3Aleancode.co&sort=downloads
+[patrol-landing]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=poe2arb
