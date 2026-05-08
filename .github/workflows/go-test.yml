@@ -39,6 +39,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # Both integration jobs hit the same POEditor account, which is
+    # rate-limited. Share one concurrency group so they never run in parallel.
+    concurrency:
+      group: poeditor-integration
+      cancel-in-progress: false
+
     strategy:
       matrix:
         flutter_version: ['3.16']
@@ -91,11 +97,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # The write test mutates a shared POEditor project. Avoid running multiple
-    # instances of this job in parallel — concurrency: cancel-in-progress
-    # ensures only the latest run holds the lock.
+    # Shares the integration-test concurrency group: there's only one POEditor
+    # test account, so the read-only and write jobs must not run in parallel.
     concurrency:
-      group: poeditor-write-integration
+      group: poeditor-integration
       cancel-in-progress: false
 
     steps:
