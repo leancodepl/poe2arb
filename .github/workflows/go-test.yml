@@ -81,3 +81,41 @@ jobs:
               cat lib/$dir/app_$locale.arb
             done
           done
+
+  write-integration-test:
+    name: Write integration test (seed + upload)
+    # Skips on PRs from contributors who don't have access to the write
+    # secrets, and on forks. Set the POEDITOR_INTEGRATION_TESTS_WRITE_PROJECT_ID
+    # repo variable to enable.
+    if: ${{ vars.POEDITOR_INTEGRATION_TESTS_WRITE_PROJECT_ID != '' }}
+
+    runs-on: ubuntu-latest
+
+    # The write test mutates a shared POEditor project. Avoid running multiple
+    # instances of this job in parallel — concurrency: cancel-in-progress
+    # ensures only the latest run holds the lock.
+    concurrency:
+      group: poeditor-write-integration
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+
+      - name: Build binary
+        run: |
+          go build
+          mv ./poe2arb /usr/local/bin
+
+      - name: Run write integration test
+        env:
+          # Write-access POEditor token for the dedicated test project.
+          POEDITOR_TOKEN: ${{ secrets.POEDITOR_INTEGRATION_TESTS_WRITE_TOKEN }}
+          POE_PROJECT_ID: ${{ vars.POEDITOR_INTEGRATION_TESTS_WRITE_PROJECT_ID }}
+        working-directory: integration_test
+        run: ./scripts/run_write_test.sh

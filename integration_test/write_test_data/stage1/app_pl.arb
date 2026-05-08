@@ -1,0 +1,6 @@
+{
+  "@@locale": "pl",
+  "hello": "Cześć",
+  "goodbye": "Do widzenia",
+  "thanks": "Dziękuję, {name}"
+}

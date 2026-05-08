@@ -126,9 +126,15 @@ Workflow:
 5. Uploads each ARB file to POEditor with overwrite enabled, template language first.
 
 ```
-poe2arb upload          # safe: aborts if any remote terms would be deleted
-poe2arb upload --force  # also deletes terms missing locally
+poe2arb upload            # safe: aborts if any remote terms would be deleted
+poe2arb upload --force    # also deletes terms missing locally
+poe2arb upload --dry-run  # preview the diff without changing POEditor
 ```
+
+Use `--dry-run` to see exactly what `upload` would do: the lists of terms
+to be added, removed, and the per-language summary of translation changes
+(`added` / `updated` / `unchanged`), and whether any languages would have to
+be created in the project. No requests that mutate POEditor state are made.
 
 It uses the same configuration as `poe2arb poe`. Term-prefix filtering is honored, so
 deletions are limited to terms in your prefix scope — sibling packages sharing the same
@@ -138,9 +144,10 @@ POEditor project are unaffected.
 
 In addition to the options shared with `poe2arb poe`:
 
-| Description                                                                                                                                                            | Flag      |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| Allow deletion of terms that are present in POEditor but missing from local ARB files. Without this flag, the upload aborts and prints the list of would-be deletions. | `--force` |
+| Description                                                                                                                                                            | Flag        |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| Allow deletion of terms that are present in POEditor but missing from local ARB files. Without this flag, the upload aborts and prints the list of would-be deletions. | `--force`   |
+| Preview the diff (terms to add/remove and per-language change counts) without making any changes to POEditor.                                                          | `--dry-run` |
 
 ## Syntax & supported features
 

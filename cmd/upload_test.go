@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/leancodepl/poe2arb/convert"
 	"github.com/leancodepl/poe2arb/poeditor"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -132,4 +134,96 @@ func TestOrderTemplateFirst(t *testing.T) {
 	files := []string{"a", "b", "c"}
 	got := orderTemplateFirst(files, "b")
 	assert.Equal(t, []string{"b", "a", "c"}, got)
+}
+
+func TestTermsToAdd(t *testing.T) {
+	remote := []poeditor.Term{
+		{Term: "existing"},
+		{Term: "alsoExisting"},
+	}
+	local := map[string]struct{}{
+		"existing":     {},
+		"alsoExisting": {},
+		"newTerm":      {},
+		"anotherNew":   {},
+	}
+
+	got := termsToAdd(remote, local, nil, "")
+	assert.Equal(t, []string{"anotherNew", "newTerm"}, got)
+}
+
+func ptr(s string) *string { return &s }
+
+func TestEqualTranslation(t *testing.T) {
+	t.Run("string equal", func(t *testing.T) {
+		local := convert.POETermDefinition{Value: ptr("Hello")}
+		remote := json.RawMessage(`"Hello"`)
+		assert.True(t, equalTranslation(local, remote))
+	})
+
+	t.Run("string not equal", func(t *testing.T) {
+		local := convert.POETermDefinition{Value: ptr("Hello")}
+		remote := json.RawMessage(`"Hi"`)
+		assert.False(t, equalTranslation(local, remote))
+	})
+
+	t.Run("nil and empty are treated as equal", func(t *testing.T) {
+		local := convert.POETermDefinition{Value: ptr("")}
+		remote := json.RawMessage(`null`)
+		assert.True(t, equalTranslation(local, remote))
+	})
+
+	t.Run("plural shape mismatch is unequal", func(t *testing.T) {
+		local := convert.POETermDefinition{Value: ptr("Hello")}
+		remote := json.RawMessage(`{"one":"a","other":"b"}`)
+		assert.False(t, equalTranslation(local, remote))
+	})
+
+	t.Run("plural equal regardless of key order", func(t *testing.T) {
+		local := convert.POETermDefinition{
+			IsPlural: true,
+			Plural: &convert.POETermPluralDefinition{
+				One:   ptr("1 apple"),
+				Other: "{count} apples",
+			},
+		}
+		remote := json.RawMessage(`{"other":"{count} apples","one":"1 apple"}`)
+		assert.True(t, equalTranslation(local, remote))
+	})
+
+	t.Run("plural unequal in 'other' branch", func(t *testing.T) {
+		local := convert.POETermDefinition{
+			IsPlural: true,
+			Plural: &convert.POETermPluralDefinition{
+				One:   ptr("1 apple"),
+				Other: "{count} apples",
+			},
+		}
+		remote := json.RawMessage(`{"one":"1 apple","other":"{count} oranges"}`)
+		assert.False(t, equalTranslation(local, remote))
+	})
+}
+
+func TestShouldSkipLang(t *testing.T) {
+	cases := []struct {
+		lang      string
+		overrides []string
+		want      bool
+	}{
+		{"en", nil, false},
+		{"en", []string{}, false},
+		{"en", []string{"en", "pl"}, false},
+		{"de", []string{"en", "pl"}, true},
+		{"EN", []string{"en"}, false}, // case-insensitive
+	}
+	for _, c := range cases {
+		assert.Equal(t, c.want, shouldSkipLang(c.lang, c.overrides), "lang=%s overrides=%v", c.lang, c.overrides)
+	}
+}
+
+func TestLangInProject(t *testing.T) {
+	avail := []poeditor.Language{{Code: "en"}, {Code: "pl"}}
+	assert.True(t, langInProject("en", avail))
+	assert.True(t, langInProject("PL", avail)) // case-insensitive
+	assert.False(t, langInProject("de", avail))
 }

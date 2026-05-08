@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "hello": "Hello there",
+  "@hello": {},
+  "goodbye": "Goodbye",
+  "@goodbye": {},
+  "thanks": "Thank you, {name}",
+  "@thanks": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "welcome": "Welcome",
+  "@welcome": {}
+}

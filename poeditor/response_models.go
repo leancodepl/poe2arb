@@ -47,7 +47,11 @@ type termsListResponse struct {
 // termTranslation matches both the simple-string form and the plural object
 // form returned by POEditor's /terms/list endpoint when a language is specified.
 type termTranslation struct {
+	// Content is a human-readable preview. For plurals, it's the "other" form.
 	Content string
+	// Raw holds the original JSON content (string or plural object) so callers
+	// can do exact equality comparisons across formats.
+	Raw json.RawMessage
 }
 
 func (t *termTranslation) UnmarshalJSON(data []byte) error {
@@ -61,6 +65,8 @@ func (t *termTranslation) UnmarshalJSON(data []byte) error {
 	if len(raw.Content) == 0 {
 		return nil
 	}
+
+	t.Raw = raw.Content
 
 	var asString string
 	if err := json.Unmarshal(raw.Content, &asString); err == nil {

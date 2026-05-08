@@ -143,13 +143,14 @@ func (c *Client) ListTerms(projectID, languageCode string) ([]Term, error) {
 	terms := make([]Term, 0, len(resp.Result.Terms))
 	for _, t := range resp.Result.Terms {
 		terms = append(terms, Term{
-			Term:        t.Term,
-			Context:     t.Context,
-			Plural:      t.Plural,
-			Reference:   t.Reference,
-			Tags:        t.Tags,
-			Comment:     t.Comment,
-			Translation: t.Translation.Content,
+			Term:           t.Term,
+			Context:        t.Context,
+			Plural:         t.Plural,
+			Reference:      t.Reference,
+			Tags:           t.Tags,
+			Comment:        t.Comment,
+			Translation:    t.Translation.Content,
+			TranslationRaw: t.Translation.Raw,
 		})
 	}
 
