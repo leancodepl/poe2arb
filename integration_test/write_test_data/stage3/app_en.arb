@@ -1,0 +1,9 @@
+{
+  "@@locale": "en",
+  "hello": "Hello there",
+  "@hello": {},
+  "goodbye": "Goodbye",
+  "@goodbye": {},
+  "welcome": "Welcome",
+  "@welcome": {}
+}

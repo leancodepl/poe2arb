@@ -23,6 +23,7 @@ func Execute(logger *log.Logger) {
 	rootCmd.AddCommand(convertCmd)
 	rootCmd.AddCommand(poeCmd)
 	rootCmd.AddCommand(seedCmd)
+	rootCmd.AddCommand(uploadCmd)
 	rootCmd.AddCommand(versionCmd)
 
 	ctx := context.WithValue(context.Background(), loggerKey{}, logger)

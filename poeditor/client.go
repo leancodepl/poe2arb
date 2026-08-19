@@ -82,6 +82,13 @@ func handleRequestErr(err error, resp baseResponse) error {
 	return TryNewErrorFromResponse(resp.Response)
 }
 
+func boolField(b bool) string {
+	if b {
+		return "1"
+	}
+	return "0"
+}
+
 func (c *Client) AddLanguage(projectID, languageCode string) error {
 	var resp baseResponse
 	params := map[string]string{
@@ -116,6 +123,72 @@ func (c *Client) GetProjectLanguages(projectID string) ([]Language, error) {
 	return langs, nil
 }
 
+// ListTerms fetches all terms in the POEditor project. If languageCode is
+// non-empty, each term's Translation field is populated with the translation
+// in that language (useful for displaying a preview before deletion).
+//
+// See: https://poeditor.com/docs/api#terms_list
+func (c *Client) ListTerms(projectID, languageCode string) ([]Term, error) {
+	var resp termsListResponse
+
+	params := map[string]string{"id": projectID}
+	if languageCode != "" {
+		params["language"] = languageCode
+	}
+	err := c.request("/terms/list", params, &resp)
+	if err := handleRequestErr(err, resp.baseResponse); err != nil {
+		return nil, err
+	}
+
+	terms := make([]Term, 0, len(resp.Result.Terms))
+	for _, t := range resp.Result.Terms {
+		terms = append(terms, Term{
+			Term:           t.Term,
+			Context:        t.Context,
+			Plural:         t.Plural,
+			Reference:      t.Reference,
+			Tags:           t.Tags,
+			Comment:        t.Comment,
+			Translation:    t.Translation.Content,
+			TranslationRaw: t.Translation.Raw,
+		})
+	}
+
+	return terms, nil
+}
+
+// TermRef identifies a term by its name and (optional) context.
+type TermRef struct {
+	Term    string `json:"term"`
+	Context string `json:"context,omitempty"`
+}
+
+// DeleteTerms permanently removes the given terms from the POEditor project.
+//
+// See: https://poeditor.com/docs/api#terms_delete
+func (c *Client) DeleteTerms(projectID string, terms []TermRef) error {
+	if len(terms) == 0 {
+		return nil
+	}
+
+	data, err := json.Marshal(terms)
+	if err != nil {
+		return fmt.Errorf("encoding terms: %w", err)
+	}
+
+	var resp baseResponse
+	params := map[string]string{
+		"id":   projectID,
+		"data": string(data),
+	}
+	err = c.request("/terms/delete", params, &resp)
+	if err := handleRequestErr(err, resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Client) GetExportURL(projectID, languageCode string) (string, error) {
 	var resp projectsExportResponse
 
@@ -132,7 +205,14 @@ func (c *Client) GetExportURL(projectID, languageCode string) (string, error) {
 	return resp.Result.URL, nil
 }
 
-func (c *Client) Upload(projectID, languageCode string, file io.Reader) error {
+// UploadOptions configures the Upload call.
+type UploadOptions struct {
+	// Overwrite, when true, replaces existing translations and term definitions
+	// in POEditor with the ones in the uploaded file.
+	Overwrite bool
+}
+
+func (c *Client) Upload(projectID, languageCode string, file io.Reader, opts UploadOptions) error {
 	reqURL := fmt.Sprintf("%s%s", c.apiURL, "/projects/upload")
 
 	var b bytes.Buffer
@@ -150,7 +230,7 @@ func (c *Client) Upload(projectID, languageCode string, file io.Reader) error {
 	}
 
 	_ = w.WriteField("language", languageCode)
-	_ = w.WriteField("overwrite", "0")
+	_ = w.WriteField("overwrite", boolField(opts.Overwrite))
 
 	err = w.Close()
 	if err != nil {

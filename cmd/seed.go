@@ -159,7 +159,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 
 		uploadFileReader := bytes.NewReader(b.Bytes())
 		for {
-			err = poeClient.Upload(options.ProjectID, lang, uploadFileReader)
+			err = poeClient.Upload(options.ProjectID, lang, uploadFileReader, poeditor.UploadOptions{})
 
 			if err != nil {
 				var poeErr *poeditor.Error
