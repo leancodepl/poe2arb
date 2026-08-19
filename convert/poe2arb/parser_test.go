@@ -53,9 +53,10 @@ func TestTranslationParseDummy(t *testing.T) {
 
 	for _, testCase := range cases {
 		t.Run(testCase.Input, func(t *testing.T) {
-			parser := newTranslationParser(false)
+			parser := newTranslationParser(false, false)
 
-			output := parser.ParseDummy(testCase.Input)
+			output, err := parser.ParseDummy(testCase.Input)
+			assert.NoError(t, err)
 
 			assert.Equal(t, testCase.ExpectedOutput, output)
 		})
@@ -104,7 +105,7 @@ func TestTranslationParserParseErrors(t *testing.T) {
 
 	for _, testCase := range cases {
 		t.Run(testCase.TestName, func(t *testing.T) {
-			parser := newTranslationParser(testCase.Plural)
+			parser := newTranslationParser(testCase.Plural, false)
 
 			output, err := parser.Parse(testCase.Input)
 
@@ -363,7 +364,7 @@ func TestTranslationParserAddPlaceholder(t *testing.T) {
 
 	for _, testCase := range cases {
 		t.Run(testCase.TestName, func(t *testing.T) {
-			pc := newTranslationParser(testCase.Plural)
+			pc := newTranslationParser(testCase.Plural, false)
 			for name, placeholder := range testCase.InitialPlaceholders {
 				pc.namedParams.Set(name, placeholder)
 			}
@@ -455,7 +456,7 @@ func TestTranslationParserFallbackPlaceholderTypes(t *testing.T) {
 
 	for _, testCase := range cases {
 		t.Run(testCase.TestName, func(t *testing.T) {
-			pc := newTranslationParser(testCase.Plural)
+			pc := newTranslationParser(testCase.Plural, false)
 
 			for name, placeholder := range testCase.Before {
 				pc.namedParams.Set(name, placeholder)
@@ -471,6 +472,64 @@ func TestTranslationParserFallbackPlaceholderTypes(t *testing.T) {
 			assert.Equal(t, pc.namedParams.Len(), len(testCase.After))
 		})
 	}
+}
+
+func TestTranslationParseWithEscaping(t *testing.T) {
+	t.Run("escaped braces do not become placeholders", func(t *testing.T) {
+		parser := newTranslationParser(false, true)
+
+		out, err := parser.Parse("I confirm that I have read the '{terms}' and the '{privacyPolicy}'.")
+		assert.NoError(t, err)
+		assert.Equal(t, "I confirm that I have read the '{terms}' and the '{privacyPolicy}'.", out)
+		assert.Equal(t, 0, parser.namedParams.Len(), "should not register any placeholders")
+	})
+
+	t.Run("escaped braces coexist with real placeholders", func(t *testing.T) {
+		parser := newTranslationParser(false, true)
+
+		out, err := parser.Parse("Hello {name}, read '{terms}' now.")
+		assert.NoError(t, err)
+		assert.Equal(t, "Hello {name}, read '{terms}' now.", out)
+		assert.Equal(t, 1, parser.namedParams.Len())
+		_, ok := parser.namedParams.Get("name")
+		assert.True(t, ok, "only {name} should be registered as a placeholder")
+	})
+
+	t.Run("double apostrophe is preserved", func(t *testing.T) {
+		parser := newTranslationParser(false, true)
+
+		out, err := parser.Parse("it''s me")
+		assert.NoError(t, err)
+		assert.Equal(t, "it''s me", out)
+		assert.Equal(t, 0, parser.namedParams.Len())
+	})
+
+	t.Run("unmatched apostrophe is an error", func(t *testing.T) {
+		parser := newTranslationParser(false, true)
+
+		_, err := parser.Parse("read the '{terms} without a close")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "unmatched single quote")
+	})
+
+	t.Run("without escaping enabled: apostrophes are literal and braces are placeholders", func(t *testing.T) {
+		parser := newTranslationParser(false, false)
+
+		out, err := parser.Parse("read the '{terms}' now")
+		assert.NoError(t, err)
+		assert.Equal(t, "read the '{terms}' now", out)
+		_, ok := parser.namedParams.Get("terms")
+		assert.True(t, ok, "with use-escaping off, {terms} inside quotes is still a placeholder")
+	})
+
+	t.Run("ParseDummy respects escapes", func(t *testing.T) {
+		parser := newTranslationParser(false, true)
+
+		out, err := parser.ParseDummy("Hello {name,String}, read '{terms,String}' now.")
+		assert.NoError(t, err)
+		// Type annotations should be stripped only OUTSIDE the escaped span.
+		assert.Equal(t, "Hello {name}, read '{terms,String}' now.", out)
+	})
 }
 
 func TestTranslationParserErrors(t *testing.T) {

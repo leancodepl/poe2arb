@@ -23,6 +23,7 @@ type Converter struct {
 	template                  bool
 	requireResourceAttributes bool
 	termPrefix                string
+	useEscaping               bool
 }
 
 type ConverterOptions struct {
@@ -30,6 +31,10 @@ type ConverterOptions struct {
 	Template                  bool
 	RequireResourceAttributes bool
 	TermPrefix                string
+	// UseEscaping mirrors Flutter's `l10n.yaml: use-escaping: true` option.
+	// When enabled, matched single-quote spans (e.g. `'{terms}'`) are treated
+	// as literal text and their braces are not registered as placeholders.
+	UseEscaping bool
 }
 
 func NewConverter(
@@ -43,6 +48,7 @@ func NewConverter(
 		template:                  options.Template,
 		requireResourceAttributes: options.RequireResourceAttributes,
 		termPrefix:                options.TermPrefix,
+		useEscaping:               options.UseEscaping,
 	}
 }
 
@@ -142,7 +148,7 @@ func errorsToError(errs []error) error {
 
 func (c Converter) parseTerm(term *convert.POETerm) (*convert.ARBMessage, error) {
 	var value string
-	tp := newTranslationParser(term.Definition.IsPlural)
+	tp := newTranslationParser(term.Definition.IsPlural, c.useEscaping)
 
 	name, err := parseName(term.Term)
 	if err != nil {
@@ -188,6 +194,6 @@ func (c Converter) parseSingleTranslation(tp *translationParser, translation str
 	if c.template {
 		return tp.Parse(translation)
 	} else {
-		return tp.ParseDummy(translation), nil
+		return tp.ParseDummy(translation)
 	}
 }

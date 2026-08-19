@@ -1,0 +1,12 @@
+{
+    "@@locale": "en",
+    "acceptTerms": "I confirm that I have read the '{terms}' and the '{privacyPolicy}' and accept their provisions.",
+    "greetingWithApostrophe": "It''s time, {name}!",
+    "@greetingWithApostrophe": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    }
+}

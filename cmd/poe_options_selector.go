@@ -30,6 +30,7 @@ type poeOptions struct {
 	OutputDir                 string
 	OverrideLangs             []string
 	RequireResourceAttributes bool
+	UseEscaping               bool
 }
 
 // SelectOptions selects all the options used for the poe command.
@@ -65,6 +66,7 @@ func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
 	}
 
 	requireResourceAttributes := s.SelectRequireResourceAttributes()
+	useEscaping := s.SelectUseEscaping()
 
 	return &poeOptions{
 		ProjectID:                 projectID,
@@ -75,6 +77,7 @@ func (s *poeOptionsSelector) SelectOptions() (*poeOptions, error) {
 		OutputDir:                 outputDir,
 		OverrideLangs:             overrideLangs,
 		RequireResourceAttributes: requireResourceAttributes,
+		UseEscaping:               useEscaping,
 	}, nil
 }
 
@@ -203,4 +206,13 @@ func (s *poeOptionsSelector) SelectOverrideLangs() ([]string, error) {
 func (s *poeOptionsSelector) SelectRequireResourceAttributes() bool {
 	// In Flutter, defaults to false, so no need to handle lack of the option.
 	return s.l10n.RequireResourceAttributes
+}
+
+// SelectUseEscaping mirrors Flutter's `l10n.yaml: use-escaping` option. When
+// enabled, ICU escapes (matched single quotes around braces, or two
+// consecutive apostrophes) in POE terms are preserved verbatim in the
+// generated ARBs and their braces are not registered as placeholders.
+func (s *poeOptionsSelector) SelectUseEscaping() bool {
+	// In Flutter, defaults to false, so no need to handle lack of the option.
+	return s.l10n.UseEscaping
 }

@@ -16,6 +16,7 @@ type Converter struct {
 
 	templateLocale flutter.Locale
 	termPrefix     string
+	useEscaping    bool
 }
 
 func NewConverter(input io.Reader, templateLocale flutter.Locale, termPrefix string) *Converter {
@@ -24,6 +25,15 @@ func NewConverter(input io.Reader, templateLocale flutter.Locale, termPrefix str
 		templateLocale: templateLocale,
 		termPrefix:     termPrefix,
 	}
+}
+
+// SetUseEscaping toggles ICU single-quote escape awareness. When enabled,
+// placeholder-type annotations are only inserted at `{name}` positions that
+// fall OUTSIDE matched single-quote escape spans, matching Flutter's
+// `l10n.yaml: use-escaping: true` behavior.
+func (c *Converter) SetUseEscaping(v bool) *Converter {
+	c.useEscaping = v
+	return c
 }
 
 var ErrNoTerms = errors.New("no terms to convert")
@@ -38,7 +48,7 @@ func (c *Converter) Convert(output io.Writer) (lang flutter.Locale, err error) {
 
 	var poeTerms []*convert.POETerm
 	for _, message := range messages {
-		poeTerm, err := arbMessageToPOETerm(message, !template, c.termPrefix)
+		poeTerm, err := arbMessageToPOETerm(message, !template, c.termPrefix, c.useEscaping)
 		if err != nil {
 			return flutter.Locale{}, fmt.Errorf("decoding term %q failed: %w", message.Name, err)
 		}
