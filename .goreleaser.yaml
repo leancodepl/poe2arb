@@ -20,6 +20,9 @@ homebrew_casks:
     homepage: https://github.com/leancodepl/poe2arb
     description: POEditor JSON to Flutter ARB converter.
     directory: Casks
+    # Skip publishing the cask update on prerelease tags (e.g. v2.6.0-rc.1)
+    # so brew users only get stable releases.
+    skip_upload: "auto"
     repository:
       owner: leancodepl
       name: poe2arb
