@@ -26,9 +26,11 @@ homebrew_casks:
     repository:
       owner: leancodepl
       name: poe2arb
-    hooks:
-      post:
-        install: |
-          if OS.mac?
-            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/poe2arb"]
-          end
+    # Homebrew deprecated `postflight do` blocks (which GoReleaser's
+    # `hooks.post.install` generates) in favor of declarative `postflight_steps`.
+    custom_block: |
+      postflight_steps do
+        on_macos do
+          run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{ "{{" }}staged_path{{ "}}" }}/poe2arb"]
+        end
+      end
