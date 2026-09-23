@@ -95,7 +95,8 @@ func runSeed(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		converter := arb2poe.NewConverter(file, options.TemplateLocale, options.TermPrefix)
+		converter := arb2poe.NewConverter(file, options.TemplateLocale, options.TermPrefix).
+			SetUseEscaping(options.UseEscaping)
 
 		var b bytes.Buffer
 		flutterLocale, err := converter.Convert(&b)

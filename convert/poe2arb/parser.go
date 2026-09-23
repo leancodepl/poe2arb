@@ -36,7 +36,8 @@ func parseName(name string) (string, error) {
 }
 
 type translationParser struct {
-	plural bool
+	plural      bool
+	useEscaping bool
 
 	namedParams *orderedmap.OrderedMap[string, *placeholder]
 }
@@ -46,39 +47,78 @@ type placeholder struct {
 	Format string
 }
 
-func newTranslationParser(plural bool) *translationParser {
+func newTranslationParser(plural, useEscaping bool) *translationParser {
 	return &translationParser{
 		plural:      plural,
+		useEscaping: useEscaping,
 		namedParams: orderedmap.New[string, *placeholder](),
 	}
 }
 
 // ParseDummy is used to parse a translation string without actually adding the placeholders to the parser
 // and checking for errors. Used for non-template terms.
-func (tp *translationParser) ParseDummy(translation string) string {
-	return placeholderRegexp.ReplaceAllString(translation, "{$1}")
+func (tp *translationParser) ParseDummy(translation string) (string, error) {
+	return tp.transform(translation, func(chunk string) (string, error) {
+		return placeholderRegexp.ReplaceAllString(chunk, "{$1}"), nil
+	})
 }
 
 func (tp *translationParser) Parse(translation string) (string, error) {
-	var errors translationParserErrors
+	var errs translationParserErrors
 
-	replaced := placeholderRegexp.ReplaceAllStringFunc(translation, func(match string) string {
-		matchGroup := placeholderRegexp.FindStringSubmatch(match)
-		name, placeholderType, format := matchGroup[1], matchGroup[2], matchGroup[3]
+	out, err := tp.transform(translation, func(chunk string) (string, error) {
+		replaced := placeholderRegexp.ReplaceAllStringFunc(chunk, func(match string) string {
+			matchGroup := placeholderRegexp.FindStringSubmatch(match)
+			name, placeholderType, format := matchGroup[1], matchGroup[2], matchGroup[3]
 
-		err := tp.addPlaceholder(name, placeholderType, format)
-		if err != nil {
-			errors.AddError(name, err)
-		}
+			err := tp.addPlaceholder(name, placeholderType, format)
+			if err != nil {
+				errs.AddError(name, err)
+			}
 
-		return "{" + name + "}"
+			return "{" + name + "}"
+		})
+		return replaced, nil
 	})
-
-	if errors.HasErrors() {
-		return "", errors
+	if err != nil {
+		return "", err
 	}
 
-	return replaced, nil
+	if errs.HasErrors() {
+		return "", errs
+	}
+
+	return out, nil
+}
+
+// transform splits translation into escaped and non-escaped chunks according to
+// Flutter's `use-escaping` semantics, applies fn to each non-escaped chunk, and
+// concatenates the result. Escaped chunks are copied verbatim.
+//
+// When useEscaping is false, the entire string is a single non-escaped chunk.
+func (tp *translationParser) transform(translation string, fn func(chunk string) (string, error)) (string, error) {
+	if !tp.useEscaping {
+		return fn(translation)
+	}
+
+	segments, err := convert.SplitByEscapes(translation)
+	if err != nil {
+		return "", err
+	}
+
+	var sb strings.Builder
+	for _, seg := range segments {
+		if seg.Escaped {
+			sb.WriteString(seg.Text)
+			continue
+		}
+		out, err := fn(seg.Text)
+		if err != nil {
+			return "", err
+		}
+		sb.WriteString(out)
+	}
+	return sb.String(), nil
 }
 
 func (tp *translationParser) addPlaceholder(name, placeholderType, format string) error {

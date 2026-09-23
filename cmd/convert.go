@@ -23,8 +23,9 @@ var (
 )
 
 const (
-	langFlag       = "lang"
-	noTemplateFlag = "no-template"
+	langFlag        = "lang"
+	noTemplateFlag  = "no-template"
+	useEscapingFlag = "use-escaping"
 )
 
 func init() {
@@ -33,6 +34,7 @@ func init() {
 
 	convertCmd.PersistentFlags().StringP(termPrefixFlag, "", "", "POEditor term prefix")
 	convertCmd.PersistentFlags().Bool(noTemplateFlag, false, "Whether the output should NOT be generated as a template ARB")
+	convertCmd.PersistentFlags().Bool(useEscapingFlag, false, "Honor ICU single-quote escaping when scanning for placeholders (matches Flutter's `use-escaping: true`)")
 
 	convertCmd.AddCommand(convertIoCmd)
 }
@@ -41,6 +43,7 @@ func runConvertIo(cmd *cobra.Command, args []string) error {
 	lang, _ := cmd.Flags().GetString(langFlag)
 	noTemplate, _ := cmd.Flags().GetBool(noTemplateFlag)
 	termPrefix, _ := cmd.Flags().GetString(termPrefixFlag)
+	useEscaping, _ := cmd.Flags().GetBool(useEscapingFlag)
 
 	flutterLocale, err := flutter.ParseLocale(lang)
 	if err != nil {
@@ -52,6 +55,7 @@ func runConvertIo(cmd *cobra.Command, args []string) error {
 		Template:                  !noTemplate,
 		RequireResourceAttributes: true,
 		TermPrefix:                termPrefix,
+		UseEscaping:               useEscaping,
 	})
 
 	return conv.Convert(os.Stdout)

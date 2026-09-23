@@ -12,6 +12,7 @@ func arbMessageToPOETerm(
 	m *convert.ARBMessage,
 	skipPlaceholderDefinitions bool,
 	termPrefix string,
+	useEscaping bool,
 ) (*convert.POETerm, error) {
 	translation := m.Translation
 	if !skipPlaceholderDefinitions && m.Attributes != nil && m.Attributes.Placeholders != nil {
@@ -27,7 +28,10 @@ func arbMessageToPOETerm(
 			}
 
 			// Only do the replacement for the first occurence (defining the same parameter multiple times is illegal)
-			found := strings.Index(translation, "{"+placeholderName+"}")
+			found, err := indexPlaceholder(translation, placeholderName, useEscaping)
+			if err != nil {
+				return nil, err
+			}
 			if found == -1 {
 				continue
 			}
@@ -133,4 +137,31 @@ func arbMessageToPOETerm(
 		TermPlural: termPlural,
 		Definition: definition,
 	}, nil
+}
+
+// indexPlaceholder returns the byte offset of the first `{name}` occurrence
+// in translation, or -1 if not found. When useEscaping is true, matches inside
+// ICU single-quote escape spans are skipped.
+func indexPlaceholder(translation, name string, useEscaping bool) (int, error) {
+	needle := "{" + name + "}"
+
+	if !useEscaping {
+		return strings.Index(translation, needle), nil
+	}
+
+	segments, err := convert.SplitByEscapes(translation)
+	if err != nil {
+		return 0, err
+	}
+
+	offset := 0
+	for _, seg := range segments {
+		if !seg.Escaped {
+			if i := strings.Index(seg.Text, needle); i != -1 {
+				return offset + i, nil
+			}
+		}
+		offset += len(seg.Text)
+	}
+	return -1, nil
 }

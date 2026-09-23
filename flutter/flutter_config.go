@@ -27,6 +27,7 @@ type L10n struct {
 	ARBDir                    string `yaml:"arb-dir"`
 	TemplateArbFile           string `yaml:"template-arb-file"`
 	RequireResourceAttributes bool   `yaml:"required-resource-attributes"`
+	UseEscaping               bool   `yaml:"use-escaping"`
 
 	// custom options
 

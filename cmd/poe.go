@@ -235,6 +235,7 @@ func (c *poeCommand) ExportLanguage(lang poeditor.Language, flutterLocale flutte
 		Template:                  template,
 		RequireResourceAttributes: c.options.RequireResourceAttributes,
 		TermPrefix:                c.options.TermPrefix,
+		UseEscaping:               c.options.UseEscaping,
 	})
 	err = conv.Convert(file)
 	if err != nil {

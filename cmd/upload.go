@@ -94,7 +94,7 @@ func runUpload(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	parsedFiles, err := parseAllARBs(orderTemplateFirst(files, templateFile), options.TemplateLocale, options.TermPrefix)
+	parsedFiles, err := parseAllARBs(orderTemplateFirst(files, templateFile), options.TemplateLocale, options.TermPrefix, options.UseEscaping)
 	if err != nil {
 		logger.Error("failed parsing ARB files: " + err.Error())
 		return err
@@ -304,7 +304,7 @@ type parsedARB struct {
 // parseAllARBs parses each ARB file and converts it to POE terms in memory.
 // Files that produce no terms (e.g. empty translations file with non-template
 // locale and term prefix filtering) are skipped silently.
-func parseAllARBs(files []string, templateLocale flutter.Locale, termPrefix string) ([]*parsedARB, error) {
+func parseAllARBs(files []string, templateLocale flutter.Locale, termPrefix string, useEscaping bool) ([]*parsedARB, error) {
 	var out []*parsedARB
 	for _, p := range files {
 		f, err := os.Open(p)
@@ -313,7 +313,7 @@ func parseAllARBs(files []string, templateLocale flutter.Locale, termPrefix stri
 		}
 
 		var b bytes.Buffer
-		converter := arb2poe.NewConverter(f, templateLocale, termPrefix)
+		converter := arb2poe.NewConverter(f, templateLocale, termPrefix).SetUseEscaping(useEscaping)
 		locale, err := converter.Convert(&b)
 		_ = f.Close()
 		if err != nil {

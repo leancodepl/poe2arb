@@ -207,6 +207,29 @@ Available placeholder types:
 **Only template files can define placeholders with their type and format.** In non-template languages, placeholders' types and formats
 are ignored and no logical errors are reported.
 
+### Escaping literal braces (`use-escaping`)
+
+If you need a literal `{` or `}` character in a message — for example, to reference the
+Flutter widget name `{terms}` verbatim rather than as a placeholder — you can use ICU
+single-quote escaping and enable Flutter's [`use-escaping: true`][use-escaping] option in
+`l10n.yaml`.
+
+When `use-escaping: true`, poe2arb respects the same rules Flutter's gen-l10n does:
+
+| POE term text        | Rendered as             | Notes                                                        |
+|----------------------|-------------------------|--------------------------------------------------------------|
+| `'{terms}'`          | `{terms}` (literal)     | Anything between matched single quotes is kept verbatim.     |
+| `it''s`              | `it's`                  | Double apostrophes escape a literal apostrophe.              |
+| `Hello {name}`       | `Hello {name}`          | `{name}` is a placeholder as usual (outside the quotes).     |
+| `'{a}' and {b}`      | `'{a}' and {b}`         | `{a}` is literal, `{b}` is a placeholder.                    |
+| unmatched `'`        | error                   | Same as Flutter's `ICU Lexing Error: Unmatched single quotes.` |
+
+When `use-escaping` is unset (the default), apostrophes are literal characters and every
+`{name}` is a placeholder — matching Flutter's default behavior. `use-escaping` is read
+from `l10n.yaml`, or you can pass `--use-escaping` to `poe2arb convert`.
+
+[use-escaping]: https://github.com/flutter/flutter/blob/main/packages/flutter_tools/lib/src/localizations/gen_l10n.dart
+
 > [!NOTE]
 > \*If you're using Flutter 3.5 or older, you need to specify format for numeric placeholders.
 > Otherwise `flutter gen-l10n` will fail. You can look at the legacy placeholder syntax diagrams

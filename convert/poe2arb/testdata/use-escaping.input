@@ -1,0 +1,18 @@
+[
+    {
+        "term": "acceptTerms",
+        "definition": "I confirm that I have read the '{terms}' and the '{privacyPolicy}' and accept their provisions.",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    },
+    {
+        "term": "greetingWithApostrophe",
+        "definition": "It''s time, {name}!",
+        "context": "",
+        "term_plural": "",
+        "reference": "",
+        "comment": ""
+    }
+]
